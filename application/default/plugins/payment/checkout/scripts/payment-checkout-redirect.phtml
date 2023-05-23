@@ -1,0 +1,73 @@
+<?php
+$title = ___("Checkout payment");
+$this->setLayout('layout.phtml');
+?>
+<style type="text/css">
+.C1 {
+	width: 180px;
+	height: 120px;
+	border: 1pt solid #a0a0a0;
+	display: block;
+	float: left;
+	margin: 7px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	clear: none;
+	padding: 0;
+}
+
+.C1:hover {
+	background-color: #f0f0f0;
+	border-color: black;
+}
+
+.C1 form {
+	width: 180px;
+	height: 120px;
+}
+
+.C1 form span {
+	display: table-cell;
+	vertical-align: middle;
+	height: 92px;
+	width: 180px;
+}
+
+.C1 form span input {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	border: 1pt solid #f2f2f2;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	padding: 5px;
+	background-color: white;
+}
+
+.C1:hover form span input {
+	border: 1pt solid black;
+}
+
+.C1 div {
+	text-align: center;
+	font-family: arial;
+	font-size: 8pt;
+}
+</style>
+<?php foreach($xml->payments->payment->banks as $bankX):?>
+	<?php foreach($bankX as $bank):?>
+	<div class='C1'>
+		<form action='<?=$bank['url'];?>' method='post'>
+			<?php foreach($bank as $key => $value):?>
+			<input type='hidden' name='<?=$key;?>' value='<?=htmlspecialchars($value);?>'>
+			<?php endforeach;?>
+			<span><input type='image' src='<?=$bank['icon'];?>'> </span>
+			<div>
+				<?=$bank['name'];?>
+			</div>
+		</form>
+	</div>
+	<?php endforeach;?>
+<?php endforeach;?>

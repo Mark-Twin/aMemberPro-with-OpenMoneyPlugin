@@ -1,0 +1,66 @@
+<?php 
+$this->setLayout('admin/user-layout.phtml'); 
+$title = ___('Affiliate Information');
+$this->enableReports(); ?>
+<div>
+<?php echo $form; ?>
+</div>
+
+<?php echo $report; ?>
+<br />
+<h1><?php __e('Report') ?></h1>
+<div class="grid-container">
+<table class="grid">
+<tr>
+    <th><?php __e('Date') ?></th>
+    <th style="text-align:right"><?php __e('Sales') ?></th>
+    <th style="text-align:right"><?php __e('Commission earned') ?></th>
+    <th style="text-align:right"><?php __e('Unique Clicks') ?></th>
+    <th style="text-align:right"><?php __e('All Clicks') ?></th>
+</tr>
+<?php
+/* @var $result Am_Report_Result */
+$lines = $result->getLines();
+/* @var $quant Am_Report_Quant_Date */
+$quant = $result->getQuantity();
+foreach ($result->getPoints() as $point):
+/* @var $point Am_Report_Point */
+print "<tr class='grid-row'>";
+printf("    <td>%s</td>\n", $point->getLabel());
+foreach ($lines as $line) {
+    list($start, $stop) = $quant->getStartStop($point->getKey());
+    $href = sprintf("<td style='text-align:right'><a href='javascript:affDetail(\"%s\", \"%s\", \"%s\")' class='local aff-detail'>%s</a></td>\n",
+        $start, $stop, $point->getLabel(), '%s');
+    $nohref = '<td style="text-align:right">%s</td>';
+    printf($point->getValue($line->getKey()) ? $href : $nohref,
+            !$point->getValue($line->getKey()) ? '&ndash;' :
+                        (($line->getKey() == 'commission') ?
+                            ($point->getValue($line->getKey()) >= 0 ?
+                                Am_Currency::render($point->getValue($line->getKey())) :
+                                '- ' . Am_Currency::render(abs($point->getValue($line->getKey())))):
+                            $point->getValue($line->getKey())));
+}
+print "</tr>";
+endforeach;
+?>
+</table>
+</div>
+
+<div id="aff-detail">
+</div>
+
+<script type="text/javascript">
+function affDetail(from, to, label)
+{
+    var url = "<?php j($this->pUrl(
+            'admin', 'info-tab-detail', 'aff', 'user_id', $this->user_id,
+            'from', 'FROMDATE', 'to', 'TODATE'))?>";
+    jQuery("#aff-detail").load(url.replace(/FROMDATE/, encodeURIComponent(from)).replace(/TODATE/, encodeURIComponent(to)), function(){
+        jQuery("#aff-detail").dialog({
+            title: '<?php __e('Affiliate Commission Details for') ?>' + ' ' + label,
+            width: 700,
+            heigth: 300
+        });
+    });
+}
+</script>

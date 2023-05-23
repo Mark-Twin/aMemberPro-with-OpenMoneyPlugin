@@ -1,0 +1,72 @@
+/*
+  Copyright (c) 2008 Bart Kruger
+*/
+body, p, td 
+{ 
+	font-family:Verdana,Arial,Helvetica; 
+	font-size:9pt; 
+	color:#46596E; 
+	background-color:#FFFFFF 
+}
+
+p, td 
+{ 
+	font-family:Verdana,Arial,Helvetica; 
+	font-size:9pt; 
+	color:#46596E 
+}
+
+div#info 
+{ 
+	font-family:Verdana,Arial,Helvetica; 
+	font-size:8pt; 
+	color:#46596E 
+}
+
+a 
+{ 
+	color: grey; 
+	text-decoration:none 
+}
+
+a:hover 
+{ 
+	color: grey; 
+	text-decoration:none 
+}
+
+table#outer 
+{ 
+	border-spacing:50px; 
+}
+
+table#outer td 
+{ 
+	padding:20px 
+}
+
+table#inner 
+{ 
+	border-spacing:5px 
+}
+
+table#inner td 
+{ 
+	background-color:#EEEEEE; 
+	padding:5px 
+}
+
+input.text 
+{ 
+	width: 230px 
+}
+
+textarea 
+{ 
+	width: 230px 
+}
+
+sup.red 
+{ 
+	color: #dd1414 
+}

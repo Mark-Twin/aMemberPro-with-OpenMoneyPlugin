@@ -1,0 +1,14 @@
+<?php
+/**
+ * The content of this file is displayed in popup box
+ * when user chooses to cancel subscription
+ */
+?>
+<?php echo $this->blocks('member/cancel') ?>
+<div class="cancel-subscription-popup-text">
+    <?php __e('Do you really want to cancel subscription?') ?>
+</div>
+<div class="cancel-subscription-buttons">
+    <input type="button" id="cancel-subscription-yes" value="<?php __e('Yes, I want to cancel subscription')?>" class="am-cta-cancel"/>
+    <a href="javascript:;" class="am-popup-close local-link" id="cancel-subscription-no"><?php __e('No, please keep me subscribed')?></a>
+</div>

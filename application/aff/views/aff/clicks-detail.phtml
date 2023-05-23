@@ -1,0 +1,14 @@
+<div class="grid-container">
+    <table class="grid">
+        <tr>
+            <th><?php __e('Date/Time') ?></th>
+            <th><?php __e('Referer') ?></th>
+        </tr>
+        <?php  foreach ($clicks as $c): ?>
+        <tr class="grid-row">
+            <td><?php p(amDateTime($c->time)) ?></td>
+            <td><a href="<?php p($c->referer) ?>" target="_blank" rel="noreferrer"><?php p($c->referer) ?></a></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</div>

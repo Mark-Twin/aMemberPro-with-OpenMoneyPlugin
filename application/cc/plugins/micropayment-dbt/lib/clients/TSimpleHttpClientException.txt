@@ -1,0 +1,4 @@
+streamopen_failed				= An Error occured during connect to "{2}:{3}" #{0} "{1}"
+streamopen_ssl_not_supported	= SSL currently not supported
+streamwrite_failed				= An Error occured during writing data to stream "{1}:{2}{3}" {0}
+streamread_failed				= An Error occured during reading data from stream "{1}:{2}{3}"

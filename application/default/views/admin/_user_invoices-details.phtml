@@ -1,0 +1,269 @@
+<?php
+$taxes = array();
+foreach ($invoice->getItems() as $item) {
+    if ($item->tax_rate && ($item->first_tax || $item->second_tax)) {
+        if (!isset($taxes[$item->tax_rate])) {
+            $taxes[$item->tax_rate] = array(0, 0);
+        }
+        $taxes[$item->tax_rate][0] += $item->first_tax;
+        $taxes[$item->tax_rate][1] += $item->second_tax;
+    }
+}
+if (!$taxes) {
+    $taxes[$invoice->tax_rate] = array($invoice->first_tax, $invoice->second_tax);
+}
+?>
+<div class="user-invoice-record-details">
+    <!-- products -->
+    <div class="user-invoice-record-details-products">
+        <div><?php __e('Products')?></div>
+        <div class="grid-container grid-container-small">
+            <table class="grid grid-no-highlight grid-small">
+                <tr>
+                    <th width="1%" nowrap="nowrap">#</th>
+                    <th><?php __e('Title')?></th>
+                    <th class="align-right"><?php __e('First Price')?></th>
+                    <?php if ($invoice->rebill_times): ?><th class="align-right"><?php __e('Second Price')?></th><?php endif ?>
+                </tr>
+                <?php foreach ($invoice->getItems() as $item): /* @var $item InvoiceItem */?>
+                <tr class="grid-row">
+                    <td class="align-right"><?php p($item->item_id) ?></td>
+                    <td>
+                        <?php if ($item->qty != 1) echo "<em>$item->qty pcs -</em> " ?>
+                        <?php p($item->item_title) ?>
+                        <?php if ($di->authAdmin->getUser()->hasPermission('grid_invoice', 'edit') && $item->item_type == 'product'): ?>
+                        [<a href="javascript:" class="replace-product local" data-invoice_item_id="<?php echo $item->invoice_item_id ?>" title="<?php __e('Replace Product') ?>"><?php __e('replace') ?></a>]
+                        <?php endif; ?>
+                        <!-- options -->
+                        <?php foreach ($item->getOptions() as $optKey => $opt): ?>
+                            <br /><b><i><?php p($opt['optionLabel']) ?>:</i></b>
+                                 <i><?php p(is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']) ?></i>
+                                 <?php if ($opt['first_price'] || $opt['second_price']) : ?>
+                                 <i style='color: gray;'>+ <?php
+                                        $o = new stdclass;
+                                        $o->first_price = $opt['first_price'];
+                                        $o->second_price = $opt['second_price'];
+                                        $o->first_period = $invoice->first_period;
+                                        $o->second_period = $invoice->second_period;
+                                        $o->rebill_times = $invoice->rebill_times;
+                                        $o->currency = $invoice->currency;
+                                        $t = new Am_TermsText($o);
+                                    echo $t->getStringForOption(); ?></i>
+                                 <?php endif ?>
+                        <?php endforeach // item->getOptions() ?>
+                    </td>
+                    <td class="align-right"><?php echo $invoice->getCurrency($item->first_price) ?></td>
+                    <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($item->second_price) ?></td><?php endif ?>
+                </tr>
+                <?php endforeach ?>
+                 <?php if (($invoice->first_discount+$invoice->second_discount) > 0): ?>
+                <tr class="grid-row">
+                    <td class="align-right"></td>
+                    <td class="align-right"><?php __e('Discount')?></td>
+                    <td class="align-right"><?php echo $invoice->getCurrency($invoice->first_discount) ?></td>
+                    <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($invoice->second_discount) ?></td><?php endif ?>
+                </tr>
+                <?php endif ?>
+                <?php if (($invoice->first_shipping+$invoice->second_shipping) > 0): ?>
+                <tr class="grid-row">
+                    <td class="align-right"></td>
+                    <td class="align-right"><?php __e('Shipping')?></td>
+                    <td class="align-right"><?php echo $invoice->getCurrency($invoice->first_shipping) ?></td>
+                    <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($invoice->second_shipping) ?></td><?php endif ?>
+                </tr>
+                <?php endif ?>
+                <?php if (($invoice->first_tax+$invoice->second_tax) > 0): ?>
+                <?php foreach ($taxes as $rate => $totals) : ?>
+                <?php list($first_total, $second_total) = $totals; ?>
+                <tr class="grid-row">
+                    <td class="align-right"></td>
+                    <td class="align-right"><?php __e('Tax Amount')?> (<?php p($rate) ?>%)</td>
+                    <td class="align-right"><?php echo $invoice->getCurrency($first_total) ?></td>
+                    <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($second_total) ?></td><?php endif ?>
+                </tr>
+                <?php endforeach; ?>
+                <?php endif ?>
+                <tr class="grid-row">
+                    <td class="align-right"></td>
+                    <td class="align-right"><strong><?php __e('Total')?></strong></td>
+                    <td class="align-right"><strong><?php echo $invoice->getCurrency($invoice->first_total) ?></strong></td>
+                    <?php if ($invoice->rebill_times): ?><td class="align-right"><strong><?php echo $invoice->getCurrency($invoice->second_total) ?></strong></td><?php endif ?>
+                </tr>
+            </table>
+        </div>
+        <?php if($di->plugins_tax->getAllEnabled()) : ?>
+        <div><?php __e('Tax information ')?></div>
+        <div class="grid-container grid-container-small">
+            <table class="grid grid-no-highlight grid-small">
+                <tr class="grid-row">
+                    <td><?php __e('Tax Rate');?></td>
+                    <td><?php $invoice->tax_rate? p($invoice->tax_rate."%") : __e("Not Applied")?></td>
+                </tr>
+                <tr class="grid-row">
+                    <td><?php __e("Invoice Country");?></td>
+                    <td>
+                        <?php
+                        $c = $invoice->data()->get(Am_Invoice_Tax_Vat2015::INVOICE_COUNTRY) ?: $invoice->getUser()->country;
+                        $c ? p($invoice->getDi()->countryTable->getTitleByCode($c)) : __e('unknown');
+                        ?>
+                    </td>
+                </tr>
+                <tr class="grid-row">
+                    <td><?php __e("Customer Country");?></td>
+                    <td>
+                        <?php
+                        $c = $invoice->data()->get(Am_Invoice_Tax_Vat2015::USER_COUNTRY) ?: $invoice->getUser()->country;
+                        $c ? p($invoice->getDi()->countryTable->getTitleByCode($c)) : __e('unknown');
+                        ?>
+                    </td>
+                </tr>
+                <tr class="grid-row">
+                    <td><?php __e('Signup IP');?></td>
+                    <td>
+                        <?php
+                        $ip = $invoice->data()->get(Am_Invoice_Tax_Vat2015::USER_REGISTRATION_IP) ?: $invoice->getUser()->remote_addr;
+                        $c = $invoice->data()->get(Am_Invoice_Tax_Vat2015::USER_REGISTRATION_IP_COUNTRY);
+
+                        $c ? printf("%s (%s)", $ip, $invoice->getDi()->countryTable->getTitleByCode($c)) : p($ip);
+                        ?>
+                    </td>
+                </tr>
+                <?php if($ip = $invoice->data()->get(Am_Invoice_Tax_Vat2015::INVOICE_IP)) : ?>
+                <tr class="grid-row">
+                    <td><?php __e('Purchase IP');?></td>
+                    <td>
+                        <?php
+                        $c = $invoice->data()->get(Am_Invoice_Tax_Vat2015::INVOICE_IP_COUNTRY);
+                        $c ? printf("%s (%s)", $ip, $invoice->getDi()->countryTable->getTitleByCode($c)) : p($ip);
+                        ?>
+                    </td>
+                </tr>
+                <?php endif; ?>
+                <?php if($c = $invoice->data()->get(Am_Invoice_Tax_Vat2015::SELF_VALIDATION_COUNTRY)) : ?>
+                <tr class="grid-row">
+                    <td><?php __e('Country Confirmed by User');?></td>
+                    <td>
+                        <?php
+                        p($invoice->getDi()->countryTable->getTitleByCode($c));
+                        ?>
+                    </td>
+                </tr>
+                <?php endif; ?>
+
+            </table>
+        </div>
+        <?php endif;?>
+    </div>
+    <!-- payments -->
+    <div class="user-invoice-record-details-payments">
+        <div><?php __e('Payments')?></div>
+        <div class="grid-container grid-container-small">
+            <table class="grid grid-no-highlight grid-small">
+                <tr>
+                    <th width="1%" nowrap="nowrap">#</th>
+                    <th><?php __e('Date/Time')?></th>
+                    <th><?php __e('Paysystem')?></th>
+                    <th><?php __e('Invoice')?></th>
+                    <th class="align-right"><?php __e('Amount')?></th>
+                    <th></th>
+                </tr>
+                <?php $refunds = array() ?>
+                <?php foreach ($invoice->getRefundRecords() as $r): /* @var $r InvoiceRefund */?>
+                <?php $refunds[$r->invoice_payment_id][] = $r; ?>
+                <?php endforeach; ?>
+                <?php $count = 0; foreach ($invoice->getPaymentRecords() as $payment): /* @var $payment InvoicePayment */?>
+                <tr class="grid-row" data-invoice-payment-id="<?php p($payment->pk()) ?>">
+                    <td><?php p($payment->invoice_payment_id) ?></td>
+                    <td><?php echo amDateTime($payment->dattm) ?></td>
+                    <td class="break"><?php p($payment->paysys_id) ?> &middot; <span><?php p($payment->receipt_id) ?></span></td>
+                    <td class="break">
+                        <?php if ($di->config->get('send_pdf_invoice')): ?>
+                            <a class="link" title="<?php p($payment->getDisplayInvoiceId()); ?>" href="<?php echo $this->url('admin-user-payments/invoice/payment_id/'.$payment->pk()) ?>"><?php p($payment->getDisplayInvoiceId()) ?></a>
+                        <?php else: ?>
+                            <?php p($payment->getDisplayInvoiceId()) ?>
+                        <?php endif; ?>
+                    </td>
+                    <td class="align-right"><?php echo $invoice->getCurrency($payment->amount) ?></td>
+                    <td>
+                        <?php  if ($payment->isRefunded() && $payment->isFullRefunded()): ?>
+                        <a href="javascript:;" onclick="jQuery('[rel=refund-payment-<?php p($payment->pk()) ?>]').toggle()" class="local"><span class="red"><?php __e('Refunded')?></span></a>
+                        <?php else: ?>
+                            <?php if ($di->authAdmin->getUser()->hasPermission('grid_payment', 'insert')): ?>
+                                <?php
+                                $refundDisplayed = false;
+                                try {
+                                    if (Am_Di::getInstance()->plugins_payment->isEnabled($payment->paysys_id)
+                                        && ($ps = Am_Di::getInstance()->plugins_payment->loadGet($payment->paysys_id))
+                                        && $ps->isRefundable($payment)): ?>
+                                    <a href="javascript:;" data-partialrefunds="<?php echo intval($ps->allowPartialRefunds()) ?>" data-amount="<?php echo $payment->amount ?>" data-refund_amount="<?php echo moneyRound($payment->amount - $payment->refund_amount) ?>" class="refund-button local" id="refund-button-<?php echo $payment->invoice_payment_id?>"><?php __e('Refund')?></a>
+                                        <?php $refundDisplayed = true;
+                                    endif ;
+                                } catch (Am_Exception $e) { echo $e->getMessage(); }
+
+                                if (!$refundDisplayed): ?>
+                                    <a href="javascript:;" data-amount="<?php echo $payment->amount ?>" data-refund_amount="<?php echo $payment->refund_amount ?>" class="refund-button refund-button-manual local" id="refund-button-<?php echo $payment->invoice_payment_id?>"><?php __e('Refund')?></a>
+                                <?php
+                                endif; // if !$refundDisplayed
+                            endif; // if has access to refund
+                            ?>
+                            <?php if ($payment->isRefunded()): ?>
+                                <a style="margin-left:1em" href="javascript:;" onclick="jQuery('[rel=refund-payment-<?php p($payment->pk()) ?>]').toggle()" class="local"><span class="red"><?php echo $invoice->getCurrency($payment->refund_amount) ?> <?php __e('refunded')?></span></a>
+                            <?php endif; ?>
+                        <?php endif; //fullRefund
+                        ?>
+                    </td>
+                </tr>
+                <?php if (isset($refunds[$payment->pk()])) : ?>
+                    <?php foreach ($refunds[$payment->pk()] as $r) : ?>
+                    <tr class="grid-row red" rel="refund-payment-<?php p($payment->pk()) ?>" style="display:none" data-invoice-refund-id="<?php p($r->pk()) ?>">
+                        <td><?php p($r->invoice_refund_id) ?></td>
+                        <td><?php echo amDateTime($r->dattm) ?></td>
+                        <td class="break"><?php p($r->paysys_id) ?> &middot; <span><?php p($r->receipt_id) ?></span></td>
+                        <td>
+                            <?php if ($di->config->get('send_pdf_invoice') && $di->config->get('different_invoice_for_refunds')): ?>
+                            <a class="link" title="<?php p($r->getDisplayInvoiceId()); ?>" href="<?php echo $this->url('admin-user-payments/invoice/refund_id/'.$r->pk()) ?>"><?php p($r->getDisplayInvoiceId()); ?></a>
+                            <?php else: ?>
+                            <?php p($r->getDisplayInvoiceId()); ?>
+                            <?php endif; ?>
+                        </td>
+                        <td class="align-right">&minus;&nbsp;<?php echo $invoice->getCurrency($r->amount) ?></td>
+                        <td>
+                            (<?php
+                            switch ($r->refund_type) {
+                                case InvoiceRefund::VOID:
+                                    __e('void');
+                                    break;
+                                case InvoiceRefund::CHARGEBACK:
+                                    __e('chargeback');
+                                    break;
+                                default:
+                                    __e('refund');
+                            }
+                            ?>)
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php $count++; endforeach ?>
+            </table>
+        </div>
+        <?php if ($count < $invoice->rebill_times+1):
+
+        $suggestedAmount = 0.0;
+        if ($invoice->getStatus() != Invoice::PENDING)
+            $suggestedAmounts = "[$invoice->second_total]";
+        else
+            $suggestedAmounts = "[$invoice->first_total]";
+        ?>
+        <?php if ($di->authAdmin->getUser()->hasPermission('grid_payment', 'insert')): ?>
+        <a href="javascript:;" class="add-payment-link local"
+           data-paysys_id="<?php echo $invoice->paysys_id ?>"
+           data-amounts="<?php echo $suggestedAmounts ?>"
+           data-invoice_id="<?php echo $invoice->invoice_id ?>"
+           id="add-payment-link-<?php echo $invoice->invoice_id ?>"><?php __e('Add Payment Manually')?></a>
+        <?php endif; ?>
+        <?php endif ?>
+    </div>
+    <?php $this->invoice = $invoice ?>
+    <?php echo $this->blocks('admin/user/invoice/details', '%s', array('invoice' => $invoice)) ?>
+</div>

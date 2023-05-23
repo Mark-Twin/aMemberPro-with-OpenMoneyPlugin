@@ -1,0 +1,37 @@
+<?php $notes = $di->userNoteTable->selectLast($num); ?>
+<?php if ($notes) : ?>
+<div class="admin-last">
+    <h2><?php __e('Last %s User Notes', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <?php foreach ($notes as $n): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td>
+                    <div style="padding-bottom:0.4em; opacity:0.8">
+                    <?php if ($name = trim("$n->name_f $n->name_l")) : ?>
+                        <strong><?php p($name) ?></strong>
+                        (<?php p($n->login) ?>)
+                    <?php else: ?>
+                        <?php p($n->login) ?>
+                    <?php endif; ?>
+                    </div>
+                    <div style="padding-bottom:0.4em">
+                        <a href="<?php echo $this->url('admin-user-note/index/user_id/' . $n->user_id) ?>"><?php p(mb_substr($n->content, 0, 250))?><?php echo mb_strlen($n->content) > 250 ? '&hellip;' : '' ?></a>
+                    </div>
+                    <div style="margin-bottom:0.4em; opacity:0.8">
+                       <?php __e('added by %s', '<strong>' . $this->escape($n->a_name_f || $n->a_name_l ? trim(sprintf('%s %s (%s)', $n->a_name_f, $n->a_name_l, $n->a_login)) : $n->a_login) . '</strong>') ?>
+                            &middot;
+                            <time datetime="<?php p(date('c', amstrtotime($n->dattm))) ?>" title="<?php p(amDatetime($n->dattm)) ?>"><small><?php p($this->getElapsedTime($n->dattm)) ?></small></time>
+                    </div>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s User Notes', $num); ?></h2>
+    <p><?php __e('No data to display yet') ?></p>
+</div>
+<?php endif; ?>

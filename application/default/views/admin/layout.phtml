@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<?php ob_start(); $this->adminHeadInit(); $_head_init = ob_get_clean(); // run it here to init vars first ?>
+<html<?php if (!empty($this->html_attrs)) echo ' ' . $this->attrs($this->html_attrs)?>>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Cache-Control" content="no-cache" />
+        <meta name="robots" content="noindex,nofollow" />
+        <?php echo $this->headMeta() . "\n"; ?>
+        <title><?php p(strip_tags(empty($this->layoutNoTitle) ? $title : 'aMember PRO')) ?></title>
+        <?php
+        echo $this->placeholder("head-start");
+        $admin_logged_in = Am_Di::getInstance()->authAdmin->getUserId() > 0;
+        $admin_login = Am_Di::getInstance()->authAdmin->getUsername();
+        echo $_head_init;
+        echo $this->headLink() . "\n";
+        echo $this->headStyle() . "\n";
+        echo $this->headScript() . "\n";
+        echo $this->placeholder("head-finish");
+        ?>
+    </head>
+    <body class="<?php echo isset($_COOKIE['am-admin-menu-collapsed']) && $_COOKIE['am-admin-menu-collapsed'] ? 'collapsed' : '' ?>">
+        <?php echo $this->placeholder('body-start'); ?>
+        <?php if ($di->config->get('maintenance')): //maint.mode warning ?>
+        <div class="maint-mode-warning">
+        <?php __e('Maintenance mode is currently enabled. Only logged-in administrators like you can access it. %sDisable%s',
+            '<a href="'.$this->url('admin-setup/advanced').'">', '</a>'
+            ); ?>
+        </div>
+        <?php endif; //maint.mode warning ?>
+        <div class="layout">
+            <a id="top"></a>
+            <div id="header">
+                <div class="ajax-loading">
+                    <img src="<?php echo $this->_scriptImg('loading-w.svg') ?>" width="16" height="16" alt="" /> <?php __e('Loading') ?>&hellip;
+                </div>
+                <div class="header-right">
+                    <div class="lookup-block ui-front">
+                        <div class="input-lookup">
+                            <form method="get" action="<?php echo $this->url('admin-users') ?>">
+                                <input class="input-lookup-button" type="submit" value="<?php __e('Lookup')?>" />
+                                <div class="input-lookup-input">
+                                    <div  class="input-lookup-input-inner-wrapper">
+                                        <input class="lookup" type="text" id="user-lookup" name="_u_filter" size="20"
+                                               placeholder="<?php __e('Find an user…')?>" />
+                                        <div class="input-lookup-empty">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <script type="text/javascript">
+                        jQuery('.input-lookup-input .input-lookup-empty').click(function(){
+                            jQuery('.input-lookup-input input').val('').change().focus();
+                        });
+                        jQuery('.input-lookup-input input').bind('keyup change', function(){
+                            jQuery('.input-lookup').toggleClass('state-has-value', this.value.length !== 0);
+                        });
+                        jQuery('.input-lookup-button').bind('mouseover mouseout', function(){
+                            jQuery('.input-lookup').toggleClass('hover');
+                        });
+                        jQuery('.input-lookup-input input').bind('focusin', function(){
+                            jQuery('.input-lookup').addClass('state-open');
+                            jQuery('#user-lookup').attr('placeholder', '<?php j(___('login, email or name') . '…') ?>');
+                        });
+                        jQuery('.input-lookup-input input').bind('focusout', function(){
+                            this.value.length != 0 || jQuery('.input-lookup').removeClass('state-open');
+                            this.value.length != 0 || jQuery('#user-lookup').attr('placeholder', '<?php j(___('Find an user…')) ?>');
+                        });
+                        </script>
+                    </div><div class="user-identity-block">
+                        <span class="user-identity-block-user-wide">
+                            <?php __e('Logged in as %s', sprintf('<span class="user-identity-block-usernanme">%s</span>', $this->escape($admin_login))); ?>
+                        </span>
+                        <span class="user-identity-block-user-narrow">
+                            <span class="user-identity-block-usernanme"><?php p($admin_login) ?></span>
+                        </span>
+                        <a href="<?php echo $this->url('admin-auth/logout') ?>"><?php __e('Logout')?></a>
+                        <!-- switch language -->
+                        <?php include $this->_script('admin/_lang-choice.phtml'); ?>
+                        <!-- end of switch language -->
+                    </div>
+                </div>
+                <div class="logo-block">
+                    <a href="<?php echo $this->url('admin') ?>">
+                        aMember Pro
+                    </a>
+                </div>
+            </div>
+            <div class="layout-two-coll">
+                <div class="coll-left">
+                    <div class="menu-bg"></div>
+                    <div class="menu-wrapper">
+                        <?php include $this->_script("admin/_menu.phtml"); ?>
+                    </div>
+                </div>
+                <div class="coll-right">
+                    <div class="content am-admin-content">
+                        <?php if (empty($this->layoutNoTitle)): ?>
+                            <!-- title starts here -->
+                            <h1 id="pageTitle"><?php echo $title ?></h1>
+                            <!-- title starts here -->
+                        <?php endif ?>
+                        <?php echo $this->placeholder('before-content'); ?>
+                        <!-- content starts here -->
+                        <?php echo $content ?>
+                        <!-- content ends here -->
+                        <?php echo $this->placeholder('after-content'); ?>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div id="footer">
+            <div class="footer-content">
+                <div class="footer-actions">
+                    <a href="#top" onclick="jQuery('html, body').animate({scrollTop: 0}, 1000); return false;" class="footer-actions-top"><img src="<?php echo $this->_scriptImg('admin/top.png') ?>" alt="" /></a>
+                </div>
+                <div class="footer-text">
+                <a href="http://www.amember.com">aMember Pro</a>&trade; <?php if (AM_APPLICATION_ENV != 'demo') { p(AM_VERSION); } ?> by CGI-Central.Net &copy; 2002&ndash;<?php echo date('Y') ?>
+                &middot; <a href="http://twitter.com/mikomagni" target="_blank" rel="noreferrer">theme by Miko Magni</a>
+                &middot; uses <a href="http://www.famfamfam.com/lab/icons/silk/" target="_blank" rel="noreferrer">FamFamFam Icons Set</a> and <a href="https://materialdesignicons.com/" target="_blank" rel="noreferrer">Material Design Icons</a>
+                </div>
+            </div>
+        </div>
+        <?php include $this->_script('admin/_modal-login.phtml'); ?>
+        <?php echo $this->placeholder('body-finish'); ?>
+    </body>
+</html>

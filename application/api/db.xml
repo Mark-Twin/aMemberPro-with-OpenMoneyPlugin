@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema version="4.0.0" id="$Id$" >
+    <table name="api_key">
+        <field name="key_id" type="int" notnull="1" extra="auto_increment"/>
+        <field name="key" type="varchar" len="255" notnull="1" />
+        <field name="comment" type="varchar" len="255" notnull="1" />
+        <field name="ip" type="text" notnull="0" />
+        <field name="is_disabled" type="tinyint" notnull="1" />
+        <field name="perms" type="text" />
+
+        <index name="PRIMARY" unique="1">
+            <field name="key_id"/>
+        </index>
+        <index name="key" unique="1">
+            <field name="key" len="191"/>
+        </index>
+    </table>
+</schema>

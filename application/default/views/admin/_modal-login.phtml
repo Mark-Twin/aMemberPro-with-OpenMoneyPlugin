@@ -1,0 +1,33 @@
+<div id="admin-login" style="display:none; padding-left: 0; padding-right: 0;">
+    <div class="am-form">
+        <form method="post" action="<?php echo $this->url('admin-auth') ?>">
+            <fieldset>
+                <div class="row row-wide" id="recaptcha-row" data-recaptcha-theme="<?php echo $di->config->get('recaptcha-theme', 'light');?>">
+                    <div class="element am-element-recaptcha" id="recaptcha-element"></div>
+                </div>
+                <div class="row">
+                    <div class="element-title">
+                        <label for="login"><?php __e('Username') ?></label>
+                    </div>
+                    <div class="element">
+                        <input type="text" id="login" name="am_admin_login" size="18" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="element-title">
+                        <label for="pass"><?php __e('Password') ?></label>
+                    </div>
+                    <div class="element">
+                        <input type="password" id="pass" name="am_admin_passwd" size="18" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="element-title"></div>
+                    <div class="element">
+                        <input type=submit value="<?php __e('Log In')?>">
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

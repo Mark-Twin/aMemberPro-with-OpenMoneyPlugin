@@ -1,0 +1,8 @@
+<?php /* Shopping cart tags */ ?>
+<div class="am-cart-tag-list">
+    <div>
+        <?php foreach ($tags as $tag => $cnt): ?>
+        <a class="am-cart-tag-list-item" href="<?php echo $this->url('tag/') . $this->escape(urldecode($tag)) ?>"><?php p($tag) ?> <span class="am-cart-tag-list-item-count"><?php p($cnt)?></span></a>
+        <?php endforeach; ?>
+    </div>
+</div>

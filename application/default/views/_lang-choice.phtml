@@ -1,0 +1,25 @@
+<?php
+if ($di->config->get('lang.display_choice')):
+    $avail = $di->languagesListUser;
+    $_list = array();
+    if ($enabled = $di->getLangEnabled(false)) {
+        foreach ($enabled as $lang) {
+            if (!empty($avail[$lang])) {
+                $_list[$lang] = $avail[$lang];
+            }
+        }
+    }
+    if ($_list):
+        $_locale = $di->locale->getId();
+        list($_lang) = explode('_', $_locale);
+?>
+<div class="am-lang-choice">
+    <form method="get" action="<?php echo Am_Html::escape(preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI'])) ?>">
+        <span  class="am-lang-title"><?php __e('Language') ?> :</span>
+        <?php echo Am_Html::renderArrayAsInputHiddens(array_diff_key($_GET, array('_lang' => null))); ?>
+        <select name="_lang" size="1" onchange="this.form.submit()">
+            <?php echo Am_Html::renderOptions($_list, isset($_list[$_locale]) ? $_locale : $_lang); ?>
+        </select>
+    </form>
+</div>
+<?php endif; endif;

@@ -1,0 +1,16 @@
+<?php $this->headScript()->appendFile("https://cdn.paddle.com/paddle/paddle.js"); ?>
+<?php $this->headMeta()->setName('robots', 'noindex,nofollow'); ?>
+<?php $title=___('Payment Info'); $this->setLayout('layout.phtml'); $this->layoutNoMenu = true; ?>
+<?php include $this->_script('_receipt.phtml'); ?>
+<div style="text-align:center">
+<a href="#!" class="paddle_button"
+    data-product="<?= $product ?>"
+    data-success="<?= $return_url ?>"
+    data-passthrough="<?= $passthrough ?>"
+    data-price="<?= $price ?>"
+    data-auth="<?= $auth ?>"
+>Complete Payment</a>
+</div>
+<script type="text/javascript">
+Paddle.Setup({vendor: <?= $vendor ?>, debug: <?= $debug ?>});
+</script>

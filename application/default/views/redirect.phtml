@@ -1,0 +1,32 @@
+<?php echo $this->doctype('XHTML1_TRANSITIONAL'); ?>
+<html>
+    <head>
+        <title><?php p($title) ?></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Refresh" CONTENT="1; URL=<?php p($url) ?>">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style type="text/css">
+            <!--
+            body {
+                font-family: Arial;
+                background:#EDEDED;
+            }
+
+            a, a:visited {
+                color: #34536e;
+            }
+            -->
+        </style>
+    </head>
+    <body>
+        <table height="90%" width="70%" border="0" align="center">
+            <tr valign="middle" align="center">
+                <td>
+                    <strong><?php p($text) ?></strong>
+                    <br /><br />
+                    <a href="<?php p($url) ?>"><?php __e('Click here if you do not want to wait any longer (or if your browser does not automatically forward you).') ?></a>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

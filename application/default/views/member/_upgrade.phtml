@@ -1,0 +1,67 @@
+<?php echo $this->blocks('member/upgrade', '%s', array('invoice' => $invoice)) ?>
+<?php $form_id = 'upgrade-'.uniqid(); ?>
+<form method="post" name="upgrade" id="<?php echo $form_id; ?>" action="<?php echo $this->url('member/upgrade')?>">
+    <div class="am-upgrade-options">
+    <?php $checked = 'checked="checked"';
+    foreach ($item->_upgrades as $upgrade):
+        $id = rand(10,999999); ?>
+        <label for="<?php echo $id ?>">
+        <input type="radio" <?php echo $checked; $checked ='';?>
+               id="<?php echo $id?>" name="upgrade" value="<?php p($upgrade->product_upgrade_id) ?>" />
+            <?php
+            $product = $upgrade->getToProduct();
+            $newInvoice = $upgrade->createUpgradeInvoice($invoice, $item);
+            printf('<span class="am-product-title">%s</span> <span class="am-product-terms">%s</span> <span class="am-product-desc">%s</span>',
+                $product->getTitle(),
+                $newInvoice->getTerms(),
+                $product->getDescription(false)); ?>
+        </label>
+        <?php if ($upgrade->comment) : ?>
+        <div class="am-upgrade-options-comment"><?php echo $upgrade->comment ?></div>
+        <?php endif; ?>
+    <?php endforeach ?>
+    </div>
+    <input type="hidden" name="invoice_id" value="<?php p($invoice->public_id) ?>" />
+    <input type="hidden" name="invoice_item_id" value="<?php p($this->obfuscate($item->invoice_item_id)) ?>" />
+    <?php if($di->config->get('allow_coupon_upgrades')): ?>
+    <div class="am-upgrade-coupon">
+        <label for="coupon"><?php __e("Coupon Code") ?></label>
+        <input type="text" name="coupon" id="coupon" />
+        <br />
+    </div>
+    <?php endif; ?>
+    <div>
+        <input type="submit" class="upgrade-subscription-yes am-cta-upgrade" value="<?php __e('Upgrade Subscription')?>" />
+        <a class="am-popup-close upgrade-subscription-no local-link" href="javascript:;"><?php __e('Cancel')?></a>
+    </div>
+</form>
+<script>
+    jQuery(document).ready(function($){
+    <?php if($di->config->get('allow_coupon_upgrades')): ?>
+        if (jQuery && jQuery.validator)
+        {
+            jQuery("form#<?php echo $form_id; ?>").validate({
+                ignore: ':hidden'
+                ,rules: {"coupon":{"remote":{"url":<?php echo json_encode($this->url('ajax', array('do'=>'check_coupon'), false)) ?>}}}
+                ,messages: {"coupon":{"remote":""}}
+                ,errorPlacement: function(error, element) {
+                    error.appendTo(element.parent());
+                }
+                ,errorElement: "span"
+                ,submitHandler: function(form){
+                    jQuery(".upgrade-subscription-yes").closest('.am-popup').hide();
+                    jQuery("<div><?php __e('Your upgrade is being processed please wait');?></div>").amPopup({'title':'<?php __e('Upgrade Status');?>'});
+                    form.submit();
+                    return true;
+                }
+            });
+        }
+    <?php else: ?>
+        jQuery(".upgrade-subscription-yes").on('click', function(){
+            jQuery(this).closest('.am-popup').hide();
+            jQuery("<div><?php __e('Your upgrade is being processed please wait');?></div>").amPopup({'title':'<?php __e('Upgrade Status');?>'});
+            return true;
+        });
+    <?php endif; ?>
+    });
+</script>

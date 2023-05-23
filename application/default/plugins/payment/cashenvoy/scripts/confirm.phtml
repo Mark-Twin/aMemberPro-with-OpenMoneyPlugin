@@ -1,0 +1,19 @@
+<?php
+$title = ___("Processing your Transaction");
+$this->setLayout('layout.phtml');
+?>
+<br />
+<?php include $this->_script('_receipt.phtml'); ?>
+<div class="make-payment-button">
+    <h2><?php __e('Click button to continue') ?></h2>
+    <form action="<?php echo $this->url; ?>" method="post">
+        <input type="hidden" name="ce_merchantid" value="<?php echo $this->ce_merchantid; ?>" />
+        <input type="hidden" name="ce_transref" value="<?php echo $this->ce_transref; ?>" />
+        <input type="hidden" name="ce_amount" value="<?php echo $this->ce_amount; ?>" />
+        <input type="hidden" name="ce_customerid" value="<?php echo $this->ce_customerid; ?>" />
+        <input type="hidden" name="ce_memo" value="<?php echo $this->ce_memo; ?>" />
+        <input type="hidden" name="ce_notifyurl" value="<?php echo $this->ce_notifyurl; ?>" />
+        <input type="hidden" name="ce_window" value="<?php echo $this->ce_window; ?>" />
+        <input type="submit" value="<?php __e('Continue') ?>" />
+    </form>
+</div>

@@ -1,0 +1,9 @@
+<h3><a href="<?php p($r->getUrl()) ?>"><?php p($r->title) ?></a></h3>
+<?php if ($r->desc) : ?>
+<p><?php p($r->desc) ?></p>
+<?php $type = $r->mime == 'audio/mpeg' ? 'audio' : 'video'; ?>
+<script type="text/javascript" id="am-<?php echo $type ?>-<?php echo $r->pk() ?>"
+    id="resource-link-<?php p($r->getTable()->getAccessType()) ?>-<?php p($r->pk()) ?>"
+    src="<?php echo $this->url("$type/js/id/".$r->pk()) ?>">
+</script>
+<?php endif; ?>

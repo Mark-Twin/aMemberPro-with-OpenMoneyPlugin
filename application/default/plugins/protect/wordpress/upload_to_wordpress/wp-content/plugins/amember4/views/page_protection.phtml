@@ -1,0 +1,6 @@
+<?php include "protection.phtml"; ?>
+<br/><div>
+        <div><input type="checkbox" name='options[exclude]' value=1 <?php checked($options['exclude'],1);?>> <?php _e('Exclude page from menus', 'am4-plugin');?><i> <?php _e('Page will not be protected and still will be accessible through direct link, but page title will be excluded from theme-built menus. This has no effect on the WordPress Custom Menu utility.', 'am4-plugin');?></i></div>
+        <div><input type="checkbox" name='options[only_guest]' value=1 <?php checked($options['only_guest'],1);?>> <?php _e('Show page only for guests', 'am4-plugin');?><i> <?php _e('Page will be displayed only when user is not logged in', 'am4-plugin');?></i></div>
+        <div><input type="checkbox" name='options[exclude_protection]' value=1 <?php checked($options['exclude_protection'],1);?>> <?php _e('Exclude page from protection', 'am4-plugin');?><i> <?php _e('Page will be displayed even if whole blog is protected', 'am4-plugin');?></i></div>
+</div>

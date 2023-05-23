@@ -1,0 +1,19 @@
+<?php $title = ___('Backup');
+$this->setLayout('admin/layout.phtml'); ?>
+<?php if (file_exists(AM_APPLICATION_PATH . '/configs/key.php')): ?>
+    <div class="admin-warnings">
+        <ul>
+            <li>You are using your own encryption key, <strong>make sure you backup file
+                <em>amember/application/configs/key.php</em> with your database!</strong> Please download this file source
+                via FTP (it is impossible to download it using your browser),
+                print it, make 3 copies and put it to safe places. Without contents of this file, it will be
+                <strong>ABSOLUTELY IMPOSSIBLE</strong> to restore encrypted information from database.
+            </li>
+        </ul>
+    </div>
+    <?php
+endif ?>
+<p><?php __e('Please click on the button below to create backup of aMembers tables in MySQL database.') ?></p> 
+<form method="post" action="<?php $this->pUrl(null, 'backup') ?>">
+    <input type="submit" name="do_backup_amember" value="Backup" />
+</form>

@@ -1,0 +1,60 @@
+<?php $module = $this->di->modules->get('aff'); ?>
+<?php if (!$catActive) : ?>
+
+    <?php echo $intro; ?>
+    <h2><?php __e('Your General Affiliate Link') ?></h2>
+    <div class="am-aff-banner-preview">
+        <?php p($generalLink) ?>
+    </div>
+    <?php if ($canUseCustomRedirect) : ?>
+    <?php include $this->_script('aff/_custom-redirect.phtml'); ?>
+    <?php endif; ?>
+<?php endif; ?>
+<?php if (count($category) && !(count($category)==1 && $catActive)) : ?>
+    <div class="am-block">
+        <ul class="am-aff-banner-cat-list">
+        <?php foreach ($category as $cat) : ?>
+            <?php if ($cat == $catActive) : ?>
+                    <li class="am-aff-banner-cat-list-item"><h2><?php p($cat) ?></h2></li>
+            <?php else: ?>
+                    <li class="am-aff-banner-cat-list-item"><h2><a href="<?php echo $this->url('aff/aff', array('c' => $cat)) ?>"><?php p($cat) ?></a></h2></li>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </ul>
+    </div>
+    
+<?php endif; ?>
+<!-- aff banners -->
+<?php if (count($affBanners)) : ?>
+<h2><?php __e('Banners and Links') ?></h2>
+    <?php foreach ($affBanners as $banner) : ?>
+    <?php $code = $module->getBannerJs($this->di->user, $banner->pk()); ?>
+    <div class="am-aff-banner-preview">
+        <div>
+            <div class="am-aff-banner-preview-preview">
+                <div class="am-aff-banner-preview-preview-conteiner">
+                <?php echo str_replace(array('http://', 'https://'), '//', $code) ?>
+                </div>
+            </div>
+            <div class="am-aff-banner-preview-info">
+                <div class="am-aff-banner-preview-info-conteiner">
+                    <dl class="am-aff-banner-preview-info-details">
+                        <dt><?php __e('Title') ?></dt>
+                        <dd><?php p($banner->title) ?></dd>
+                        <dt><?php __e('Affiliate Link') ?></dt>
+                        <dd><?php echo $module->getTrackingLink($this->di->user, $banner->pk()) ?></dd>
+                        <dt><?php __e('Target URL') ?></dt>
+                        <dd><a href="<?php p($banner->getUrl()) ?>"><?php p($banner->getUrl()) ?></a></dd>
+                        <?php if ($banner->desc) : ?>
+                        <dt><?php __e('Description') ?></dt>
+                        <dd><?php p($banner->desc) ?></dd>
+                        <?php endif; ?>
+                    </dl>
+                    <a href="javascript:;" onclick="jQuery(this).siblings('textarea').toggle()" class="local-link"><?php __e('Source Code &mdash; Copy/Paste Into Your Website') ?></a><br />
+                    <textarea class="el-wide" style="display:none; margin-top: 1em;" rows="8"><?php p($code); ?></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+<?php endif; ?>

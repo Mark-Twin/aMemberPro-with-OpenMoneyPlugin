@@ -1,0 +1,27 @@
+<?php if ($di->config->get('cart.use_coupons')) : ?>
+    <?php if (!$isBasket) : ?>
+    <form method="post" action="<?php echo $this->url('cart/index/view-basket'); ?>">
+    <?php endif; ?>
+        <div class="am-cart-checkout-coupon-wrapper">
+            <?php $showCoupon = $cart->getCouponCode() || !empty($coupon_error); ?>
+            <?php if (!$showCoupon) : ?>
+            <a href="javascript:;" class="local-link" onclick="jQuery(this).hide();jQuery('.am-cart-checkout-coupon').show();jQuery('input[name=coupon]').focus()"><?php __e('Have a Coupon? Apply Here') ?></a>
+            <?php endif; ?>
+            <div class="am-cart-checkout-coupon" <?php echo !$showCoupon ? 'style="display:none"' : '' ?>>
+                <?php __e('Coupon') ?>:
+                    <?php if ($code = $cart->getCouponCode()) : ?>
+                    <a href="javascript:;" class="local-link" onclick="jQuery(this).hide();jQuery('.am-cart-checkout-coupon-input').show();jQuery('input[name=coupon]').focus()"><?php p($code) ?></a>
+                    <?php endif; ?>
+                    <div class="am-cart-checkout-coupon-input" <?php echo $cart->getCouponCode() ? 'style="display:none"' : '' ?>>
+                    <input type="text" name="coupon" value="<?php p($cart->getCouponCode()) ?>" />
+                    <input type="submit" name="calculate" class="am-cart-checkout-buttons-apply" value="<?php __e('Apply') ?>" />
+                    </div>
+                <?php if (!empty($coupon_error)): ?>
+                    <div class="error"><?php p($coupon_error) ?></div>
+                <?php endif ?>
+            </div>
+        </div>
+    <?php if (!$isBasket) : ?>
+    </form>
+    <?php endif; ?>
+<?php endif; ?>

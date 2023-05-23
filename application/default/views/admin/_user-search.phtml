@@ -1,0 +1,102 @@
+<div id="advanced-search">
+    <div class="popup-wide">
+        <div class="popup-top-arrow"></div>
+        <div class="popup-content">
+            <form method="get" action="<?php $this->pUrl() ?>" id="search-form">
+                <?php echo $form['elements'][0]['html'] ?>
+                <div style="overflow-x: auto;">
+                    <table class="search-fields">
+                        <?php foreach ($form['elements'][1]['elements'] as $f): if ($f['id']!='search-add-field'):
+                                ?>
+                        <tr <?php echo $f['attributes'] ?>>
+                            <td class="name"><?php p(@$f['label']) ?></td>
+                            <td class="input"><?php if (!empty($f['elements'])) foreach ($f['elements'] as $el) echo @$el['html']; ?></td>
+                            <td class="action"><a class="delete" href="javascript:;"><?php echo $this->icon('delete') ?></a></td>
+                        </tr>
+                            <?php endif ?>
+                        <?php endforeach ?>
+                    </table>
+                </div>
+                <input type="submit" id="apply-filter-button" value="<?php __e('Apply Filter') ?>" />
+                <?php echo $hidden ?>
+            </form>
+            <?php if ($loadSearchOptions): ?>
+            <br /><br />
+            <form method="get" action="<?php p(preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI'])) ?>">
+                    <?php echo $hidden ?>
+                <select name="_u_search_load" onchange="jQuery(this).closest('form').find('input[type=submit]').click()">
+                    <option value="">** Or choose a saved search to load **</option>
+                        <?php echo $loadSearchOptions ?>
+                </select>
+                <input type="submit" name="my_submit" style="display:none" />
+            </form>
+            <?php endif ?>
+        </div>
+        <div class="popup-bottom"></div>
+    </div>
+</div>
+<div id="save-advanced-search" style="display: none; position: absolute;">
+    <div class="popup">
+        <div class="popup-top"></div>
+        <div class="popup-content">
+            <h3 style="float:left;"><?php __e('Save Advanced Search') ?></h3>
+            <div style="text-align:right; margin-bottom: 1em">
+                <a href="javascript:;" onclick="hideSaveAdvancedSearch()" style="text-decoration: none; font-size: 120%; line-height: 100%;">&#10005;</a>
+            </div>
+            <p><?php p($description) ?></p>
+            <p><?php __e('You can save this search for later usage, just give it a descriptive name and press "Save" button.') ?></p>
+            <form method="post" action="<?php $this->pUrl(null, 'save-search') ?>" id="saveSearch">
+                <input type="text" name="name" value="<?php p($description) ?>" size="40" maxlength="64"/><br /><br />
+                <input type="submit" value="<?php __e('Save') ?>" />
+                <input type="hidden" name="a" value="save-search"/>
+                <input type="hidden" name="search[serialized]" value="<?php p($serialized) ?>" />
+            </form>
+        </div>
+        <div class="popup-bottom"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        jQuery('#advanced-search .delete').click(function(){
+            var div = jQuery(this).parents('.searchField');
+            div.hide();
+            jQuery(':input', div).prop('disabled', true);
+        });
+        jQuery('#advanced-search select#search-add-field').change(function(){
+            if (jQuery(this).val()=="") return;
+            var id = jQuery(this).val();
+            var div = jQuery("#"+id);
+            div.show();
+            jQuery(':input', div).prop('disabled', false);
+            this.selectedIndex = null;
+        });
+        jQuery('#advanced-search tr.empty').hide();
+        jQuery('#advanced-search tr.empty :input').prop('disabled', true);
+    });
+    function saveAdvancedSearch(link){
+        jQuery('#save-advanced-search')
+            .toggle()
+            .css('height', jQuery(window).height() / 3  + 'px')
+            .css('width', jQuery(window).width() / 3 + 'px')
+            .position({my:'center top',at:'center top',overflow:'fit',of:'.filter-wrap'});
+        return false;
+    }
+    function hideSaveAdvancedSearch(){
+        jQuery('#save-advanced-search').hide();
+        return false;
+    }
+    function toggleAdvancedSearch(button)
+    {
+        jQuery(button).toggleClass('active');
+        if (jQuery(button).hasClass('active')) {
+            jQuery("#advanced-search")
+                .fadeIn(300)
+                .position({my:'right top+30',at:'right bottom',of:'.filter-wrap',overflow:'fit'})
+                .position({my:'right top',at:'right bottom',of:'.filter-wrap',overflow:'fit'});
+        } else {
+            jQuery("#advanced-search")
+                .position({my:'right top+30',at:'right bottom',of:'.filter-wrap',overflow:'fit'})
+                .fadeOut(300);
+        }
+    }
+</script>

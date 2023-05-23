@@ -1,0 +1,14 @@
+<?php
+/** this invoice displays payment receipt and has one button to confirm payment */
+$title = ___("Confirm Payment");
+$this->setLayout('layout.phtml');
+if (empty($btnText)) $btnText = ___("Make Payment");
+
+include $this->_script('_receipt.phtml');
+?>
+<br />
+<div class="make-payment-button">
+<iframe src="<?php echo $iframe_src;?>" width="100%" height="620px"  scrolling="no" frameBorder="0">
+	<p>Browser unable to load iFrame</p>
+</iframe>
+</div>

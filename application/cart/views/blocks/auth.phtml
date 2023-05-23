@@ -1,0 +1,26 @@
+<?php $auth = Am_Di::getInstance()->auth; ?>
+<?php if ($auth->getUserId()): // authorized ?>
+<?php __e('You are logged-in as') ?> <strong><span class="username"><?php p($auth->getUsername()) ?></span></strong>.
+<a href="<?php echo $this->url('logout',array('amember_redirect_url'=>$this->overrideUrl())) ?>"><?php __e("Logout")?></a>
+<?php else: // not authorized yet?>
+<form method="post" action="<?php echo $this->url('login') ?>" class="am-cart-login">
+    <div class="am-cart-login-element">
+        <label for="amember-cart-login"><?php __e("Username")?></label>
+        <input type="text" name="amember_login" id="amember-cart-login" placeholder="<?php __e("Username")?>" value="<?php p(@$_REQUEST['login'])?>" />
+    </div>
+    <div class="am-cart-login-element">
+        <label for="amember-cart-pass"><?php __e("Password")?></label>
+        <input type="password" name="amember_pass" id="amember-cart-pass" placeholder="<?php __e("Password")?>" class="am-pass-reveal" />
+    </div>
+    <input type="hidden" name="amember_redirect_url" value="<?php p($this->overrideUrl())?>" />
+    <input type="hidden" name="saved_form" value="cart" />
+    <input type="submit" value="<?php __e("Login")?>"/>
+    <?php __e("or")?>
+    <a href="<?php echo $this->url('signup/cart')?>"><?php __e("Register")?></a>
+</form>
+<?php endif ?>
+<script type="text/javascript">
+    jQuery(document).on('focus blur', '.am-cart-login-element input', function(){
+       jQuery(this).closest('.am-cart-login-element').toggleClass('am-focus');
+    });
+</script>

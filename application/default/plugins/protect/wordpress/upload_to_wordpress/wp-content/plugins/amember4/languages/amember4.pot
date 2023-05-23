@@ -1,0 +1,705 @@
+# Copyright (C) 2010 aMember PRO v4 Integration Plugin for Wordpress
+# This file is distributed under the same license as the aMember PRO v4 Integration Plugin for Wordpress package.
+msgid ""
+msgstr ""
+"Project-Id-Version: aMember PRO v4 Integration Plugin for Wordpress 0.1\n"
+"Report-Msgid-Bugs-To: support@cgi-central.net\n"
+"POT-Creation-Date: 2011-12-26 11:41:25+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Alexander Ivanoff <alexander@cgi-central.net>\n"
+"Language-Team: Alexander Ivanoff <alexander@cgi-central.net>\n"
+
+#: views/widget_after_login.phtml:2
+msgid "Welcome"
+msgstr ""
+
+#: views/errormessages.phtml:2
+msgid "These error messages can be used in shortcodes later."
+msgstr ""
+
+#: views/errormessages.phtml:3
+msgid "Use something simple and unique for error message \"name\""
+msgstr ""
+
+#: views/errormessages.phtml:10
+msgid "pick"
+msgstr ""
+
+#: views/errormessages.phtml:12 views/styles.phtml:4
+msgid "edit"
+msgstr ""
+
+#: views/errormessages.phtml:12
+msgid "delete"
+msgstr ""
+
+#: views/errormessages.phtml:27
+msgid "Add new error message"
+msgstr ""
+
+#: views/errormessages.phtml:34
+msgid "Error Template Name"
+msgstr ""
+
+#: views/errormessages.phtml:37
+msgid "Error Template Body"
+msgstr ""
+
+#: views/shortcode_am4user.phtml:1
+msgid ""
+"This shortcode will output information about logged in user. Can be used "
+"without any parameters (will output user's full name then)."
+msgstr ""
+
+#: views/bulk_protection.phtml:3
+msgid "Remove protection from selected posts"
+msgstr ""
+
+#: views/shortcode_am4guest.phtml:1
+msgid ""
+"Block within [am4guest] tags will be displayed only for guest users(user's "
+"who is not logged in)"
+msgstr ""
+
+#: views/shortcode_am4guest.phtml:2
+msgid ""
+"If you specify also notactive attribute, text will be displayed for users "
+"who is logged in but is not active in aMember."
+msgstr ""
+
+#: views/shortcode_am4guest.phtml:3 views/shortcode_am4aff.phtml:2
+msgid "Usage Example"
+msgstr ""
+
+#: views/shortcode_am4guest.phtml:4
+msgid "Welcome guest user! Please login here:"
+msgstr ""
+
+#: views/shortcode_am4info.phtml:1
+msgid "Output  system information like signup url, login url, etc..."
+msgstr ""
+
+#: views/shortcode_am4info.phtml:2
+msgid ""
+"If title parameter will be set, HTML link will be printed instead of url"
+msgstr ""
+
+#: views/protection.phtml:4
+msgid "Protection enabled"
+msgstr ""
+
+#: views/protection.phtml:13
+msgid "Access Permissions"
+msgstr ""
+
+#: views/protection.phtml:17
+msgid ""
+"Actions for post/page (when unauthorized user or guest try to access "
+"protected post/page):"
+msgstr ""
+
+#: views/protection.phtml:21 views/protection.phtml:55
+#: views/protection.phtml:78 views/category.phtml:9 views/category.phtml:35
+msgid "Action for"
+msgstr ""
+
+#: views/protection.phtml:24
+msgid "Hide post completly"
+msgstr ""
+
+#: views/protection.phtml:25 views/category.phtml:12
+msgid "Redirect to page:"
+msgstr ""
+
+#: views/protection.phtml:31 views/category.phtml:18
+msgid "Redirect to url:"
+msgstr ""
+
+#: views/protection.phtml:35 views/category.phtml:22
+msgid "Redirect to login page"
+msgstr ""
+
+#: views/protection.phtml:35 views/category.phtml:22
+msgid "Redirect to membership renewal page"
+msgstr ""
+
+#: views/protection.phtml:36
+msgid "Show this error message instead of post content:"
+msgstr ""
+
+#: views/protection.phtml:48
+msgid "Archive / Search protection"
+msgstr ""
+
+#: views/protection.phtml:49
+msgid ""
+"What should happen when Wordress display post in Archive or when  visitor  "
+"use Search."
+msgstr ""
+
+#: views/protection.phtml:58
+msgid "Exclude post/page  from search results"
+msgstr ""
+
+#: views/protection.phtml:59
+msgid ""
+"Show post/page title and this error message instead of post/page content:"
+msgstr ""
+
+#: views/protection.phtml:70
+msgid "Menu Item Protection for Post / Page Link"
+msgstr ""
+
+#: views/protection.phtml:71
+msgid ""
+"What should happen when link to Page / Post will be placed into WordPress "
+"Custom Menu:"
+msgstr ""
+
+#: views/protection.phtml:82
+msgid "Exclude page / post  link from menu"
+msgstr ""
+
+#: views/protection.phtml:83 views/category.phtml:38
+msgid "Show link even if"
+msgstr ""
+
+#: views/protection.phtml:83
+msgid "do not have access to page / post"
+msgstr ""
+
+#: views/protection.phtml:94
+msgid "Update"
+msgstr ""
+
+#: views/settings.phtml:3
+msgid "aMember Path"
+msgstr ""
+
+#: views/settings.phtml:5
+msgid "Path where you have aMember installed"
+msgstr ""
+
+#: views/settings.phtml:10
+msgid "aMember Root URL"
+msgstr ""
+
+#: views/settings.phtml:15
+msgid "Protect whole blog"
+msgstr ""
+
+#: views/page_protection.phtml:3
+msgid "Exclude page from menus"
+msgstr ""
+
+#: views/page_protection.phtml:3
+msgid ""
+"Page will not be protected and still will be accessible through direct link, "
+"but page title will be excluded from theme-built menus. This has no effect "
+"on the WordPress Custom Menu utility."
+msgstr ""
+
+#: views/widget_protection.phtml:2
+msgid "Show widget when:"
+msgstr ""
+
+#: views/widget_protection.phtml:3
+msgid "User is not logged in"
+msgstr ""
+
+#: views/widget_protection.phtml:4 views/shortcode_am4show.phtml:4
+msgid "User do not have subscriptions:"
+msgstr ""
+
+#: views/widget_protection.phtml:5 views/shortcode_am4show.phtml:5
+msgid "Select Products that user should not have"
+msgstr ""
+
+#: views/widget_protection.phtml:7 views/shortcode_am4show.phtml:7
+msgid "User have subscriptions:"
+msgstr ""
+
+#: views/widget_protection.phtml:8 views/shortcode_am4show.phtml:8
+msgid "Select Products that user should have"
+msgstr ""
+
+#: views/shortcode_am4aff.phtml:1
+msgid "Block within [am4aff] tags will be displayed only for affiliates"
+msgstr ""
+
+#: views/shortcode_am4aff.phtml:3
+msgid "Welcome affiliate! "
+msgstr ""
+
+#: views/category.phtml:6
+msgid ""
+"Actions for category listing (when unauthorized user or guest try to access "
+"protected category):"
+msgstr ""
+
+#: views/category.phtml:11
+msgid "Show post headers"
+msgstr ""
+
+#: views/category.phtml:29
+msgid "Menu Item Protection for Category Link"
+msgstr ""
+
+#: views/category.phtml:30
+msgid ""
+"What should happen when link to Category will be placed into WordPress "
+"Custom Menu:"
+msgstr ""
+
+#: views/category.phtml:37
+msgid "Exclude category link from menu"
+msgstr ""
+
+#: views/category.phtml:38
+msgid "do not have access to category"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:1
+msgid "Build protection shortcode:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:10
+msgid "Error for guest:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:14
+msgid "Error for user:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:19
+msgid "Result:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:73
+msgid "Text within shortcode will be displayed only if user have access."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:74
+msgid "Parameters:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:79
+msgid ""
+"Access that user should have. Format: type1[,start1[,stop1]][;type2[,start2[,"
+"stop2]]]"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:80
+msgid ""
+"type represents Product or Category: p1 - means product with id 1, g1 means "
+"Category with id 1 "
+msgstr ""
+
+#: views/shortcode_am4show.phtml:81
+msgid "id can be set to -1. p-1 - means any product, g-1 means any category"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:82
+msgid "start and stop  are number of days"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:83 views/shortcode_am4show.phtml:101
+#: views/shortcode_am4show.phtml:119
+msgid "Examples:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:84
+msgid "show block for users who have active product #2 or Category #1"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:85
+msgid ""
+"show block for users who have active product #1 and product was purchased "
+"not more then 10 days ago"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:86
+msgid ""
+"also show block for users who have product #2 and product was purchased not "
+"less then 30 days ago but not more then 60 days ago."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:87
+msgid "Both start and stop values can be omited. For example:"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:88
+msgid ""
+"show block for users who purchase product 1 not less then ten days ago, and "
+"have active subscription for product 2"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:89
+msgid ""
+"stop value can be set to -1 as well. If stop value will be set to -1, block "
+"will be displayed even if user's subscription to product expired."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:90
+msgid ""
+"means that block will be displayed for users who purchase product #1 before "
+"(even if subscription expired already)"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:91
+msgid ""
+"show block for users who have any product  and product was purchased not "
+"less then 10 days ago but not more then 20 days ago"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:99
+msgid "Products or Categories that user should not have. Format: type1[;type2]"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:100
+msgid "type meaning the same as above."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:102
+msgid ""
+"block will be displayed if user don't have product #1 and don't have product "
+"#2"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:108
+msgid ""
+"Error that will be displayed for user when he don't have an access. Can be "
+"created"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:108 views/shortcode_am4show.phtml:114
+msgid "here"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:114
+msgid "Error that will be displayed for guest. Can be created"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:115
+msgid ""
+"Both error settings can be omited. Block will be hidden if user will not "
+"have an access."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:121
+msgid ""
+"This block will be be displayed only if user have active subscription to "
+"product 1."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:122
+msgid ""
+"If user don't have such subscription,  'amember_error' message will be "
+"displayed instead of block contents."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:123
+msgid "Guest will see 'amember_guest_error' message."
+msgstr ""
+
+#: views/shortcode_am4show.phtml:126
+msgid "This block will be displayed only if user don't have Category  #1"
+msgstr ""
+
+#: views/shortcode_am4show.phtml:127
+msgid "This block will be displayed for active users only"
+msgstr ""
+
+#: widgets.php:54
+msgid "aMember Widget"
+msgstr ""
+
+#: widgets.php:54
+msgid "Login form and aMember subscriptions links"
+msgstr ""
+
+#: widgets.php:55
+msgid "Before Login Title:"
+msgstr ""
+
+#: widgets.php:55 widgets.php:58 widgets.php:59
+msgid "Login"
+msgstr ""
+
+#: widgets.php:56
+msgid "After Login Title:"
+msgstr ""
+
+#: widgets.php:56
+msgid "Your Subscriptions"
+msgstr ""
+
+#: widgets.php:57
+msgid "Password Title"
+msgstr ""
+
+#: widgets.php:57
+msgid "Password"
+msgstr ""
+
+#: widgets.php:58
+msgid "Username Title:"
+msgstr ""
+
+#: widgets.php:59
+msgid "Login Button  Title:"
+msgstr ""
+
+#: widgets.php:60
+msgid "Register Link Title:"
+msgstr ""
+
+#: widgets.php:60
+msgid "Signup Here"
+msgstr ""
+
+#: widgets.php:61
+msgid "Lost Password Title:"
+msgstr ""
+
+#: widgets.php:61
+msgid "Lost Password"
+msgstr ""
+
+#: widgets.php:62
+msgid "Renew Subscription Title:"
+msgstr ""
+
+#: widgets.php:62
+msgid "Renew Subscription"
+msgstr ""
+
+#: widgets.php:63
+msgid "Payment History Title:"
+msgstr ""
+
+#: widgets.php:63
+msgid "Payment History"
+msgstr ""
+
+#: widgets.php:64
+msgid "Logout Title:"
+msgstr ""
+
+#: widgets.php:64
+msgid "Logout"
+msgstr ""
+
+#: widgets.php:65
+msgid "Change Profile Title:"
+msgstr ""
+
+#: widgets.php:65
+msgid "Edit Profile"
+msgstr ""
+
+#: widgets.php:66
+msgid "Signup Page URL"
+msgstr ""
+
+#: widgets.php:67
+msgid "Renewal  Page URL"
+msgstr ""
+
+#: widgets.php:68
+msgid "Lost Password Page URL"
+msgstr ""
+
+#: widgets.php:69
+msgid "Profile Page URL"
+msgstr ""
+
+#: widgets.php:70
+msgid "Payment History Page URL"
+msgstr ""
+
+#: widgets.php:71
+msgid "Logout page URL"
+msgstr ""
+
+#: widgets.php:72
+msgid "Active Subscriptions Links"
+msgstr ""
+
+#: widgets.php:73
+msgid "Renew subscription Link"
+msgstr ""
+
+#: widgets.php:74
+msgid "Payment History Link"
+msgstr ""
+
+#: widgets.php:75
+msgid "Logout Link"
+msgstr ""
+
+#: widgets.php:76
+msgid "Register Link"
+msgstr ""
+
+#: widgets.php:77
+msgid "Forgot Password Link"
+msgstr ""
+
+#: widgets.php:78
+msgid "Change Profile Link"
+msgstr ""
+
+#: widgets.php:129
+msgid "Show Links"
+msgstr ""
+
+#: widgets.php:194
+msgid "Arbitrary text or HTML"
+msgstr ""
+
+#: widgets.php:196
+msgid "aMember Text Widget"
+msgstr ""
+
+#: widgets.php:232
+msgid "Custom Menu with aMember protection settings"
+msgstr ""
+
+#: widgets.php:233
+msgid "aMember menu Widget"
+msgstr ""
+
+#: protection.php:9
+msgid "aMember Protection Settings"
+msgstr ""
+
+#: protection.php:18
+msgid "Protection"
+msgstr ""
+
+#: protection.php:80
+msgid "Headers already sent! Can't redirect."
+msgstr ""
+
+#: protection.php:155
+msgid "Template not found:"
+msgstr ""
+
+#: amember4.php:112
+msgid "aMember path is empty"
+msgstr ""
+
+#: amember4.php:114
+msgid "Specified path is not an aMember installation"
+msgstr ""
+
+#: shortcode_select.php:13
+msgid "Rich Editor Help"
+msgstr ""
+
+#: shortcode_select.php:29
+msgid "aMember Shortcodes"
+msgstr ""
+
+#: shortcodes.php:13 shortcodes.php:15
+msgid "aMember Shortcodes Help"
+msgstr ""
+
+#: shortcodes.php:96
+msgid "Show User Info"
+msgstr ""
+
+#: shortcodes.php:116
+msgid "Show System Info"
+msgstr ""
+
+#: shortcodes.php:139
+msgid "Show content only for guest users"
+msgstr ""
+
+#: shortcodes.php:157
+msgid "Show content only for affiliates"
+msgstr ""
+
+#: shortcodes.php:176
+msgid "Show block if user have access"
+msgstr ""
+
+#: includes/access.php:68 includes/view.php:221
+msgid "Any Product"
+msgstr ""
+
+#: includes/access.php:72
+msgid " from "
+msgstr ""
+
+#: includes/access.php:72
+msgid "start"
+msgstr ""
+
+#: includes/access.php:72
+msgid " to "
+msgstr ""
+
+#: includes/access.php:72
+msgid " forever "
+msgstr ""
+
+#: includes/access.php:72
+msgid "expiration"
+msgstr ""
+
+#: includes/view.php:213
+msgid "Choose Products and/or Product Categories that allows access"
+msgstr ""
+
+#: includes/view.php:219
+msgid "Please select an item..."
+msgstr ""
+
+#: includes/view.php:220
+msgid "Product Categories"
+msgstr ""
+
+#: includes/view.php:224
+msgid "Products"
+msgstr ""
+
+#: includes/view.php:242
+msgid "Please select error message:"
+msgstr ""
+
+#: menu.php:83
+msgid "Settings"
+msgstr ""
+
+#: menu.php:298
+msgid "Templates"
+msgstr ""
+
+#: menu.php:332
+msgid "Error Messages"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "aMember PRO v4 Integration Plugin for Wordpress"
+msgstr ""
+
+#. #-#-#-#-#  amember4.pot (aMember PRO v4 Integration Plugin for Wordpress 0.1)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  amember4.pot (aMember PRO v4 Integration Plugin for Wordpress 0.1)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://www.amember.com/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Add aMember functionality to Wordpress blog"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Alexander Smith <alexander@cgi-central.net>"
+msgstr ""

@@ -1,0 +1,55 @@
+<?php if ($member_products || $member_future_products): ?>
+<ul id="member-subscriptions" class="am-widget-list am-list-subscriptions">
+    <?php foreach ($member_products as $p):  ?>
+    <li id="product-item-<?php p($p->pk()) ?>">
+        <span class="am-list-subscriptions-title">
+        <?php if ($_url = $p->getDashboardUrl()) : ?>
+            <a href="<?php p($_url) ?>"><?php echo $p->getTitle(); ?></a>
+        <?php else : ?>
+            <strong><?php echo $p->getTitle(); ?></strong>
+        <?php endif; ?>
+        </span><span class="am-list-subscriptions-date">
+    <?php if ($products_rebill[$p->pk()]) : ?>
+        <span class="am-list-subscriptions-date_rebill"><?php __e('next bill') ?> <?php echo amDate($products_rebill[$p->pk()]); ?></span>
+    <?php elseif ($products_expire[$p->pk()] == Am_Period::MAX_SQL_DATE): ?>
+        <span class="am-list-subscriptions-date_lifetime"><?php __e('Lifetime') ?></span>
+    <?php else: ?>
+        <span class="am-list-subscriptions-date_expires"><?php __e('expires') ?> <?php echo amDate($products_expire[$p->pk()]); ?></span>
+    <?php endif ?>
+        </span><span class="am-list-subscriptions-link">
+    <?php if (isset($products_cancel[$p->pk()]) && $products_cancel[$p->pk()]) : ?>
+        <a class="cancel-subscription local-link" href="<?php p($products_cancel[$p->pk()])?>" data-popup-title="<?php p($p->getTitle()) ?>"><?php __e("cancel") ?></a>
+    <?php endif; ?>
+    <?php if (isset($products_upgrade[$p->pk()]) &&  $products_upgrade[$p->pk()]): ?>
+        <?php if (isset($products_cancel[$p->pk()]) && $products_cancel[$p->pk()]) : ?>
+        <span class="am-list-subscriptions_divider">|</span>
+        <?php endif; ?>
+        <a href="javascript:;" class="upgrade-subscription local-link" data-invoice_item_id="<?php p($this->obfuscate($products_upgrade[$p->pk()]->pk())) ?>"><?php __e("upgrade") ?></a>
+    <?php endif; ?>
+        </span>
+    </li>
+    <?php endforeach ?>
+    <?php foreach ($member_future_products as $p) : ?>
+    <li id="product-item-<?php p($p->pk()) ?>">
+        <span class="am-list-subscriptions-title"><?php echo $p->getTitle(); ?></span>
+        <span class="am-list-subscriptions-date">
+            <span class="am-list-subscriptions-date_future"><?php __e('begins') ?> <?php echo amDate($products_begin[$p->pk()]); ?></span>
+        </span>
+    </li>
+    <?php endforeach; ?>
+</ul>
+<?php else : // Customer doesn't have any active subscriptions ?>
+    <h3><?php __e('You have no active subscriptions') ?></h3>
+    <p><?php __e('Please use %sAdd/Renew subscription%s form to order or renew subscription.',
+        '<a href="' . $this->url('signup') . '">','</a>') ?></p>
+<?php endif ?>
+<div class="cancel-subscription-popup" data-popup-title="<?php __e('Cancel Subscription')?>" style="display:none">
+    <?php include $this->_script('member/_cancel.phtml') ?>
+</div>
+<?php foreach ($products_upgrade as $item) : ?>
+<?php $invoice = $di->invoiceTable->load($item->invoice_id); ?>
+<div class="upgrade-subscription-popup upgrade-subscription-popup-<?php p($this->obfuscate($item->pk())) ?>"
+                 style="display:none" data-popup-title="<?php __e('Change Subscription') ?>">
+    <?php include $this->_script('member/_upgrade.phtml') ?>
+</div>
+<?php endforeach; ?>

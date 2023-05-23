@@ -1,0 +1,17 @@
+<?php
+/**
+ * That is layout for member.phtml - based pages - with tab menu on top
+ * it is automatically inserted into your site layout:
+ */
+if (empty($title)) $title = ___('Your Membership Information');
+$this->setLayout('layout.phtml');
+
+$this->headScript()
+    ->prependFile($this->_scriptJs('jquery/jquery.validate.js'));
+
+?>
+<?php echo $this->blocks('member/under-menu') ?>
+<!-- member content starts here -->
+<?php echo $content ?>
+<!-- member content ends here -->
+<?php echo $this->blocks('member/under-contents') ?>

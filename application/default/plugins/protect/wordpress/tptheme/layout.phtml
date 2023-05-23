@@ -1,0 +1,15 @@
+<?php
+do_action("template_redirect");
+Am_Di::getInstance()->plugins_protect->get('wordpress')
+    ->startLayout($this, isset($meta_title) ? $meta_title : $title, true, $body_class);
+global $mysite;
+get_header();
+
+include dirname(__FILE__)."/../amember.php";
+?>
+<?php mysite_after_page_content(); ?>
+	
+		<div class="clearboth"></div>
+	</div><!-- #main_inner -->
+</div><!-- #main -->
+<?php get_footer();

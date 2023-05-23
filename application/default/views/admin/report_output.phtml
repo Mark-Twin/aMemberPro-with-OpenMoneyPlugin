@@ -1,0 +1,71 @@
+<?php
+$this->layoutNoTitle = true;
+$this->enableReports();
+$title = $report->getTitle();
+?>
+<h1 id="pageTitle"><?php p($title) ?> <a href="<?php $this->pUrl(null, 'index') ?>"><?php __e('Choose another Report') ?></a></h1>
+<div>
+    <h2><?php __e('Report Settings') ?></h2>
+    <?php
+    echo $form ?>
+
+</div>
+<?php if (@$reportId) : ?>
+<div class="info" id="save-report-offer"><?php __e('You can %ssave%s this report for future use. You will be able to add this report to your dashboard or send it to your email periodically.',
+    '<a href="javascript:;" id="save-report" class="local" data-report-id="' . $this->escape($reportId) . '" data-request="' . $this->escape($serializedRequest) . '">', '</a>') ?></div>
+<?php endif; ?>
+<?php echo $content ?>
+<div style="margin-bottom:1em; overflow: hidden"><a style="float:right" href="<?php echo $this->url('admin-reports/export', array('report_id'=>$reportId,'request'=>$serializedRequest)) ?>" class="link"><?php __e('Download CSV') ?></a></div>
+<div style="display:none">
+    <div id="save-report-form">
+        <?php echo $saveReportForm ?>
+    </div>
+</div>
+<script type="text/javascript">
+jQuery(function(){
+
+    function saveReport(params, callback) {
+        var url = amUrl('/admin-reports/save', 1);
+        jQuery.post(url[0], jQuery.merge(params, url[1]), function(res){
+            callback = callback || function(){};
+            callback(res);
+        });
+    }
+
+    jQuery('#save-report').click(function(){
+        var $this = jQuery(this);
+
+        jQuery('#save-report-form').dialog({
+                autoOpen: true,
+                modal : true,
+                title : "",
+                width : 600,
+                position : {my: "center", at: "center", of: window},
+                buttons: {
+                    "Save" : function() {
+                        saveReport([
+                            {name:'report_id', value: $this.data('report-id')},
+                            {name:'request', value: $this.data('request')},
+                            {name:'title', value: jQuery('#save-report-form input[name=title]').val()},
+                            {name:'add-to-dashboard', value: jQuery('#save-report-form input[name=add-to-dashboard]:checked').val()}
+                        ], function(res){
+                            if (res.status == 'OK') {
+                                jQuery('#save-report-offer').remove();
+                                jQuery("#menu-tab-saved").find('.menu-item-alert').remove();
+                                jQuery("#menu-tab-saved").append(jQuery('<div class="menu-item-alert"></div>').text(res.count));
+                                jQuery("#menu-tab-saved").find('.menu-item-alert').fadeTo('slow', 0.1).fadeTo('slow', 1.0);
+                                jQuery('#save-report-form').dialog("close");
+                            } else {
+                                alert('<?php j(___('Error occurred, please check Errors Log for clue')) ?>');
+                            }
+                        });
+
+                    },
+                    "Close" : function() {
+                        jQuery(this).dialog("close");
+                    }
+                }
+            });
+    })
+});
+</script>

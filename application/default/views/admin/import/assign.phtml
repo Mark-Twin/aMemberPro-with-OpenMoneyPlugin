@@ -1,0 +1,93 @@
+<?php $this->setLayout('admin/layout.phtml'); ?>
+<style type="text/css">
+<!--
+select.csv-fields { max-width: 200px; }
+-->
+</style>
+<?php include $this->_script('admin/_error.phtml'); ?>
+<div id="import-area">
+    <?php echo $table; ?>
+</div>
+<div class="info">
+    <h2><?php __e('Important Notice:') ?></h2>
+    <p><?php __e('One field can be assigned to one column only.') ?></p>
+    <p><?php __e('Email address is required field.') ?></p>
+    <p><?php __e('Subscription field should have either numeric value which represent subscription in current installation or title that exactly match product title in aMember. You can find these values at %sManage Products%s page, column # or Title.',
+        '<a class="link" href="' . $this->url('admin-products') . '">', '</a>') ?></p>
+    <p><?php __e('Dates can be in the folowing formats') ?>:</p>
+    <ul class="list">
+        <li><?php __e('SQL Date Format') ?> : YYYY-MM-DD</li>
+        <li><?php __e('European Date Format') ?> : DD.MM.YYYY</li>
+        <li><?php __e('American Date Format') ?> : MM/DD/YYYY</li>
+    </ul>
+</div>
+<script type="text/javascript">
+    (function($) {
+        function setupHooks() {
+            jQuery("#skip:checked").each(function(){
+                jQuery(".grid tr:eq(1)").addClass('disabled');
+            });
+
+            jQuery("#skip").change(function(){
+                if (this.checked) {
+                    jQuery(".grid tr:eq(1)").addClass('disabled');
+                } else {
+                    jQuery(".grid tr:eq(1)").removeClass('disabled');
+                }
+            })
+            jQuery("#add_subscription").change(function(){
+                jQuery(this.form).ajaxSubmit({
+                    target: '#import-area'
+                });
+            })
+            jQuery("#add_encrypted_pass").change(function(){
+                jQuery(this.form).ajaxSubmit({
+                    target: '#import-area'
+                });
+            })
+            jQuery("select[name=delim]").change(function(){
+                jQuery(this.form).ajaxSubmit({
+                    target: '#import-area'
+                });
+            })
+
+            jQuery("input[type=button]").click(function(){
+                this.form.action = this.form.action.replace(/(\/)[a-z]+(\/*)$/, '$1back$2');
+                this.form.submit();
+            })
+
+            jQuery("select[name^=FIELD]").each(function(){
+                if (this.value) {
+                    jQuery('.' + this.name).addClass('selected');
+                }
+            });
+
+            jQuery("select[name^=FIELD]").change(function(){
+                if (this.value) {
+                    jQuery('.' + this.name).addClass('selected');
+                } else {
+                    jQuery('.' + this.name).removeClass('selected');
+                }
+            });
+
+            jQuery(".csv-fields").change(function(){
+                jQuery(".csv-fields option").removeAttr('disabled');
+                var selected = jQuery.map(jQuery(".csv-fields option:selected"), function(obj) {
+                    return jQuery(obj).val();});
+                for (var i in selected) {
+                    if (selected[i] == '') continue;
+                    jQuery('.csv-fields option[value=' + selected[i] + ']').not(':selected').attr('disabled', 'disabled')
+                }
+            }).change();
+        }
+
+        jQuery(function(){
+            jQuery(document).ajaxSuccess(function(event, xhr, settings){
+                if (settings.target == '#import-area') {
+                    setupHooks();
+                }
+            });
+            setupHooks();
+        })
+    })(jQuery)
+</script>

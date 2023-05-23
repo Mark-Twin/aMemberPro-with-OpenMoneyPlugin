@@ -1,0 +1,23 @@
+<?php if ($affiliates) : ?>
+<h2><?php __e('Top %d Affiliates', $num) ?> &middot; <?php p($reportTitle) ?></h2>
+<div class="admin-dashboard-wrapper">
+<ul class="widget-top-affiliate">
+<?php $n=1; ?>
+<?php foreach ($affiliates as $a) : ?>
+    <li><?php p($n++) ?>.
+        <?php if(trim($a->name)) : ?>
+            <?php p($a->name) ?>
+            (<a class="link" href="<?php p($this->userUrl($a->user_id)) ?>"><?php p($a->login) ?></a>)
+        <?php else: ?>
+            <a class="link" href="<?php p($this->userUrl($a->user_id)) ?>"><?php p($a->login) ?></a>
+        <?php endif; ?>
+        &ndash; <strong><?php p(Am_Currency::render($a->comm)) ?></strong></li>
+<?php endforeach; ?>
+</ul>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Top %d Affiliates', $num) ?> &middot; <?php p($reportTitle) ?></h2>
+    <p><?php __e("You don't have any affiliate sales on this period yet") ?></p>
+</div>
+<?php endif; ?>

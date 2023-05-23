@@ -1,0 +1,90 @@
+<div class="invoice-card">
+    <div class="invoice-card-head">
+        <ul>
+            <li>#<strong><?php echo $invoice->invoice_id ?>/<?php echo $invoice->public_id ?></strong>
+        <?php p($invoice->paysys_id ? $invoice->paysys_id : ___('none'))  ?>,
+        <?php echo '<strong class="invoice-status-text">' . $invoice->getStatusTextColor() . '</strong>'; ?>
+            </li>
+            <li><?php __e('Billing Terms') ?>: <strong><?php echo new Am_TermsText($invoice) ?></strong></li>
+            <li><?php __e('created at') ?> <time datetime="<?php p(date('c', amstrtotime($invoice->tm_added))) ?>" title="<?php p($this->getElapsedTime($invoice->tm_added)) ?>"><em><?php p(amDateTime($invoice->tm_added))
+        ?></em></time><?php if ($invoice->isPaid()):?>, <?php __e('first paid at')?> <time datetime="<?php p(date('c', amstrtotime($invoice->tm_started))) ?>" title="<?php p($this->getElapsedTime($invoice->tm_started)) ?>"><em><?php echo amDateTime($invoice->tm_started) ?></em></time><?php endif ?>
+            </li>
+        <?php if ($invoice->coupon_id): ?>
+            <li><?php echo ___('Coupon'). ': ' . ($invoice->coupon_code ? $invoice->coupon_code : '<strong>#' . $invoice->coupon_id . '</strong>') ?></li>
+        <?php endif ?>
+        <?php if ($invoice->saved_form_id): ?>
+            <?php $origin = isset($savedFormOptions[$invoice->saved_form_id]) ? $savedFormOptions[$invoice->saved_form_id] : $invoice->saved_form_id; ?>
+            <li><?php __e('Origin') ?>: <span><?php p($origin) ?></span></li>
+        <?php endif; ?>
+        </ul>
+        </div>
+    </div>
+    <div class="grid-container grid-container-small">
+        <table class="grid grid-no-highlight grid-small">
+            <tr>
+                <th width="1%" nowrap="nowrap">#</th>
+                <th><?php __e('Title')?></th>
+                <th class="align-right"><?php __e('First Price')?></th>
+                <?php if ($invoice->rebill_times): ?><th class="align-right"><?php __e('Second Price')?></th><?php endif ?>
+            </tr>
+            <?php foreach ($invoice->getItems() as $item): /* @var $item InvoiceItem */?>
+            <tr class="grid-row">
+                <td class="align-right"><?php p($item->item_id) ?></td>
+                <td>
+                    <?php if ($item->qty != 1) echo "<em>$item->qty pcs -</em> " ?>
+                    <?php p($item->item_title) ?>
+                    <!-- options -->
+                    <?php foreach ($item->getOptions() as $optKey => $opt): ?>
+                        <br /><b><i><?php p($opt['optionLabel']) ?>:</i></b>
+                             <i><?php p(is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']) ?></i>
+                             <?php if ($opt['first_price'] || $opt['second_price']) : ?>
+                             <i style='color: gray;'>+ <?php
+                                    $o = new stdclass;
+                                    $o->first_price = $opt['first_price'];
+                                    $o->second_price = $opt['second_price'];
+                                    $o->first_period = $invoice->first_period;
+                                    $o->second_period = $invoice->second_period;
+                                    $o->rebill_times = $invoice->rebill_times;
+                                    $o->currency = $invoice->currency;
+                                    $t = new Am_TermsText($o);
+                                echo $t->getStringForOption(); ?></i>
+                             <?php endif ?>
+                    <?php endforeach // item->getOptions() ?>
+                </td>
+                <td class="align-right"><?php echo $invoice->getCurrency($item->first_price) ?></td>
+                <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($item->second_price) ?></td><?php endif ?>
+            </tr>
+            <?php endforeach ?>
+             <?php if (($invoice->first_discount+$invoice->second_discount) > 0): ?>
+            <tr class="grid-row">
+                <td class="align-right"></td>
+                <td class="align-right"><?php __e('Discount')?></td>
+                <td class="align-right"><?php echo $invoice->getCurrency($invoice->first_discount) ?></td>
+                <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($invoice->second_discount) ?></td><?php endif ?>
+            </tr>
+            <?php endif ?>
+            <?php if (($invoice->first_shipping+$invoice->second_shipping) > 0): ?>
+            <tr class="grid-row">
+                <td class="align-right"></td>
+                <td class="align-right"><?php __e('Shipping')?></td>
+                <td class="align-right"><?php echo $invoice->getCurrency($invoice->first_shipping) ?></td>
+                <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($invoice->second_shipping) ?></td><?php endif ?>
+            </tr>
+            <?php endif ?>
+            <?php if (($invoice->first_tax+$invoice->second_tax) > 0): ?>
+            <tr class="grid-row">
+                <td class="align-right"></td>
+                <td class="align-right"><?php __e('Tax Amount')?></td>
+                <td class="align-right"><?php echo $invoice->getCurrency($invoice->first_tax) ?></td>
+                <?php if ($invoice->rebill_times): ?><td class="align-right"><?php echo $invoice->getCurrency($invoice->second_tax) ?></td><?php endif ?>
+            </tr>
+            <?php endif ?>
+            <tr class="grid-row">
+                <td class="align-right"></td>
+                <td class="align-right"><strong><?php __e('Total')?></strong></td>
+                <td class="align-right"><strong><?php echo $invoice->getCurrency($invoice->first_total) ?></strong></td>
+                <?php if ($invoice->rebill_times): ?><td class="align-right"><strong><?php echo $invoice->getCurrency($invoice->second_total) ?></strong></td><?php endif ?>
+            </tr>
+        </table>
+    </div>
+</div>

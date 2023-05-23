@@ -1,0 +1,13 @@
+<?php
+$title = ___('Delete Account and Personal Data');
+$this->setLayout('member/layout.phtml');
+?>
+<p><?php __e("We're sorry to see you go."); ?></p>
+<p>
+    <?php if (!$success || Am_Di::getInstance()->config->get('account-removal-method') == 'delete-request') : ?>
+        <?php __e('Your request was registered. Please allow 72 hours to process it.'); ?>    
+    <?php else : ?>
+        <?php __e('Your request was processed.'); ?>    
+    <?php endif; ?></p>
+
+

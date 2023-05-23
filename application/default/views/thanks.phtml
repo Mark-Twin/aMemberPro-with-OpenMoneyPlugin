@@ -1,0 +1,67 @@
+<?php
+$body_class = 'am-page-thanks';
+$this->headMeta()->setName('robots', 'noindex,nofollow');
+$this->placeholder("head-start")->prepend(sprintf('<base href="//%s" />',  Am_Html::escape($_SERVER['HTTP_HOST']))) ?>
+<?php $title = ___('Thank you for Signing up'); $this->setLayout('layout.phtml'); ?>
+
+<?php if (empty($invoice) || !$invoice->tm_started): ?>
+<?php if((!empty($invoice) && !$invoice->isConfirmed()) ||
+            (empty($invoice) && !empty($user) && !$user->is_approved)): ?>
+    <?php __e($di->config->get('manually_approve_note', <<<CUT
+<strong>IMPORTANT NOTE: We review  all new payments manually, so your payment is under review currently.<br/>
+You will get  email notification after payment will be approved by admin. We are sorry  for possible inconvenience.</strong>
+CUT
+        )) ?>
+<?php elseif (@$show_waiting && !empty($invoice)): ?>
+<div class="am-thanks-awaiting-payment">
+    <?php __e("Your payment is not yet confirmed by payment system. It may take several minutes to get confirmation of the payment.") ?>
+    <div class="am-thanks-awaiting-refresh">
+    <?php __e("This page will be automatically refreshed within %s", $refreshTime) ?>
+    </div>
+</div>
+<script type="text/javascript">
+<?php echo $script ?>
+</script>
+<?php echo $this->blocks('thanks/notstarted', '%s', array('invoice' => $invoice)); ?>
+<?php else : ?>
+<div class="am-thanks-login-offer">
+<?php if ($di->auth->getUserId()) : ?>
+<strong><?php __e("Enjoy your membership. Please click %shere%s to access your member's area.", "<a href='{$di->surl('login')}'>",'</a>') ?></strong>
+<?php else : ?>
+<strong><?php __e('Enjoy your membership. To Login please click here %sLogin%s', "<a href='{$di->surl('login')}'>",'</a>') ?></strong>
+<?php endif ?>
+</div>
+<?php endif ?>
+
+<?php echo $this->blocks('thanks/unknown'); ?>
+
+<?php elseif ($invoice->tm_started): ?>
+
+<?php if ($invoice->first_total > 0): ?>
+<div class="am-thanks-status-success">
+<?php __e('Your payment has been successfully processed.') ?>
+</div>
+<div class="am-thanks-payment-details">
+<?php __e('Order reference: %s', "<strong>{$this->escape($payment->getDisplayInvoiceId())}</strong>") ?><br />
+<?php __e('Transaction reference: %s', "<strong>{$this->escape($payment->receipt_id)}</strong>") ?><br />
+<?php __e('Date and time of payment: %s', '<strong>' . amDatetime($payment->dattm) . '</strong>') ?><br />
+</div>
+<?php else: ?>
+<div class="am-thanks-status-success">
+<?php __e('Your subscription has been successfully processed.') ?>
+</div>
+<?php endif ?>
+
+<?php include $this->_script('_receipt.phtml'); ?>
+<div class="am-thanks-login-offer">
+<?php if ($di->auth->getUserId()) : ?>
+<strong><?php __e("Enjoy your membership. Please click %shere%s to access your member's area.", "<a href='{$di->surl('login')}'>", '</a>') ?></strong>
+<?php else : ?>
+<?php include $this->_script('_thanks-login-details.phtml'); ?>
+<strong><?php __e('Enjoy your membership. To Login please click here %sLogin%s', "<a href='{$di->surl('login')}'>", '</a>') ?></strong>
+<?php endif ?>
+</div>
+<?php echo $this->blocks('thanks/success', '%s', array('invoice' => $invoice)); ?>
+
+<?php endif // invoice->tm_started ?>
+<?php echo $this->blocks('thanks'); ?>

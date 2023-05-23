@@ -1,0 +1,16 @@
+<?php $this->setLayout('admin/layout.phtml'); ?>
+<div id="import-area">
+    <?php echo $table ?>
+    <br />
+    <?php echo $form ?>
+</div>
+<script type="text/javascript">
+    (function($){
+        jQuery(function(){
+            jQuery("input[type=button]").click(function(){
+                this.form.action = this.form.action.replace(/(\/)[a-z]+(\/*)$/, '$1back$2');
+                this.form.submit();
+            });
+        });
+    })(jQuery);
+</script>

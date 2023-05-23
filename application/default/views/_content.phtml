@@ -1,0 +1,15 @@
+<div class="am-body-content">
+    <?php echo $this->blocks('content/before'); ?>
+    <div class="am-body-content-top">
+    <?php include $this->_script('_top.phtml'); ?>
+    <?php echo $this->breadcrumbs() ?>
+    <?php if (empty($this->layoutNoTitle)): ?>
+        <h1><?php echo $title ?></h1>
+    <?php endif; ?>
+    </div>
+    <div class="am-body-content-content">
+    <!-- content starts here -->
+    <?php echo $content ?>
+    </div>
+</div>
+<?php include $this->_script('_flash.phtml'); ?>

@@ -1,0 +1,27 @@
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    jQuery('.am-tabs li:has(ul) > a').append(
+        jQuery('<span></span>').addClass('arrow')
+    );
+    jQuery('.am-tabs .has-children > ul').bind('mouseenter mouseleave', function(){
+        jQuery(this).closest('li').toggleClass('active expanded');
+    });
+            
+});
+</script>
+<div class="am-tabs-wrapper">
+<?php
+$m = new Am_View_Helper_Menu();
+$m->setView($this);
+
+echo $m->renderMenu($this->di->navigationUser,
+    array(
+        'ulClass' => 'am-tabs',
+        'activeClass' => 'active',
+        'normalClass' => 'normal',
+        'disabledClass' => 'disabled',
+        'maxDepth' => 1,
+    )
+);
+?>
+</div>

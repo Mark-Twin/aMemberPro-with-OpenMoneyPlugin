@@ -1,0 +1,12 @@
+<ul class="am-widget-list am-list-links">
+<?php foreach ($member_links as $u => $t): ?>
+    <li>
+    <?php if (is_array($t)) : ?>
+        <?php $label = $t['label']; unset($t['label']) ?>
+        <a <?php echo $this->attrs($t)?>><?php echo $label ?></a>
+    <?php else: ?>
+        <a href="<?php p($u) ?>"><?php echo $t ?></a>
+    <?php endif; ?>
+    </li>
+<?php endforeach ?>
+</ul>

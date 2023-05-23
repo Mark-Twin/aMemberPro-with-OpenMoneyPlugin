@@ -1,0 +1,25 @@
+<?php
+$this->blocks('member/main/**');
+$title = ___('Your Membership Information');
+$this->setLayout('member/layout.phtml');
+?>
+<?php echo $this->blocks('member/main/top') ?>
+<div class="am-layout-two-coll">
+    <div class="am-layout-two-coll-top"></div>
+    <div class="am-coll-left">
+        <div class="am-coll-content">
+            <?php echo $this->blocks('member/main/left/top') ?>
+            <?php echo $this->blocks('member/main/left', '<h2 id="%3$s-head">%2$s</h2><div class="am-block" id="%3$s">%1$s</div>'); ?>
+            <?php echo $this->blocks('member/main/left/bottom') ?>
+        </div>
+    </div>
+    <div class="am-coll-right">
+        <div class="am-coll-content">
+            <?php echo $this->blocks('member/main/right/top') ?>
+            <?php echo $this->blocks('member/main/right', '<h2 id="%3$s-head">%2$s</h2><div class="am-block" id="%3$s">%1$s</div>'); ?>
+            <?php echo $this->blocks('member/main/right/bottom') ?>
+        </div>
+    </div>
+    <div class="am-layout-two-coll-bottom"></div>
+</div>
+<?php echo $this->blocks('member/main/bottom') ?>

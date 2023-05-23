@@ -1,0 +1,14 @@
+<?php $this->headMeta()->setName('robots', 'noindex,nofollow'); ?>
+<?php $title=___('Payment Info'); $this->setLayout('layout.phtml'); $this->layoutNoMenu = true; ?>
+<?php include $this->_script('_receipt.phtml'); ?>
+<form action="<?php p($plugin->getPluginUrl('thanks')) ?>" method="POST">
+    <script
+    src="https://checkout.quaderno.io/checkout.js" class="quaderno-button"
+    data-key="<?php p($plugin->getConfig('public_key')) ?>"
+    <?php foreach ($charge as $k => $v): ?>
+    data-<?php p($k) ?>="<?php p($v) ?>"
+    <?php endforeach; ?>
+    data-label="<?php p($label) ?>">
+  </script>
+  <input type="hidden" name="id" value="<?php p($invoice->public_id) ?>" />
+</form>

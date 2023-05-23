@@ -1,0 +1,13 @@
+<form method="post" action="<?php
+            echo $di->helpdeskStrategy->assembleUrl(array(
+                'page_id' => 'view',
+                'action' => 'changestatus',
+                'ticket' => $ticket->ticket_mask
+            ), 'inside-pages')
+            ?>">
+    <?php echo $this->formSelect('status', $ticket->status, null, HelpdeskTicket::getStatusOptions()) ?>
+    <input type="hidden" name="c" value="helpdesk" />
+    <input type="hidden" name="a" value="changestatus" />
+    <input type="hidden" name="ticket" value="<?php echo $ticket->ticket_mask ?>" />
+    <input type="submit" value="<?php __e('Change') ?>" />
+</form>

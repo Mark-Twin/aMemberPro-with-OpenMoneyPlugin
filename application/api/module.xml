@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>api</id>
+    <name>Remote API</name>
+    <desc>Allows to make aMember API calls from other scripts and even from other servers</desc>
+    <version>5.5.4</version>
+</module>

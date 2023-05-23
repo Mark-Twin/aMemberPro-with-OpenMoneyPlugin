@@ -1,0 +1,147 @@
+<div id="am-block" <?php if(@$vars['hidden']) : ?>style="display:none;"<?php endif;?>>
+    <?php if(!@$vars['hide_protected_checkbox']) : ?>
+    <div>
+        <input id="am-protection-checkbox" type="checkbox" name='options[protected]' value=1 <?php checked(@$options['protected'],1);?>> <?php _e('Protection enabled', 'am4-plugin');?>
+    </div>
+    <?php endif; ?>
+    <div id="am-protection-error" style="display:none;">
+    </div>
+    
+    <div id="am-protection-settings" style="display:none;">
+               <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row"><?php _e('Access Permissions', 'am4-plugin');?></th>
+                        <td><?php $this->resourceAccess('resourceaccess', @$options['access'],"options[access]"); ?>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"></th>
+                        <td><input type="checkbox" name='options[require_all]' value=1 <?php checked(@$options['require_all'],1);?>><?php _e('Allow access only if user has all above products', 'am4-plugin');?></td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"></th>
+                        <td><input type="checkbox" name='options[affiliate]' value=1 <?php checked(@$options['affiliate'],1);?>><?php _e('Make this post/page available for affiliates', 'am4-plugin');?></td>
+                    </tr>
+                    
+                    <tr><th colspan="2"><b><?php _e('Actions for post/page (when unauthorized user or guest try to access protected post/page):', 'am4-plugin');?> </b></th></tr>
+                    <?php foreach(array('guest', 'user') as $t) : ?>
+                    <tr>
+                        <th scope="row">
+                            <?php _e('Action for', 'am4-plugin');?> <?php echo $t;?>
+                        </th>
+                        <td>
+                            <?php if(!@$show_only_urls) : ?><div><input class="action_input" type="radio" <?php checked(@$options[$t.'_action'],'hide');?> name="options[<?php echo $t;?>_action]" value="hide"> <?php _e('Hide post completly', 'am4-plugin');?></div> <?php endif;?>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action'],'page');?> name="options[<?php echo $t;?>_action]" value="page"> <?php _e('Redirect to page:', 'am4-plugin');?> <br/>
+                            <div class="am4-additional-setting">
+                                <select name="options[<?php echo $t;?>_action_page]">
+                                <?php $this->pagesOptions($options[$t.'_action_page']);?>
+                                </select>
+                            </div></div>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action'],'redirect');?> name="options[<?php echo $t;?>_action]" value="redirect"> <?php _e('Redirect to url:', 'am4-plugin');?> <br/>
+                            <div class="am4-additional-setting">
+                                <input type='text' name="options[<?php echo $t;?>_action_redirect]" size="60" value="<?php echo $options[$t.'_action_redirect'];?>">
+                            </div></div>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action'],'login');?> name="options[<?php echo $t;?>_action]" value="login"> <?php if($t=='guest')  _e('Redirect to login page', 'am4-plugin'); else _e('Redirect to membership renewal page', 'am4-plugin');?></div>
+                            <?php if(!@$show_only_urls) : ?><div><input class="action_input" type="radio" <?php checked(@$options[$t.'_action'],'text');?> name="options[<?php echo $t;?>_action]" value="text"> <?php _e('Show this error message instead of post content:', 'am4-plugin');?> <br/>
+                            <div class="am4-additional-setting">
+                                <?php $this->errorMessageSelect($options[$t.'_action_text'], "options[".$t."_action_text]"); ?>
+                            </div></div><?php endif;?>
+
+                        </td>
+                    </tr>
+                    <?php endforeach;?>
+                    
+                    <?php if(!@$show_only_urls) : ?>
+                    <tr>
+                        <th scope="row" colspan="2">
+                            <b><?php _e('Archive / Search protection', 'am4-plugin');?></b><br/>
+                            <?php _e('What should happen when Wordress display post in Archive or when  visitor  use Search.', 'am4-plugin');?> 
+                        </th>
+                    </tr>
+                    <?php foreach(array('guest', 'user') as $t) : ?>
+                    <tr>
+                        <th scope="row">
+                            <?php _e('Action for', 'am4-plugin');?> <?php echo $t;?>
+                        </td>
+                        <td>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_search'],'hide');?> name="options[<?php echo $t;?>_action_search]" value="hide"> <?php _e('Exclude post/page  from search results', 'am4-plugin');?></div>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_search'],'text');?> name="options[<?php echo $t;?>_action_search]" value="text"> <?php _e('Show post/page title and this error message instead of post/page content:', 'am4-plugin');?> <br/>
+                            <div class="am4-additional-setting">
+                                <?php $this->errorMessageSelect($options[$t.'_action_search_text'], "options[".$t."_action_search_text]"); ?>
+                            </div></div>                            
+                        </td>
+                        
+                    </tr>
+                    <?php endforeach;?>
+                    <?php endif;?>
+                    <?php if(!@$show_only_urls) : ?>
+                    <tr>
+                        <th scope="row" colspan="2"><b><?php _e('Menu Item Protection for Post / Page Link', 'am4-plugin');?></b><br/>
+                            <?php _e('What should happen when link to Page / Post will be placed into WordPress Custom Menu:', 'am4-plugin');?> 
+                        </th>
+                    </tr>
+                    <?php foreach(array('guest', 'user') as $t) : ?>
+
+                    <tr>
+                        <th scope ="row">
+                            <?php _e('Action for', 'am4-plugin');?> <?php echo $t;?>
+                        </td>
+                        
+                        <td>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_menu'],'hide');?> name="options[<?php echo $t;?>_action_menu]" value="hide"> <?php _e('Exclude page / post  link from menu', 'am4-plugin');?></div>
+                            <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_menu'],'show');?> name="options[<?php echo $t;?>_action_menu]" value="show"> <?php _e('Show link even if', 'am4-plugin');?> <?php echo $t;?> <?php _e('do not have access to page / post', 'am4-plugin');?><br/>
+                            </div>                            
+                            
+                        </td>
+                        
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php endif;?>
+                    <?php if(!@$show_only_urls) : ?>
+                    <tr>
+                        <th scope="row" colspan="2"><b><?php _e('Include Post in RSS feed', 'am4-plugin');?></b><br/>
+                            <?php _e('Post will not be removed from RSS feed. Make sure that you have Setings -> Reading -> For each article in a feed, show set to summary, or full post content will be available in feed', 'am4-plugin');?> 
+                        </th>
+                    </tr>
+                    <tr>
+                        <th scope ="row">
+                            <?php _e('Action', 'am4-plugin');?>
+                        </td>
+                        
+                        <td>
+                            <div><input class="action_input" type="radio" <?php checked($options['include_in_rss'],'hide');?> name="options[include_in_rss]" value="hide"> <?php _e('Do not include post in RSS feed', 'am4-plugin');?></div>
+                            <div><input class="action_input" type="radio" <?php checked($options['include_in_rss'],'show');?> name="options[include_in_rss]" value="show"> <?php _e('Include Post in RSS feed', 'am4-plugin');?><br/>
+                            </div>                            
+                            
+                        </td>
+                        
+                    </tr>
+                    <?php endif;?>
+                    
+               </table>                   
+        
+		<?php if(!@$hide_update_bnt) : ?><input id="am4-update-btn" name="save" type="submit" class="button-primary"  value="<?php _e('Update', 'am4-plugin');?>" /> <?php endif;?>
+    </div>
+    
+</div>
+<?php if($controller = $this->getController())$controller->actionInput("save"); ?>
+<script type="text/javascript">
+    jQuery(document).ready(function (){
+        jQuery("#am-protection-checkbox").change(function(){
+           if(jQuery(this).attr("checked")) {
+               jQuery("#am-protection-settings").show(200);
+           }else{
+               jQuery("#am-protection-settings").hide(200);
+           }
+        }).trigger("change");
+        
+        jQuery(".action_input").change(function (){
+            jQuery(".action_input").each(function (){
+                if(jQuery(this).attr("checked")) jQuery(this).parent("div").children("div").show(200);
+                else jQuery(this).parent("div").children("div").hide();
+            });
+        }).change(); 
+    });
+</script>
+
+    

@@ -1,0 +1,5 @@
+<?php /* Shopping cart search */ ?>
+<form method="get" action="<?php echo $this->url('cart/index/search')?>">
+    <input type="text" name="q" value="<?php p(@$_REQUEST['q']) ?>">
+    <input type="submit" value="<?php __e('Search')?>">
+</form>

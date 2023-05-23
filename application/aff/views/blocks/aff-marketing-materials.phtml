@@ -1,0 +1,12 @@
+<?php if (count($affDownloads)) : ?>
+<!-- aff downloads -->
+<ul class="am-list am-aff-mm">
+    <?php foreach ($affDownloads as $download) : ?>
+    <li class="am-aff-mm-item"><a href="<?php echo $this->url('file/download/path/' . $download->getPath(),null,true,2) ?>"><?php p($download->getName()) ?></a>
+            <?php if ($download->desc) : ?>
+                <em class="am-aff-mm-item-desc"><?php __e($download->desc) ?></em>
+            <?php endif; ?>
+    </li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>

@@ -1,0 +1,35 @@
+<form name="login" method="post" <?php if ($form_action) echo "action='$form_action'"; ?> id="am-login-form">
+    <fieldset>
+        <legend><?php __e('Login to your Account') ?></legend>
+        <div class="row row-wide row-login-recaptcha" id="recaptcha-row" <?php if (!$showRecaptcha) : ?>style="display: none;" <?php endif; ?> data-recaptcha-theme="<?php echo $di->config->get('recaptcha-theme','light');?>" data-recaptcha-size="<?php echo $di->config->get('recaptcha-size','normal');?>">
+            <div class="element am-element-recaptcha" id="recaptcha-element"></div>
+        </div>
+        <div class="row row-login-login">
+            <div class="element-title">
+                <label class="element-title" for="amember-login"><?php __e('Username/Email') ?></label>
+            </div>
+            <div class="element">
+                <input type="text" id="amember-login" name="<?php p($loginFieldName) ?>" size="15" value="<?php p($loginFieldValue) ?>" autofocus="autofocus"  placeholder="<?php __e('Username/Email') ?>" />
+            </div>
+        </div>
+        <div class="row row-login-pass">
+            <div class="element-title">
+                <label class="element-title" for="amember-pass"><?php __e('Password') ?></label>
+            </div>
+            <div class="element">
+                <input type="password" id="amember-pass" name="<?php p($passFieldName) ?>" class="am-pass-reveal" size="15" placeholder="<?php __e('Password') ?>" />
+                <?php if (@$this_config['remember_login'] && !@$this_config['remember_auto']): ?>
+                        <label class="element-title" for="remember_login" id="am-form-login-remember">
+                            <input type="checkbox" name="remember_login" value="1"<?php if (@$_REQUEST['remember_login']): ?>checked="checked"<?php endif ?>> <?php __e('Stay signed in') ?></label>
+                <?php endif ?>
+            </div>
+        </div>
+        <div class="row row-buttons">
+            <div class="element">
+                <input type="submit" value="<?php __e('Login') ?>" />
+                <a href="<?php echo $this->url('login?sendpass') ?>" class="local-link am-form-login-switch"><?php __e('Forgot password?') ?></a>
+            </div>
+        </div>
+    </fieldset>
+    <?php echo Am_Html::renderArrayAsInputHiddens($hidden) ?>
+</form>

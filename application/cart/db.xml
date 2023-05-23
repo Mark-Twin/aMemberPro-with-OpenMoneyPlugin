@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema version="4.0.0">
+  <table name="product">
+    <field name="path" type="varchar" len="255" notnull="0"/>
+    <field name="img" type="int" />
+    <field name="img_path" type="varchar" len="255"/>
+    <field name="img_detail_path" type="varchar" len="255"/>
+    <field name="img_cart_path" type="varchar" len="255"/>
+    <field name="img_orig_path" type="varchar" len="255"/>
+    <field name="cart_description" type="text"/>
+    <field name="tags" type="varchar" len="255" notnull="0"/>
+    <field name="meta_title" type="varchar" len="255" notnull="0"/>
+    <field name="meta_keywords" type="varchar" len="255" notnull="0"/>
+    <field name="meta_description" type="varchar" len="255" notnull="0"/>
+    <field name="meta_robots" type="set" len="'noindex','nofollow','noarchive'" notnull="0"/>
+    <index name="path" unique="1">
+      <field name="path" len="191"/>
+    </index>
+  </table>
+</schema>

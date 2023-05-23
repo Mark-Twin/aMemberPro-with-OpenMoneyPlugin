@@ -1,0 +1,15 @@
+<?php
+if (
+    !$this->di->auth->getUserId() && ($_SERVER['REQUEST_METHOD'] != 'POST') && (empty($_GET['_qf_EmailCode_display']))): // skip this block if user is logged-in 
+    ?>
+    <?php
+    $plugin->includeJSSDK();
+    $plugin->includeLoginJS();
+    ?>
+    <div class="am-fb-signup-button-wrapper">
+        <div class="am-fb-signup-button">
+            <div class="fb-login-button" data-max-rows="1" data-size="<?php p($plugin->getConfig('size', 'medium')) ?>" data-show-faces="false" data-auto-logout-link="false" onlogin="facebook_login_login();" data-scope="email"></div>
+        </div>
+    </div>
+<?php
+endif; // end of skip if customer is not logged-in ?>

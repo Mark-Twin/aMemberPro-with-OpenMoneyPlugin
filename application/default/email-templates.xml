@@ -1,0 +1,491 @@
+<table_data name="email_template">
+    <row type="email_template">
+        <field name="name">bruteforce_notify</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Bruteforce Attack Detected</field>
+        <field name="txt">Bruteforce Attack Detected.
+
+IP: %ip%
+Last Used Login: %login%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_security_code</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Password Recovery</field>
+        <field name="txt">You have requested your log in information.
+
+     Your User ID:  %user.login%
+
+Follow a link below to change your password:
+  %url%
+
+This link will be active %hours% hour(s).
+            
+Password reset has been requested from IP address: %ip%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_security_code_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Password Recovery</field>
+        <field name="txt">You have requested your admin log in information.
+
+     Your User ID:  %user.login%
+
+Follow a link below to change your password:
+  %url%
+
+This link will be active %hours% hour(s).
+            
+Password reset has been requested from IP address: %ip%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_password_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: New Admin Password</field>
+        <field name="txt">You have requested to reset your access credentials.
+
+     Your User ID:  %user.login%
+     New Password:  %pass%
+
+Please login to admin control panel at:
+     %root_url%/admin/
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">profile_changed</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: User profile has been changed</field>
+        <field name="txt">User has changed profile.
+
+User details:
+    Username:   %user.login%
+    Email:      %user.email%
+    Name:       %user.name_f% %user.name_l%
+
+Changed fields:
+%changes%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">manually_approve</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your signup is pending</field>
+        <field name="txt">Thank you for subscribing!
+
+We review all payments manually, so your payment
+status is pending. You will receive email when your
+account will be approved. Thank you for your patience.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">invoice_approval_wait_user</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your payment is under review</field>
+        <field name="txt">Thank you for subscribing!
+
+We review all payments manually, so your payment
+status is pending. You will receive email when your
+payment will be approved. Thank you for your patience.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">invoice_pay_link</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: New Invoice</field>
+        <field name="txt">%message%
+Follow a link below to pay Invoice:
+%url%
+
+%invoice_text%
+Invoice is valid until: %invoice.due_date|date%
+        </field>
+    </row>
+
+    <row type="email_template">
+        <field name="name">invoice_approved_user</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your payment was approved!</field>
+        <field name="txt">Thank you for subscribing!
+
+Your payment was approved by our staff.
+
+   Your User ID: %user.login%
+
+Log-on to your member pages at:
+%root_url%/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">mail_cancel_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: User subscription cancelled</field>
+        <field name="txt">User %user.login%, &quot;%user.name_f% %user.name_l%&quot; &lt;%user.email%&gt;
+has cancelled recurring subscription #%invoice.invoice_id% to product
+%product.title%.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">mail_cancel_member</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Subscription cancelled</field>
+        <field name="txt">Your subscription to &quot;%product.title%&quot; cancelled. Feel free to subscribe
+again, you can do it here:
+  %root_url%/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_payment_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: *** New Payment</field>
+        <field name="txt">Payment Amount: %payment.amount% %payment.currency%
+Payment Reference: %payment.receipt_id%
+
+%invoice_text%
+
+User details:
+    Username:   %user.login%
+    Email:      %user.email%
+    Name:       %user.name_f% %user.name_l%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">registration_mail</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Registration</field>
+        <field name="txt">Thank you for registration on %site_title%!
+
+   Your User ID: %user.login%
+   Your Password: %password%
+
+Log-on to your member pages at:
+%root_url%/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">registration_mail_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: User Registration</field>
+        <field name="txt"><![CDATA[
+New User Registration:
+
+   User ID: %user.login%
+   %root_url%/admin-users?_u_a=edit&_u_id=%user.user_id%
+
+        ]]></field>
+    </row>
+    <row type="email_template">
+        <field name="name">changepass_mail</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Password Change</field>
+        <field name="txt">You changed password on %site_title%!
+
+   Your User ID: %user.login%
+   Your Password: %password%
+
+Log-on to your member pages at:
+%root_url%/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_signup_mail</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Membership Information</field>
+        <field name="txt">Thank you for subscribing on %site_title%!
+
+   Your User ID: %user.login%
+
+Log-on to your member pages at:
+%root_url%/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_payment_mail</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Payment Receipt</field>
+        <field name="txt">Thank you for your order. You may find order details below:
+
+Payment Amount: %payment.amount% %payment.currency%
+Payment Reference: %payment.receipt_id%
+
+%invoice_text%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">verify_email_signup</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Account Verification</field>
+        <field name="txt">You (or someone else) has just registered an account on %site_title%.
+Clicking on the link below will activate the account:
+%url%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">verify_email_profile</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Account Verification</field>
+        <field name="txt">You (or someone else) has just changed email address in your account on %site_title%.
+Clicking on the link below will approve this change:
+%url%
+
+Please note that email address will be changed in your profile only if you will click on above link.
+If you didn't request email address change just disregard this message.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">send_free_payment_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: *** New Free Signup</field>
+        <field name="txt">%invoice_text%
+
+User details:
+    Username:   %user.login%
+    Email:      %user.email%
+    Name:       %user.name_f% %user.name_l%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">manually_approve_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your approval required</field>
+        <field name="txt">New signup completed and is awaiting your approval.
+Please log into aMember CP
+        %root_url%/admin/
+and then click the following link:
+        %root_url%/admin-users?_u_a=edit&amp;_u_id=%user.user_id%
+
+User details:
+    Username:   %user.login%
+    Email:      %user.email%
+    Name:       %user.name_f% %user.name_l%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">invoice_approval_wait_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your approval required</field>
+        <field name="txt">New signup completed and is awaiting your approval.
+Please log into aMember CP
+        %root_url%/admin/
+and then click the following link:
+        %root_url%/admin-user-payments/index/user_id/%user.user_id%
+
+User details:
+    Username:   %user.login%
+    Email:      %user.email%
+    Name:       %user.name_f% %user.name_l%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">max_ip_actions_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Account Sharing Violation Detected</field>
+        <field name="txt">There is an automated message from %site_title%.
+An account violation has been detected for the following
+customer:
+User details:
+    Username:   %user.login%
+    Email:      %user.email%
+    Name:       %user.name_f% %user.name_l%
+%userlocked%
+It has reached configured limit of %maxipcount% IP within
+%maxipperiod% minutes. Please login into aMember CP and review
+his access log.
+
+If it looks like a script mistake, you may disable sharing violation checking
+for this user in the "User Profile", or disable it globally at
+aMember CP -> Configuration -> Setup/Configuration -> Login Page
+by setting "if customer uses more than IP" to something like "99999".
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">max_ip_actions_user</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Account Sharing Violation Detected</field>
+        <field name="txt">There is an automated message from %site_title%.
+An account violation has been detected.
+%userlocked%
+
+It has reached configured limit of %maxipcount% IP within
+%maxipperiod% minutes.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">mail_upgraded_cancel_member</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Subscription cancelled due to Upgrade</field>
+        <field name="txt">Your subscription to "%product.title%" cancelled due to Upgrade.
+  %root_url%/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">admin_cancel_upgraded_invoice</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Cancel Upgraded Invoice</field>
+        <field name="txt">Your customer %user.login% "%user.name_f% %user.name_l%" &lt;%user.email%&gt;
+recently changed his subscription to new payment plan. Unfortunately,
+the payment system does not allow to cancel previous subscription automatically.
+Please cancel previous user recurring subscription manually:
+   Payment System:         %invoice.paysys_id%
+   aMember Invoice Id:     %invoice.public_id%
+   Subscription Reference: %subscr_id%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">admin_refund_upgraded_invoice</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Refund Upgraded Invoice</field>
+        <field name="txt">Your customer %user.login% "%user.name_f% %user.name_l%" &lt;%user.email%&gt;
+recently changed his subscription to new payment plan. aMember has done
+calculations and it is necessary to refund amount of money to the customer.
+
+Unfortunaetly, the payment system does not allow to process refunds
+automatically.
+Please process refund manually via payment system control panel:
+
+   Payment System:         %invoice.paysys_id%
+   Last Payment Reference: %subscr_id%
+   Amount to refund:       %refund_amount% %invoice.currency%
+   aMember Invoice Id:     %invoice.public_id%
+        </field>
+    </row>
+    
+   <row type="email_template">
+        <field name="name">cc.admin_rebill_stats</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: %plugin% Rebill Statistics (%short_stats%)</field>
+        <field name="txt">Outlined below are the results of latest rebilling attempt on  %site_title%
+
+Here you can find statistics about SUCCESS rebills
+===
+%rebills_success%
+
+
+Here you can find statistics about FAILED rebills
+===
+%rebills_failed%
+        </field>
+    </row>
+
+   <row type="email_template">
+        <field name="name">cc.rebill_failed</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Subscription Renewal Failed</field>
+        <field name="txt">Your subscription was not renewed automatically by membership system
+due to payment failure: %error%
+
+%prorate%
+
+You may update your credit card info here:.
+%root_url%/member
+
+Thank you for attention!
+        </field>
+    </row>
+
+    <row type="email_template">
+        <field name="name">cc.rebill_success</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Subscription Renewed</field>
+        <field name="txt">Your subscription has been renewed automatically by our membership system.
+Your credit card was charged %amount%
+
+Next renewal date: %rebill_date%
+
+You may login to membership info page at :
+%root_url%/member
+        </field>
+    </row>
+
+    <row type="email_template">
+        <field name="name">cc.card_expire</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Credit Card Expiration</field>
+        <field name="txt">Your credit card that we have on file for recurring billing will expire
+on %expires%. Next recurring billing for invoice %invoice.public_id%
+is scheduled for %invoice.rebill_date|date%.
+
+To avoid any interruption of your subscription, please visit page
+%root_url%/member
+and update your credit card information.
+        </field>
+    </row>
+    
+    <row type="email_template">
+        <field name="name">delete_personal_data_notification</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: New Delete Personal Data Request</field>
+        <field name="txt">
+User %user.login%, &quot;%user.name_f% %user.name_l%&quot; &lt;%user.email%&gt; has requested to delete his Personal Data from site. 
+%errorsText%
+Please login and process this request:  %root_surl%/admin-delete-personal-data
+        </field>
+    </row>
+    
+</table_data>

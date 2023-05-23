@@ -1,0 +1,29 @@
+<div class="am-block">
+    <div>
+        <form action="<?php echo $this->url('helpdesk/faq/search') ?>" method="get" id="helpdesk-search">
+            <input class="am-helpdesk-faq-q el-wide" id="am-helpdesk-faq-q" type="text" name="q" value="" placeholder="<?php __e('Type a keyword to search in FAQ') ?>" />
+        </form>
+    </div>
+    <div id="am-helpdesk-faq-q-result" class="am-helpdesk-faq-q-result">
+    </div>
+</div>
+<script type="text/javascript">
+jQuery(document).on('keyup','#am-helpdesk-faq-q', function(){
+   if (jQuery(this).val().length <= 3) {
+       jQuery("#am-helpdesk-faq-q-result").empty();
+       return;
+   }
+   jQuery.get(jQuery(this).closest('form').attr('action'), {q:jQuery(this).val()}, function(html){
+       jQuery("#am-helpdesk-faq-q-result").empty().append(html);
+   })
+   return false;
+})
+
+jQuery('#helpdesk-search').bind("keyup keypress", function(e) {
+  var code = e.keyCode || e.which; 
+  if (code  == 13) {               
+    e.preventDefault();
+    return false;
+  }
+});
+</script>

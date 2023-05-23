@@ -1,0 +1,171 @@
+<?php
+$title = ___('Customize Dashboard');
+$this->setLayout('admin/layout.phtml');
+?>
+<div class="dashboard-customize-link-wrapper">
+<a href="<?php echo $this->url($controllerPath); ?>" class="link dashboard-customize-link"><?php __e('Back to Dashboard') ?></a>
+</div>
+<div class="am-switch am-switch_on-state1" style="float:right">
+    <div class="am-switch_on"></div>
+    <div class="am-switch_state1"><?php __e('Preview') ?></div>
+    <div class="am-switch_state2"><?php __e('Compact') ?></div>
+</div>
+<select name="widget">
+    <option value=""><?php __e('-- Add Widget --') ?></option>
+<?php foreach ($this->widgets as $widget): ?>
+    <option value="<?php p($widget->getId()) ?>"><?php p($widget->getTitle()) ?></option>
+<?php endforeach; ?>
+</select>
+<br />
+<br />
+<div class="dashboard dashboard-customize">
+    <div class="top">
+        <div id="widget-area-top" class="connectedSortable">
+        </div>
+    </div>
+    <div class="aside">
+        <div id="widget-area-aside" class="connectedSortable">
+        </div>
+    </div>
+    <div class="main">
+        <div id="widget-area-main" class="connectedSortable">
+        </div>
+    </div>
+    <div class="bottom">
+        <div id="widget-area-bottom" class="connectedSortable">
+        </div>
+    </div>
+</div>
+<div id="widgets-available" style="display:none">
+<?php foreach ($this->widgets as $widget): ?>
+        <div id="widget-<?php p($widget->getId()) ?>" class="widget-ui" data-targets='<?php echo json_encode($widget->getTargets()) ?>'>
+            <div class="widget-ui-manage">
+                <?php p($widget->getTitle()) ?>
+                <a href="javascript:;" class="widget-remove widget-link" data-widget-id="<?php p($widget->getId()) ?>"><?php echo $this->icon('delete', ___('Remove From Dashboard')) ?></a>
+                <?php if ($widget->hasConfigForm()) : ?>
+                <a href="javascript:;" class="widget-configure widget-link" data-widget-id="<?php p($widget->getId()) ?>" data-widget-title="<?php p($widget->getTitle()) ?>"><?php echo $this->icon('configuration', ___('Configuration')) ?></a>
+                <?php endif; ?>
+            </div>
+            <div class="widget-ui-conteiner">
+                <div class="widget-ui-content">
+                    <div><?php 
+                        $widgetConfig = isset($config[$widget->getId()]) ? $config[$widget->getId()] : null;
+                        echo ($widget->renderFromCache($this, $widgetConfig) ?: $widget->render($this, $widgetConfig));
+                        ?></div>
+                </div>
+            </div>
+        </div>
+<?php endforeach; ?>
+</div>
+<script type="text/javascript">
+jQuery(function(){
+    var controllerPath = '/'+<?php echo json_encode($controllerPath); ?>;
+    function saveState() {
+        var pref = {};
+        jQuery('.connectedSortable').each(function(){
+            var id = jQuery(this).attr('id').replace('widget-area-', '');
+            pref[id] = jQuery.map(jQuery(this).sortable('toArray'), function (el){ return el.replace('widget-', ''); });
+        });
+        var url = amUrl(controllerPath + '/save-dashboard', 1);
+        jQuery.post(url[0], jQuery.param(url[1])+'&'+ jQuery.param({pref:pref}));
+    }
+
+    jQuery('select[name=widget]').change(function(){
+        if (jQuery(this).val()) {
+            var $widget = jQuery('div#widget-' + jQuery(this).val());
+            var $target = jQuery('#widget-area-' + $widget.data('targets').slice(0,1).shift());
+            $widget.prependTo($target).fadeTo('slow', 0.1).fadeTo('slow', 1.0);
+            jQuery('.connectedSortable').sortable('refresh');
+            saveState();
+            jQuery('select[name=widget] option[value=' + jQuery(this).val() + ']').prop('disabled', 'disabled');
+            jQuery(this).val('');
+        }
+    });
+
+    jQuery('.widget-remove').click(function(){
+        jQuery(this).closest('div.widget-ui').appendTo('#widgets-available');
+        jQuery('.connectedSortable').sortable('refresh');
+        saveState();
+        jQuery('select[name=widget] option[value=' + jQuery(this).data('widget-id') + ']').prop('disabled', '');
+    });
+
+    jQuery('.widget-configure').click(function(){
+        var id = jQuery(this).data('widget-id');
+        var $widget = jQuery(this);
+        var $div = jQuery('<div><div>');
+        jQuery('body').append($div);
+        var url = amUrl(controllerPath + '/get-widget-config-form', 1);
+        jQuery.post(url[0], jQuery.merge(url[1], [{name:'id',value:id}]), function(html){
+            $div.append(html);
+            $div.dialog({
+                autoOpen: true,
+                modal : true,
+                title : $widget.data('widget-title'),
+                width : 600,
+                position : {my: "center", at: "center", of: window},
+                buttons: {
+                    "Ok" : function() {
+                        var $this = jQuery(this);
+                        var url = amUrl(controllerPath + '/save-dashboard-config', 1);
+                        var params = jQuery(this).find('form').serializeArray();
+                        jQuery.post(url[0], jQuery.merge(params, url[1]),
+                            function(res){
+                                switch (res.status) {
+                                    case 'OK' :
+                                        jQuery('#widget-' + res.id + ' .widget-ui-content > div').empty().append(res.html);
+                                        $this.dialog("close");
+                                        break;
+                                    case 'ERROR' :
+                                        jQuery('#widget-form-' + res.id).empty().append(res.html)
+                                        break;
+                                }
+                            })
+                    },
+                    "Cancel" : function() {
+                        jQuery(this).dialog("close");
+                    }
+                },
+                close : function() {
+                    $div.remove();
+                }
+            });
+        });
+    });
+
+    jQuery('#widget-area-aside, #widget-area-main, #widget-area-top, #widget-area-bottom').sortable({
+        connectWith: '.connectedSortable',
+        tolerance: 'pointer',
+        receive: function(event, ui) {
+            var id = jQuery(event.target).attr('id').replace('widget-area-', '');
+            if (jQuery.inArray(id, ui.item.data('targets')) === -1) {
+                jQuery(ui.sender).sortable('cancel');
+            }
+        },
+        stop: function(event, ui) {
+            saveState();
+            jQuery(window).resize();
+        }
+    }).disableSelection();
+
+    function selectWidget(id, target) {
+        var $widget = jQuery('div#widget-' + id);
+        var $target = jQuery('#widget-area-' + target);
+        $widget.appendTo($target);
+        jQuery('.connectedSortable').sortable('refresh');
+        jQuery('select[name=widget] option[value=' + id + ']').prop('disabled', 'disabled');
+        jQuery('select[name=widget]').val('');
+    }
+
+    <?php foreach ((array)@$pref as $target => $plugins) : ?>
+    <?php foreach ((array)@$plugins as $id) : ?>
+    selectWidget('<?php j($id) ?>', '<?php j($target) ?>');
+    <?php endforeach; ?>
+    <?php endforeach; ?>
+
+    jQuery('.am-switch').click(function(){
+        jQuery(this).toggleClass('am-switch_on-state1');
+        jQuery(this).toggleClass('am-switch_on-state2');
+        jQuery('.dashboard-customize').toggleClass('dashboard-customize-compact');
+    });
+});
+</script>

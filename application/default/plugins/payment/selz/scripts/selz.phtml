@@ -1,0 +1,42 @@
+<?php
+$title = ___("Selz payout");
+$this->setLayout('layout.phtml');
+?>
+
+<?php if($this->way == 'button'): ?>
+    <script data-selz-t="_selz-btn-default" data-selz-a="modal" data-selz-b="<?php echo $this->link; ?>">
+        if (typeof _$elz === "undefined") { var _$elz = {}; }
+        if (typeof _$elz.b === "undefined") {
+            _$elz.b = { e: document.createElement("script") };
+            _$elz.b.e.src = "https://selz.com/embed/button";
+            document.body.appendChild(_$elz.b.e);
+        }
+    </script>
+<?php else: ?>
+    <div style="max-width:50px;">
+        <script data-selz-a="modal" data-selz-w="<?php echo $this->link; ?>">
+            if (typeof _$elz === "undefined") { var _$elz = {}; }
+            if (typeof _$elz.w === "undefined") {
+                _$elz.w = { e: document.createElement("script") };
+                _$elz.w.e.src = "https://selz.com/embed/widget";
+                document.body.appendChild(_$elz.w.e);
+            }
+        </script>
+        <a href="<?php echo $this->link; ?>" target="_blank" class="_selz_nojs_link">Buy this on Selz</a>
+    </div>
+<?php endif; ?>
+
+<script>
+!function(e){"use strict";function n(){e(document.body).on("click","a[href^='"+s.shortDomain+"/']",i),e(window).on("message",c).on("unload",function(){e.isFunction(s.onClose)&&"checkoutData"in s&&s.onClose(u.checkoutData)})}function t(e){return"undefined"==typeof e||null===e||""===e}function o(n,t){"undefined"!=typeof u.items[n.attr("href")]?a(n,u.items[n.attr("href")],t,!1):e.getJSON(s.domain+"/embed/itemdata/?itemurl="+n.attr("href")+"&callback=?",function(e){n.data("modal-url",e.Url),u.items[n.attr("href")]=e,a(n,e,t,!0)}).fail(function(){"console"in window&&console.error("Woops. It looks like your link is to a product that can't be found!")})}function a(n,t,o,a){e.isFunction(o)&&o(t),e.isFunction(s.onDataReady)&&a&&s.onDataReady(n,t)}function i(n){var t=e(n.target),a=t.data("modal-url");"string"==typeof a&&a.length>0?window._$elz.m.open(a,null):o(t,function(e){window._$elz.m.open(e.Url,null)}),e.isFunction(s.onModalOpen)&&s.onModalOpen(t),u.currentTrigger=t,n.preventDefault()}function c(n){n=n.originalEvent;var o=n.data;if(n.origin===s.domain&&"string"==typeof o)try{var a=JSON.parse(o);switch(a.key){case"modal-theme":var i={};if(e.each(s.theme,function(n,t){switch(n){case"button":e.each(t,function(e,n){switch(e){case"bg":i.cb=n;break;case"text":i.ct=n}});break;case"checkout":e.each(t,function(e,n){switch(e){case"headerBg":i.chbg=n;break;case"headerText":i.chtx=n}})}}),n.source.postMessage(JSON.stringify({key:"modal-theme",data:Object.size(i)?i:null}),s.domain),e.isFunction(s.getTracking)){var c=s.getTracking(u.currentTrigger);t(c)||n.source.postMessage(JSON.stringify({key:"set-tracking",data:c}),s.domain)}break;case"purchase":e.isFunction(s.onPurchase)&&s.onPurchase(a.data);break;case"processing":e.isFunction(s.onProcessing)&&s.onProcessing(a.data);break;case"modal-close":e.isFunction(s.onClose)&&s.onClose(u.currentTrigger,a.data);break;case"beforeunload":u.checkoutData=a.data}}catch(r){}}function r(){e("a[href^='"+s.shortDomain+"/']").each(function(n,t){o(e(t),null)})}window._$elz=window._$elz||{};var s={domain:"https://selz.com",shortDomain:"http://selz.co",prefetch:!1,items:{},theme:{}},u={items:{}};Object.size=function(e){var n,t=0;for(n in e)e.hasOwnProperty(n)&&t++;return t},window._$elz.m=window._$elz.m||{s:{src:s.domain+"/assets/js/embed/modal.js"}},"undefined"==typeof window._$elz.m.open?e.getScript(window._$elz.m.s.src,function(){n()}):n(),e.selz=function(n){e.extend(!0,s,n),s.prefetch&&r()}}(window.jQuery);
+jQuery(function() {
+    jQuery.selz({
+        buttonBg: "#60aae0",
+        buttonText: "#fff",
+        prefetch: true,
+        onPurchase: function (data) {
+            setTimeout("window.location = '<?php echo $this->thanks; ?>'", 5000);
+        },
+    });
+});
+</script>
+

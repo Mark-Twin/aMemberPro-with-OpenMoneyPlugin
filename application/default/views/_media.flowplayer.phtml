@@ -1,0 +1,104 @@
+<?php
+    $scriptId = "am-$type-" . filterId($this->id);
+    $mediaId = filterId($this->id);
+    $divId = "div-".$scriptId;
+    $rootUrl = $isSecure ? ROOT_SURL : ROOT_URL;
+    $flowPlayerJs = $rootUrl . "/application/default/views/public/js/flowplayer/flowplayer.js";
+    $flowPlayerIpadJs = $rootUrl . "/application/default/views/public/js/flowplayer/flowplayer.ipad.js";
+    $flowPlayerSwf = $rootUrl . "/application/default/views/public/js/flowplayer/flowplayer.swf";
+    if(empty($playerParams)) {
+        $playerParams = array('clip' => array());
+    }
+    
+?>
+<?php 
+if (!empty($media)) : // user has access to media 
+    $playerParams['clip'] += array('url'=> $media, 'ipadUrl' => $media);
+?>
+
+jQuery(document).ready(function($) {
+    if (!window.hasOwnProperty('amMediaLoader')) {
+        window.amMediaLoader = true;
+        window.amMediaLoaderLoaded = false;
+        var runAllMedia = function()
+        {
+            window.amMediaLoaderLoaded = true;
+            for (var r in window.amMediaQueue) {
+                if (window.amMediaQueue.hasOwnProperty(r)) {
+                    window.amMediaQueue[r]();
+                }
+            }
+        }
+
+        // if !flowplayer loaded, load it in async mode
+        if (typeof flowplayer == 'function')
+        {
+            runAllMedia();
+        } else {
+            jQuery.getScript('<?php p($flowPlayerJs)?>', function(){
+                jQuery.getScript('<?php p($flowPlayerIpadJs)?>', runAllMedia)
+            });
+        }
+    }
+    <?php if(isset($playerParams['plugins']['audio'])) : ?>
+        jQuery("<style type='text/css'>.am-video-wrapper > div > div {background: none !important;}</style>").appendTo('head');  
+    <?php endif; ?>
+    
+    var runMedia<?php echo $mediaId; ?> = function()
+    {
+<?php
+/**
+ * Flowplayer (flash): flv (video/x-flv), mp4 (video/mp4), f4v (video/x-f4v)
+ * Safari: H.264 (video/mp4)
+ * Chrome: Theora (video/ogg), H.264 (video/mp4), VP8 (video/webm)
+ * IE: H.264 (video/mp4)
+ * Firefox: Theora (video/ogg), H.264 (video/mp4), VP8 (video/webm)
+ * Opera: Theora (video/ogg), VP8 (video/webm)
+ */
+?>
+        var video_support = !!(document.createElement('video').canPlayType);
+        var video = document.createElement('video');
+        var idevice = /ip(hone|ad|od)/i.test(navigator.userAgent);
+        var noflash = flashembed.getVersion()[0] === 0;
+        var simulate = !idevice && noflash && video_support && !!(video.canPlayType('<?php echo $mime ?>').replace(/no/, ''));
+        var $a = jQuery('<div id="<?php p($divId) ?>" class="am-video"><?php if ($this->poster) { echo '<div class="am-video-poster-icon"></div><div class="am-video-poster"><img src="' . $this->escape($this->poster) . '" alt="" /></div>'; } ?></div>');
+        $a.css({
+            width : '100%',
+            'max-width' : '<?php p($width)?>px',
+            'height' : '<?php p($height)?>px',
+             display: 'inline-block',
+             
+        });
+        jQuery("script#<?php echo $scriptId ?>").after($a);
+        jQuery(window).resize(function(){
+            $a.css({
+                height: Math.max(56, parseInt($a.innerWidth()*<?php p($height)?>/<?php p($width)?>)) + 'px'
+            });
+        });
+        $a.wrap('<div class="am-video-wrapper"></div>');
+        jQuery(window).resize();
+        var f = flowplayer('<?php p($divId) ?>', {src: '<?php p($flowPlayerSwf) ?>', wmode: 'opaque'}, <?php echo json_encode($playerParams) ?>);
+        f.onLoad(function(){
+            jQuery('#' + this.id() + '_api').prop('controlsList', 'nodownload');
+        });
+        f.ipad({controls: true, validExtensions : null, simulateiDevice : simulate});
+    }
+    if (window.amMediaLoaderLoaded) {
+        setTimeout(function(){
+            runMedia<?php echo $mediaId; ?>();
+        }, 0);
+    } else {
+        if (!window.hasOwnProperty('amMediaQueue')) {
+            window.amMediaQueue = {};
+        }
+        window.amMediaQueue.runMedia<?php echo $mediaId; ?> = runMedia<?php echo $mediaId; ?>;
+    }
+});
+<?php else: // no media ?>
+jQuery(document).ready(function($) {
+    var $a = jQuery('<a id="<?php p($divId)?>" class="am-video-no-access"></a>');
+    $a.attr("href",'<?php echo $link;?>' + '?_amember_redirect_url=' + btoa(window.location.href));
+    $a.text('<?php j($error) ?>');
+    jQuery("script#<?php echo $scriptId ?>").after($a);
+});
+<?php endif; ?>

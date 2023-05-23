@@ -1,0 +1,325 @@
+<?php
+$title = ___('User Menu');
+$this->setLayout('admin/layout.phtml');
+?>
+<style type="text/css">
+<!--
+.menu-item-header {
+    color: #244357;
+    padding: .5em;
+    padding-left: 2em;
+    cursor: move;
+    background: #d3dce3 url('<?php echo $this->_scriptImg('admin/grid-move.png') ?>') no-repeat left center;
+    margin-bottom: 1em;
+}
+
+.menu-item > .menu-item-header {
+    margin-left: -2em;
+}
+
+.menu-item {
+    padding-left:2em;
+}
+
+.menu-item-type {
+    color: #6b869a;
+    padding-left: 1em;
+}
+.menu-item-placeholder {
+    border: 1px dashed #d3dce3;
+    margin-bottom: 1em;
+    height: 20px;
+}
+#app {
+    margin-left:420px;
+    min-height: 200px;
+    border:2px dashed #ddd;
+    padding:.2em;
+    padding-bottom: 5em;
+}
+#menu-preview {
+    opacity: .6;
+}
+.menu-item-description {
+    font-size: .8rem;
+    opacity:.8;
+}
+.menu-options {
+    max-height: 250px;
+    overflow: auto;
+}
+#main-wrapper {
+    max-width: 1000px;
+}
+-->
+</style>
+<div id="main-wrapper">
+<div class="info"><?php __e("You can add new menu items to your menu and then Drag & Drop it to arrange items according your desire. Please take into account some items is vertual (represent more than single menu item eg.: Resource Categories Menu — add to menu all Resource Categories available to user according his current active subscriptions). Only two level menu is allowed.") ?></div>
+<div style="text-align:right">
+<a href="<?php echo $this->url('admin-menu/reset') ?>" onclick="return confirm('Are you really want to reset menu?')" class="link am-link-del"><?php __e("Reset Menu to Default State") ?></a>
+</div>
+<hr />
+<div style="overflow:hidden">
+<div style="width:400px; float:left">
+    <div id="accordion">
+    <h3><?php __e('Special Items') ?></h3>
+    <div>
+        <?php foreach ($special_items  as $id => $sitem) : ?>
+        <label><input type="checkbox" name="item_id" value="1" data-title="<?php p($sitem['title']) ?>" data-id="<?php p($id) ?>" /> <?php p($sitem['title']) ?></label><br />
+        <?php if ($sitem['desc']) : ?>
+            <p class="menu-item-description"><?php p($sitem['desc']) ?></p>
+        <?php endif; ?>
+        <?php endforeach; ?>
+        <br />
+        <a class="local" href="javascript:;" onclick="jQuery('[name=item_id]:checked').each(function(){
+           addMenu(jQuery(this).data('title'), jQuery(this).data('id'), {});
+           jQuery(this).prop('checked', false);
+        });"><?php __e('Add Item to Menu') ?></a>
+    </div>
+    <?php if ($folders = $di->folderTable->findBy()) : ?>
+    <h3><?php __e('Folders') ?></h3>
+    <div>
+        <a href="<?php echo $this->url('default/admin-content/p/folders') ?>" style="float:right; margin-left:1em"><?php __e('manage') ?></a>
+        <div class="menu-options">
+        <?php foreach ($folders as $folder) : ?>
+        <label><input type="checkbox" name="folder_id" value="<?php p($folder->pk()) ?>" data-title="<?php p($folder->title) ?>" /> <?php p($folder->title) ?></label><br />
+        <?php endforeach ?>
+        </div>
+        <br />
+        <a class="local" href="javascript:;" onclick="jQuery('[name=folder_id]:checked').each(function(){
+           addMenu(jQuery(this).data('title'), 'folder', {id:jQuery(this).val()});
+           jQuery(this).prop('checked', false);
+        });"><?php __e('Add Item to Menu') ?></a>
+        <br/><br />
+        <p class="menu-item-description"><?php __e('User will see this item in menu only if has access to this folder') ?></p>
+    </div>
+    <?php endif; ?>
+    <h3><?php __e('Pages') ?></h3>
+    <div>
+        <a href="<?php echo $this->url('default/admin-content/p/pages') ?>" style="float:right; margin-left:1em"><?php __e('manage') ?></a>
+        <div class="menu-options">
+        <?php foreach ($di->pageTable->findBy() as $page) : ?>
+        <label><input type="checkbox" name="page_id" value="<?php p($page->pk()) ?>" data-id="page" data-config='{"id":<?php p($page->pk()) ?>}' data-title="<?php p($page->title) ?>" /> <?php p($page->title) ?></label><br />
+        <?php endforeach ?>
+        </div>
+        <br />
+        <a class="local" href="javascript:;" onclick="jQuery('[name=page_id]:checked').each(function(){
+          addMenu(jQuery(this).data('title'), jQuery(this).data('id'), jQuery(this).data('config'));
+           jQuery(this).prop('checked', false);
+        });"><?php __e('Add Item to Menu') ?></a>
+        <br/><br/>
+        <p class="menu-item-description"><?php __e('User will see this item in menu only if has access to this page') ?></p>
+    </div>
+    <h3><?php __e('Links') ?></h3>
+    <div>
+        <a href="<?php echo $this->url('default/admin-content/p/links') ?>" style="float:right; margin-left:1em"><?php __e('manage') ?></a>
+        <div class="menu-options">
+        <?php foreach ($di->linkTable->findBy() as $link) : ?>
+        <label><input type="checkbox" name="link_id" value="<?php p($link->pk()) ?>" data-id="link" data-config='{"id":<?php p($link->pk()) ?>}' data-title="<?php p($link->title) ?>" /> <?php p($link->title) ?></label><br />
+        <?php endforeach ?>
+        </div>
+        <br />
+        <a class="local" href="javascript:;" onclick="jQuery('[name=link_id]:checked').each(function(){
+           addMenu(jQuery(this).data('title'), jQuery(this).data('id'), jQuery(this).data('config'));
+           jQuery(this).prop('checked', false);
+        });"><?php __e('Add Item to Menu') ?></a>
+        <br/><br/>
+        <p class="menu-item-description"><?php __e('User wil see this item in menu only if has access to this link') ?></p>
+    </div>
+    <h3><?php __e('Forms') ?></h3>
+    <div>
+        <a href="<?php echo $this->url('admin-saved-form') ?>" style="float:right; margin-left:1em"><?php __e('manage') ?></a>
+        <div class="menu-options">
+        <strong><?php __e('Signup Forms') ?></strong><br />
+        <?php foreach ($di->savedFormTable->findByType(SavedForm::T_SIGNUP) as $form) : ?>
+        <label><input type="checkbox" name="form_id" data-id="signup-form" data-config='{"id":<?php p($form->pk()) ?>}' data-title="<?php p($form->title) ?>" /> <?php p($form->title) ?></label><br />
+        <?php endforeach ?>
+        <br />
+        <strong><?php __e('Profile Forms') ?></strong><br />
+        <?php foreach ($di->savedFormTable->findByType(SavedForm::T_PROFILE) as $form) : ?>
+        <label><input type="checkbox" name="form_id" data-id="profile-form" data-config='{"id":<?php p($form->pk()) ?>}' data-title="<?php p($form->title) ?>" /> <?php p($form->title) ?></label><br />
+        <?php endforeach ?>
+        </div>
+        <br />
+        <a class="local" href="javascript:;" onclick="jQuery('[name=form_id]:checked').each(function(){
+           addMenu(jQuery(this).data('title'), jQuery(this).data('id'), jQuery(this).data('config'));
+           jQuery(this).prop('checked', false);
+        });"><?php __e('Add Item to Menu') ?></a>
+    </div>
+    <?php if ($di->modules->isEnabled('directory')) : ?>
+    <h3><?php __e('Directories') ?></h3>
+    <div>
+        <a href="<?php echo $this->url('default/admin-content/p/directory') ?>" style="float:right; margin-left:1em"><?php __e('manage') ?></a>
+        <div class="menu-options">
+        <?php foreach ($di->directoryTable->findBy() as $item) : ?>
+        <label><input type="checkbox" name="directory_id" value="<?php p($item->pk()) ?>" data-id="directory" data-config='{"id":<?php p($item->pk()) ?>}' data-title="<?php p($item->title) ?>" /> <?php p($item->title) ?></label><br />
+        <?php endforeach ?>
+        </div>
+        <br />
+        <a class="local" href="javascript:;" onclick="jQuery('[name=directory_id]:checked').each(function(){
+          addMenu(jQuery(this).data('title'), jQuery(this).data('id'), jQuery(this).data('config'));
+           jQuery(this).prop('checked', false);
+        });"><?php __e('Add Item to Menu') ?></a>
+        <br/><br/>
+        <p class="menu-item-description"><?php __e('User will see this item in menu only if has access to this page') ?></p>
+    </div>
+    <?php endif; ?>
+    <h3><?php __e('Custom Links') ?></h3>
+    <div>
+        <?php __e('Link URL') ?><br/>
+        <input type="text" name="uri" id="link-uri"  class="el-wide"/><br />
+        <?php __e('Link Label') ?><br />
+        <input type="text" name="label" id="link-label" class="el-wide" /><br /><br />
+        <a class="local" href="javascript:;" onclick="if (!jQuery('#link-uri').val() || !jQuery('#link-label').val()) {alert('Please enter Link URL and Label'); return;} addMenu(jQuery('#link-label').val(), 'custom-link', {'uri' : jQuery('#link-uri').val(), 'label' : jQuery('#link-label').val()}); jQuery('#link-uri').val(''); jQuery('#link-label').val('')"><?php __e('Add Item to Menu') ?></a>
+    </div>
+    <h3><?php __e('Container (Fold)') ?></h3>
+    <div>
+        <?php __e('Container Label') ?><br />
+        <input type="text" name="label" id="container-label" class="el-wide" /><br /><br />
+        <a class="local" href="javascript:;" onclick="if (!jQuery('#container-label').val()) {alert('Please enter Container Label'); return;} addMenu(jQuery('#container-label').val(), 'container', {'label' : jQuery('#container-label').val()}); jQuery('#container-label').val('')"><?php __e('Add Item to Menu') ?></a>
+        <br/>
+        <br/>
+        <p class="menu-item-description"><?php __e('You can use Container to create dropdown menu items') ?></p>
+    </div>
+    </div>
+</div>
+<div id="app"></div>
+</div>
+<br />
+<form method="post">
+    <input type="hidden" name="user_menu" value="" id="user_menu"/>
+    <input type="submit" value="<?php __e('Save Menu') ?>"/>
+</form>
+<?php if ($user) : ?>
+<br /><hr /><br />
+<h1><?php __e('Live Preview') ?></h1>
+<p><?php __e('Exact menu depends on logged in user. Some items can be hidden/visible based on user (has some particular product or user is affiliate or not). Here you can see menu preview for user below. You can switch user to see preview for another one.') ?></p>
+<p><?php __e('User') ?>: <span id="preview-user" data-user_id='<?php p($user->pk()) ?>'>
+        <a class="local" id="preview-user-text" href="javascript:;"><?php p($user->login) ?></a>
+        <input type="text" id="preview-user-lookup" placeholder="<?php __e('Type Username or Email') ?>" style="display:none" />
+    </span></p>
+<div id="menu-preview"></div>
+<?php endif; ?>
+</div>
+<script type="text/javascript">
+function initSortable() {
+    jQuery('#app, #app > .menu-item').sortable({
+        items: "> .menu-item",
+        handle: "> .menu-item-header",
+        helper: "clone",
+        connectWith: '#app, #app > .menu-item',
+        placeholder: "menu-item-placeholder",
+        tolerance: "pointer",
+        axis: "y",
+        update: function(event, ui)
+        {
+           syncState();
+        },
+        receive: function(event, ui) {
+            //we have only two level menu
+            //so collapse nested items
+            jQuery(this).append(jQuery(ui.item).find('.menu-item'));
+        },
+        stop: function (event, ui) {
+           destroySortable();
+           initSortable();
+        },
+    }).disableSelection();
+}
+function destroySortable()
+{
+    jQuery('.ui-sortable').sortable('destroy');
+}
+function addMenu(name, id, config, node)
+{
+    node = node || "#app";
+    destroySortable();
+    var a = jQuery('<a href="javascript:;" class="am-link-del" style="float:right">&#10005;</a>').click(function(){
+       jQuery(this).closest('.menu-item').remove();
+       syncState();
+    });
+    var type = jQuery('<span class="menu-item-type" />').text(id.replace('-', ' '));
+    var header = jQuery('<div class="menu-item-header" />').
+        text(name).
+        append(type).
+        append(a);
+    var el = jQuery('<div class="menu-item" />').
+        data('name', name).
+        data('id', id).
+        data('config', config).
+        append(header);
+    jQuery(node).append(el);
+    syncState();
+    initSortable();
+    return el;
+}
+
+function getData(node)
+{
+    var items = [];
+    jQuery('> .menu-item', node).each(function(){
+        items.push({
+            'name' : jQuery(this).data('name'),
+            'id' : jQuery(this).data('id'),
+            'config' : jQuery(this).data('config'),
+            'items' : getData(jQuery(this))
+        });
+    });
+    return items;
+}
+
+function syncState()
+{
+    items = getData(jQuery("#app"));
+    jQuery("#user_menu").val(JSON.stringify(items));
+    doPreview();
+}
+
+function doPreview()
+{
+    <?php if (!$user) : ?>
+    return;
+    <?php endif; ?>
+    jQuery("#menu-preview").load(<?php echo json_encode($this->url("admin-menu/preview", false)) ?>, {
+        user_menu: jQuery("#user_menu").val(),
+        user_id: jQuery("#preview-user").data('user_id')
+    });
+}
+jQuery(function() {
+<?php foreach($items as $item) : ?>
+node = addMenu('<?php p(isset($item['name']) ? $item['name'] : $item['id']) ?>',
+    '<?php p($item['id']) ?>',
+    <?php echo json_encode(isset($item['config']) ? $item['config'] : array()) ?>);
+<?php if (isset($item['items']) && $item['items']) : ?>
+<?php foreach ($item['items'] as $i): ?>
+    addMenu('<?php p(isset($i['name']) ? $i['name'] : $i['id']) ?>',
+    '<?php p($i['id']) ?>',
+    <?php echo json_encode(isset($i['config']) ? $i['config'] : array()) ?>, node);
+<?php endforeach; ?>
+<?php endif; ?>
+<?php endforeach; ?>
+});
+</script>
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery("#accordion").accordion();
+    jQuery("#preview-user").on('click', '#preview-user-text', function(){
+       jQuery(this).hide();
+       jQuery('#preview-user-lookup').show().focus();
+    });
+    jQuery("#preview-user-lookup").autocomplete({
+        minLength: 2,
+        source: amUrl("/admin-users/autocomplete"),
+        select: function( event, ui ) {
+            console.log(ui.item.user_id);
+            jQuery("#preview-user").data('user_id', ui.item.user_id);
+            jQuery("#preview-user-lookup").val('').hide();
+            jQuery("#preview-user-text").text(ui.item.value);
+            jQuery('#preview-user-text').show();
+            doPreview();
+            return false;
+        }
+    });
+});
+</script>

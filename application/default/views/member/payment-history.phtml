@@ -1,0 +1,8 @@
+<?php
+$meta_title = ___('Payments History');
+$this->layoutNoTitle = true;
+$this->setLayout('member/layout.phtml'); ?>
+<?php $this->blocks()->requireJs('user.js'); ?>
+<?php echo $this->blocks('member/payment-history/top') ?>
+<?php echo $this->blocks('payment-history/center'); ?>
+<?php echo $this->blocks('member/payment-history/bottom') ?>

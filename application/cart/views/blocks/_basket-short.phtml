@@ -1,0 +1,14 @@
+<?php /* Shopping cart contents */ ?>
+<div class="am-basket-preview">
+<?php
+$count = 0;
+foreach ($cart->getItems() as $item) {
+    $count += $item->qty;
+}
+?>
+<?php if ($count > 0) : ?>
+<a href="<?php echo $di->surl('cart/view-basket') ?>"><?php __e('%d item(s) - %s', $count, $cart->getCurrency($cart->getInvoice()->first_total)) ?></a>
+<?php else: ?>
+<?php __e('%d item(s) - %s', $count, $cart->getCurrency($cart->getInvoice()->first_total)) ?>
+<?php endif; ?>
+</div>

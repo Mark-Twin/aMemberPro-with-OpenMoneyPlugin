@@ -1,0 +1,52 @@
+<?php $lastClicks = $di->affClickTable->selectLast($num); ?>
+<?php if ($lastClicks) : ?>
+<div class="admin-last admin-aff-lastclicks">
+    <h2><?php __e('Last %s Affiliate Clicks', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <tr>
+                <th class="helper-corner-left"><?php __e('Affiliate') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Time') ?></th>
+                <th><?php __e('Banner') ?></th>
+            </tr>
+            <?php foreach ($lastClicks as $c): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td><?php $c->name = $c->name_f . ' ' . $c->name_l;
+                        if (trim($c->name)): ?>
+                        <strong><?php p($c->name) ?></strong>
+                        (<a class="link" href="<?php echo $this->userUrl($c->aff_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$c->aff_id}") ?>"><?php p($c->login) ?></a>)
+                    <?php else: ?>
+                        <a class="link" href="<?php echo $this->userUrl($c->aff_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$c->aff_id}") ?>"><?php p($c->login) ?></a>
+                    <?php endif; ?>
+                    <br />
+                    <?php p($c->email); ?>
+                </td>
+                <td class="container-width-narrow-hide"><time datetime="<?php p(date('c', amstrtotime($c->time))) ?>" title="<?php p($this->getElapsedTime($c->time)) ?>">
+                    <?php if (sqlDate($c->time) == sqlDate('today')) : ?>
+                        <?php p(amTime($c->time)) ?>
+                    <?php else: ?>
+                        <?php p(amDate($c->time)) ?><br /><small style="color:#aaa"><?php p(amTime($c->time)) ?></small>
+                    <?php endif; ?>
+                    </time>
+                </td>
+                <td>
+                    <?php p($c->banner_title) ?>
+                </td>
+            </tr>
+            <tr class="grid-row <?php echo (@$arownum++%2) ? 'odd' : 'even' ?>">
+                <td colspan="3" class="container-width-narrow-show">
+                    <div class="admin-last_time">
+                        &#x1f550; <time datetime="<?php p(date('c', amstrtotime($c->time))) ?>" title="<?php p($this->getElapsedTime($c->time)) ?>"><?php p(amDatetime($c->time)) ?></time>
+                    </div>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s Affiliate Clicks', $num); ?></h2>
+    <p><?php __e("There are no clicks logged") ?></p>
+</div>
+<?php endif; ?>

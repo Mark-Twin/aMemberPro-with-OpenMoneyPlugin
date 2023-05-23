@@ -1,0 +1,14 @@
+<?php $this->headMeta()->setName('robots', 'noindex,nofollow'); ?>
+<?php $title=___('Payment Info'); $this->setLayout('layout.phtml');
+
+$this->headScript()
+        ->appendFile($this->_scriptJs('jquery/jquery.validate.js'));
+?>
+<?php include $this->_script('_error.phtml'); ?>
+
+<?php if (!empty($display_receipt)): ?>
+<?php include $this->_script('_receipt.phtml'); ?>
+<?php endif ?>
+
+<?php include $this->_script('_form.phtml');  ?>
+<?php include $this->_script('js.country_state.js'); ?>

@@ -1,0 +1,14 @@
+            <form name="loginform" id="loginform" action="<?php print am4PluginsManager::getAmemberURL();?>/login" method="POST">
+                <p><label><?php print $instance['username_title'];?></label><br/>
+                    <input type="text" name="amember_login" class="input" id="user_login" size="15"></p>
+                <p><label><?php print $instance['password_title'];?></label><br/>
+                <input type="password" name="amember_pass" id="user_password" class="input" size="15"></p>
+                <?php if(!$instance['follow_amember_redirect_rules']) : ?>
+                <input type="hidden" name="_amember_redirect_url" value="<?php echo (!empty($_REQUEST['_amember_redirect_url'])? $_REQUEST['_amember_redirect_url'] : am4PluginsManager::selfUrl());?>">
+                <?php endif; ?>
+                <p class="submit">
+                    <input type="submit" name="wp-submit" id="wp-submit" value="<?php print $instance['login_button_title'];?>">
+                </p>
+        </form>
+            <p><?php if($instance['register_link']){ ?><a href="<?php print  $instance['signup_page_url'];?>"><?php print $instance['register_link_title'];?></a><br/><?php } ?>
+                <?php if($instance['forgot_password_link']){ ?><a href="<?php echo $instance['lost_password_page_url'];?>"><?php print $instance['lost_password_title'];?></a><?php } ?></p>

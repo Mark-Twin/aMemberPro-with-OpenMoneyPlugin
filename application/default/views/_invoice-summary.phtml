@@ -1,0 +1,96 @@
+<?php if (count($invoice->getItems())) : ?>
+<div class="am-invoice-summary">
+    <div>
+        <table class="am-invoice-summary-items">
+<?php
+$items = $invoice->getItems();
+
+$taxes = array();
+foreach ($items as $item) {
+    if ($item->tax_rate && $item->first_tax) {
+        if (!isset($taxes[$item->tax_rate])) {
+            $taxes[$item->tax_rate] = 0;
+        }
+        $taxes[$item->tax_rate] += $item->first_tax;
+    }
+}
+if (!$taxes) {
+    $taxes[$invoice->tax_rate] = $invoice->first_tax;
+}
+$cnt = count($items);
+$index=1;
+$colspan = 1;
+$showQty = false;
+$n = 0;
+foreach ($items as $item) {if ($item->qty>1) {$showQty = true; $colspan=2; break;}} ?>
+<?php foreach ($items as $item): ?>
+            <tr class="am-invoice-summary-item<?php echo ($index == $cnt) ? ' am-invoice-summary-item-last' : ''; ?>">
+                <td class="am-invoice-summary-item-title">
+                    <span class="am-invoice-summary-item-num"><?php p(++$n) ?>.</span> <?php p($item->item_title) ?>
+                    <!-- options -->
+                    <?php foreach ($item->getOptions() as $optKey => $opt): ?>
+                        <br /><b><i><?php p($opt['optionLabel']) ?>:</i></b>
+                             <i><?php p(is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']) ?></i>
+                             <?php if ($opt['first_price'] || $opt['second_price']) : ?>
+                             <i style='color: gray;'><?= $opt['first_price'] > 0 ? '+' : '&minus;' ?> <?php
+                                    $o = new stdclass;
+                                    $o->first_price = abs($opt['first_price']);
+                                    $o->second_price = abs($opt['second_price']);
+                                    $o->first_period = $invoice->first_period;
+                                    $o->second_period = $invoice->second_period;
+                                    $o->rebill_times = $invoice->rebill_times;
+                                    $o->currency = $invoice->currency;
+                                    $t = new Am_TermsText($o);
+                                echo $t->getStringForOption(); ?></i>
+                             <?php endif ?>
+                    <?php endforeach // item->getOptions() ?>
+                </td>
+                <?php if ($showQty): ?>
+                <td class="am-invoice-summary-item-qty">&times;<?php p($item->qty) ?></td>
+                <?php endif; ?>
+                <td class="am-invoice-summary-item-total am-invoice-summary-price"><?php p($invoice->getCurrency($item->first_price)) ?></td>
+<?php $index++; ?>
+            </tr>
+<?php endforeach ?>
+            <tr class="am-invoice-summary-delimeter">
+                <td colspan="<?php p($colspan + 1) ?>"><hr /></td>
+            </tr>
+<?php if ($invoice->first_discount > 0 || $invoice->first_shipping > 0 || $invoice->first_tax) : ?>
+            <tr class="am-invoice-summary-row-subtotal">
+                <td class="am-invoice-summary-subtotal" colspan="<?php p($colspan) ?>"><?php __e('Subtotal') ?></td>
+                <td class="am-invoice-summary-price"><?php echo $invoice->getCurrency($invoice->first_subtotal)?></td>
+            </tr>
+<?php endif; ?>
+<?php if ($invoice->first_discount > 0) :?>
+            <tr class="am-invoice-summary-row-discount">
+                <td class="am-invoice-summary-discount" colspan="<?php p($colspan) ?>"><?php __e('Discount') ?></td>
+                <td class="am-invoice-summary-price">&minus;<?php echo $invoice->getCurrency($invoice->first_discount)?></td>
+            </tr>
+<?php endif; ?>
+<?php if ($invoice->first_shipping > 0): ?>
+            <tr class="am-invoice-summary-row-shipping">
+                <td class="am-invoice-summary-shipping" colspan="<?php p($colspan) ?>"><?php __e('Shipping') ?></td>
+                <td class="am-invoice-summary-price"><?php echo $invoice->getCurrency($invoice->first_shipping)?></td>
+            </tr>
+<?php endif ?>
+<?php if ($invoice->first_tax > 0) : ?>
+    <?php foreach ($taxes as $rate => $total) : ?>
+            <tr class="am-invoice-summary-row-tax">
+                <td class="am-invoice-summary-tax" colspan="<?php p($colspan) ?>"><?php __e('Tax Amount') ?> (<?php p($rate) ?>%)</td>
+                <td class="am-invoice-summary-price"><?php echo $invoice->getCurrency($total)?></td>
+            </tr>
+    <?php endforeach; ?>
+<?php endif; ?>
+            <tr class="am-invoice-summary-row-total">
+                <td class="am-invoice-summary-total" colspan="<?php p($colspan) ?>"><strong><?php __e('Total') ?></strong></td>
+                <td class="am-invoice-summary-price"><strong><?php echo $invoice->getCurrency($invoice->first_total)?></strong></td>
+            </tr>
+        </table>
+        <?php if ($show_terms) : ?>
+        <div class="am-invoice-summary-terms">
+            <strong><?php __e('Subscription Terms')?></strong>:
+            <?php p($invoice->getTerms())?></div>
+        <?php endif; ?>
+    </div>
+</div>
+<?php endif; ?>

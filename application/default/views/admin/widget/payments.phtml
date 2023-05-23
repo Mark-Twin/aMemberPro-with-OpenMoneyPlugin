@@ -1,0 +1,65 @@
+<?php $lastPaymentsList = $di->invoicePaymentTable->selectLast($num); ?>
+<?php if ($lastPaymentsList) : ?>
+<div class="admin-last admin-lastpayments">
+    <h2><?php __e('Last %s Payments', $num); ?></h2>
+    <div class="grid-container" id="am-widget-payments">
+        <table class="grid grid-no-highlight">
+            <tr>
+                <th class="helper-corner-left" nowrap="nowrap"><?php __e('Date/Time') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Invoice') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Items') ?></th>
+                <th style="text-align:right" nowrap="nowrap"><?php __e('Amount') ?></th>
+                <th class="helper-corner-right"><?php __e('User') ?></th>
+            </tr>
+            <?php foreach ($lastPaymentsList as $p): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td nowrap="nowrap"><time datetime="<?php p(date('c', amstrtotime($p->dattm))) ?>" title="<?php p($this->getElapsedTime($p->dattm)) ?>">
+                    <?php if (sqlDate($p->dattm) == sqlDate('today')) : ?>
+                        <?php p(amTime($p->dattm)) ?>
+                    <?php else: ?>
+                        <?php p(amDate($p->dattm)) ?><br /><small style="color:#aaa"><?php p(amTime($p->dattm)) ?></small>
+                    <?php endif; ?>
+                    </time></td>
+                <td class="container-width-narrow-hide"><a class="link" href="<?php echo $this->url('admin-user-payments/index/user_id/'.$p->user_id.'#invoice-'.$p->invoice_id) ?>" data-tooltip-url="<?php echo $this->url('admin-payments/invoice-card', "id={$p->invoice_id}") ?>"><?php p($p->invoice_id) ?>/<?php p($p->public_id) ?></a><br />
+                    <small><span title="<?php p($p->receipt_id) ?>"><?php p($p->paysys_id) ?></span><?php if($p->coupon_code): p(', ' . $p->coupon_code); endif; ?></small></td>
+                <td class="container-width-narrow-hide"><?php p($p->items) ?></td>
+                <td class="widget-payments-amount">
+                    <?php p(Am_Currency::render($p->amount, $p->currency)) ?>
+                    <?php if (!is_null($p->refund_amount) && $p->refund_amount == $p->amount) : ?>
+                    <br /><span class="red"><?php __e('Refunded') ?>
+                    <?php elseif (!is_null($p->refund_amount)) : ?>
+                    <br /><span class="red"><?php echo Am_Currency::render($p->refund_amount, $p->currency) ?> <?php __e('refunded') ?></span>
+                    <?php endif; ?>
+                </td>
+                <td><?php if ($p->dattm >= $p->added && (amstrtotime($p->dattm) - amstrtotime($p->added)) < 7200) : ?>
+                    <span class="widget-label widget-label_<?php echo (sqlDate($p->dattm) == sqlDate('today')) ? 'today' : 'yesterday' ?>"><?php __e('new') ?></span>
+                    <?php endif; ?>
+                    <?php if (sqlDate($p->dattm) == sqlDate('today')) : ?>
+                    <span class="widget-label widget-label_today"><?php __e('today') ?></span>
+                    <?php elseif(sqlDate($p->dattm) == sqlDate('yesterday')): ?>
+                    <span class="widget-label widget-label_yesterday"><?php __e('yesterday') ?></span>
+                    <?php endif; ?>
+                    <?php if(trim($p->name)) : ?>
+                        <strong><?php p($p->name) ?></strong>
+                        (<a class="link" href="<?php echo $this->userUrl($p->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$p->user_id}") ?>"><?php p($p->login) ?></a>)
+                    <?php else: ?>
+                        <a class="link" href="<?php echo $this->userUrl($p->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$p->user_id}") ?>"><?php p($p->login) ?></a>
+                    <?php endif; ?>
+                    <br />
+                    <?php p($p->email) ?></td>
+            </tr>
+            <tr class="grid-row <?php echo (@$arownum++%2) ? 'odd' : 'even' ?>">
+                <td colspan="5" class="container-width-narrow-show">
+                    <a class="link" href="<?php echo $this->url('admin-user-payments/index/user_id/'.$p->user_id.'#invoice-'.$p->invoice_id) ?>"><?php p($p->invoice_id) ?>/<?php p($p->public_id) ?></a> - <?php p($p->items) ?>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s Payments', $num); ?></h2>
+    <p><?php __e("You don't have any payments yet") ?></p>
+</div>
+<?php endif; ?>

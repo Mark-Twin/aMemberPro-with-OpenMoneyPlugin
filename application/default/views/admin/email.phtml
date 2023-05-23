@@ -1,0 +1,78 @@
+<?php $title = ___('E-Mail Users'); $this->setLayout('admin/layout.phtml'); ?>
+<?php include $this->_script('admin/_error.phtml'); ?>
+
+<div class="filter-wrap">
+    <span style="float:left; text-align: left; padding: 5px;">
+    <?php __e('You chose to email the following user(s):')?><br />
+    <strong><?php echo @$filterCondition ?></strong><br />
+    <?php __e('%s user(s) matches your search', number_format($users_found))?>.
+    <a href="javascript:loadBrowseUsers()" class="browse-users local"><?php __e('browse')?></a>
+    </span>
+    <?php echo $search ?>
+</div>
+<?php echo $form; ?>
+<div id="email-history"></div>
+<div id="browse-users" style="display:none"></div>
+
+<script type="text/javascript">
+jQuery(function(){
+    jQuery("#email-history")
+        .load(amUrl("/admin-email/history-rows?_h_wrap=1"),
+            function(){ jQuery("#email-history .grid-wrap").ngrid(); });
+
+    //handle fiter state change
+    jQuery("form").not("[id='am-form-email']").submit(function(event){
+        if (!jQuery(this).data('fields-added')) {
+            jQuery(this).data('fields-added', true);
+
+            event.stopPropagation();
+            event.preventDefault();
+
+            var f = jQuery("form#am-form-email");
+            var reply_to = jQuery('<input type="hidden" name="reply_to" />').val(f.find("select[name='reply_to']").val());
+            var reply_to_other = jQuery('<input type="hidden" name="reply_to_other" />').val(f.find("input[name='reply_to_other']").val());
+            var subj = jQuery('<input type="hidden" name="subject" />').val(f.find("input[name='subject']").val());
+            var is_html = f.find("input[name='format'][value='html']").is(':checked');
+            var fmt = jQuery('<input type="hidden" name="format" />').val(is_html ? 'html' : 'text');
+            var bb = (is_html && CKEDITOR.instances['body-0']) ? CKEDITOR.instances['body-0'].getData() : f.find('[name="body"]').val();
+            var body = jQuery('<input type="hidden" name="body" />').val(bb);
+
+            var $this = jQuery(this);
+            jQuery('[name^=files][type=hidden]', f).each(function(){
+                $this.append(jQuery('<input type="hidden" name="files[]" />').val(jQuery(this).val()))
+            })
+            jQuery(this).append(subj).append(fmt).append(body).append(reply_to).append(reply_to_other);
+
+            jQuery('input,select', f).each(function(){
+                if (jQuery(this).attr('name').substr(0,2) == '__') {
+                    $this.append(jQuery('<input type="hidden" />').attr('name', jQuery(this).attr('name')).val(jQuery(this).val()));
+                }
+            });
+
+            if (jQuery('[name=email_template_layout_id]', f).length) {
+                $this.append(jQuery('<input type="hidden" />').attr('name', 'email_template_layout_id').val(jQuery('[name=email_template_layout_id]', f).val()));
+            }
+
+            jQuery(this).attr('method', 'post');
+            jQuery(this).submit(); // resubmit form with new fields
+        }
+    });
+});
+
+function loadBrowseUsers()
+{
+    var vars = jQuery("#am-form-email").find(":input[name!='body']").serialize();
+    jQuery("#browse-users").empty().dialog({
+        modal: true,
+        bgiframe: true,
+        autoOpen: true,
+        height: 500,
+        width: 730,
+        draggable: true,
+        resizeable: true,
+        title: "<?php j(___('Browse Found Users'))?>",
+    }).load(amUrl("/admin-email/browse-users"), vars, function(){
+        jQuery("#browse-users").ngrid();
+    });
+}
+</script>

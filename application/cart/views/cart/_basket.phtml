@@ -1,0 +1,134 @@
+<?php
+$hasImg = false;
+$hasQty = false;
+$defaultImg = $di->config->get('cart.img_cart_default_path');
+foreach ($cart->getItems() as $item) {
+    $hasImg = $hasImg || $item->tryLoadProduct()->img_cart_path || $defaultImg;
+    $hasQty = $hasQty || $item->qty > 1 || $item->variable_qty;
+}
+?>
+<style>
+    .am-basket-img{
+        overflow: hidden;
+        width: <?php echo $di->config->get('cart.img_cart_width', 50); ?>px;
+        height: <?php echo $di->config->get('cart.img_cart_height', 50); ?>px;
+    }
+</style>
+<?php $colspan = $hasQty ? 3 : 1; ?>
+<table class = "am-basket">
+    <tr class="am-basket-row-head">
+        <th class="am-basket-title"><?php __e('Item') ?></th>
+        <th class="am-basket-price"><?php __e('Price') ?></th>
+        <?php if ($hasQty) : ?>
+            <th class="am-basket-qty"><?php __e('Qty') ?></th>
+            <th class="am-basket-total"><?php __e('Total') ?></th>
+        <?php endif; ?>
+    </tr>
+    <?php foreach ($cart->getItems() as $item): ?>
+        <tr class="am-basket-row">
+            <td class="am-basket-title-col">
+                <?php if ($isBasket) : ?>
+                    <div class="am-basket-delete"><?php if (!$cart->isStick($item)):?><a href="javascript:;" title="<?php __e('Delete') ?>"><input type="checkbox" name="d[<?php echo $item->item_id ?>]" value="1">&#10005;</a><?php endif ?></div>
+                <?php endif; ?>
+                <?php if($hasImg) : ?>
+                <div class="am-basket-img">
+                    <?php 
+                        if ($item->tryLoadProduct()->img_cart_path)  
+                            $img_url = $item->tryLoadProduct()->img_cart_path;
+                        else
+                            $img_url = $defaultImg;
+                        $img_url = $this->url('data/public/'.$img_url);
+                    ?>
+                    <?php if ($img_url): ?>
+                    <img src="<?php echo $img_url; ?>" />
+                    <?php endif ?>
+                </div>
+                <?php endif; ?>
+                <div class="am-basket-title"><strong><?php p($item->item_title) ?></strong></div>
+                <div class="am-basket-desc"><?php p($item->item_description) ?></div>
+                <div class="am-basket-options">
+                     <!-- options -->
+                    <?php foreach ($item->getOptions() as $optKey => $opt): ?>
+                        <br /><b><i><?php p($opt['optionLabel']) ?>:</i></b>
+                             <i><?php p(is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']) ?></i>
+                             <?php if ($opt['first_price'] || $opt['second_price']) : ?>
+                             <i style='color: gray;'><?= $opt['first_price'] > 0 ? '+' : '&minus;' ?> <?php
+                                    $o = new stdclass;
+                                    $o->first_price = $opt['first_price'];
+                                    $o->second_price = $opt['second_price'];
+                                    $o->first_period = $invoice->first_period;
+                                    $o->second_period = $invoice->second_period;
+                                    $o->rebill_times = $invoice->rebill_times;
+                                    $o->currency = $invoice->currency;
+                                    $t = new Am_TermsText($o);
+                                echo $t->getStringForOption(); ?></i>
+                             <?php endif ?>
+                    <?php endforeach // item->getOptions() ?>
+                </div>
+            </td>
+            <td class="am-basket-price">
+                <?php p($cart->getCurrency($item->first_price)) ?>
+            </td>
+            <?php if ($hasQty) : ?>
+                <td class="am-basket-qty">
+                    <?php if ($item->is_countable && $item->variable_qty && $isBasket && !$cart->isStick($item)) : ?>
+                    <div class="am-cart-qty-el">
+                        <input type="button" class="am-cart-qty-el-minus" value="&minus;" />
+                        <?php echo $this->formText("qty[$item->item_id]", $item->qty, array('size' => 1)) ?>
+                        <input type="button" class="am-cart-qty-el-plus" value="&plus;" />
+                    </div>
+                    <?php else: ?>
+                        <?php p($item->qty) ?>
+                    <?php endif; ?>
+                </td>
+                <td class="am-basket-total">
+                    <?php p($cart->getCurrency($item->first_total)) ?>
+                </td>
+            <?php endif; ?>
+        </tr>
+    <?php endforeach ?>
+    <tr class="am-basket-row-divider">
+        <td colspan="<?php echo $colspan + 1; ?>"></td>
+    </tr>
+    <?php if ($cart->getInvoice()->first_subtotal != $cart->getInvoice()->first_total) : ?>
+        <tr class="am-basket-totals am-basket-totals-subtotal">
+            <td colspan="<?php echo $colspan; ?>"><?php __e('Subtotal') ?></td>
+            <td class="am-basket-total"><?php p($cart->getCurrency($cart->getInvoice()->first_subtotal)) ?></td>
+        </tr>
+    <?php endif; ?>
+    <?php if ((float) $cart->getInvoice()->first_discount) : ?>
+        <tr class="am-basket-totals am-basket-totals-discount">
+            <td colspan="<?php echo $colspan; ?>"><?php __e('Discount') ?></td>
+            <td class="am-basket-total"><?php p($cart->getCurrency($cart->getInvoice()->first_discount)) ?></td>
+        </tr>
+    <?php endif; ?>
+    <?php if ((float) $cart->getInvoice()->first_shipping) : ?>
+        <tr class="am-basket-totals am-basket-totals-shipping">
+            <td colspan="<?php echo $colspan; ?>"><?php __e('Shipping') ?></td>
+            <td class="am-basket-total"><?php p($cart->getCurrency($cart->getInvoice()->first_shipping)) ?></td>
+        </tr>
+    <?php endif; ?>
+    <?php if ((float) $cart->getInvoice()->first_tax) : ?>
+        <tr class="am-basket-totals am-basket-totals-tax">
+            <td colspan="<?php echo $colspan; ?>"><?php __e('Tax') ?></td>
+            <td class="am-basket-total"><?php p($cart->getCurrency($cart->getInvoice()->first_tax)) ?></td>
+        </tr>
+    <?php endif; ?>
+    <tr class="am-basket-totals am-basket-totals-granttotal">
+        <td colspan="<?php echo $colspan; ?>"><?php __e('Total') ?></td>
+        <td class="am-basket-total"><?php p($cart->getCurrency($cart->getInvoice()->first_total)) ?></td>
+    </tr>
+    <?php if (!empty($cart->getInvoice()->rebill_times)): ?>
+        <tr class="am-basket-terms">
+            <td colspan="<?php echo $colspan + 1; ?>">
+                <?php __e('Terms') ?>: <?php echo $cart->getInvoice()->getTerms() ?>
+            </td>
+        </tr>
+    <?php endif ?>
+</table>
+<script type="text/javascript">
+jQuery('.am-basket-delete > a').click(function () {
+    jQuery(this).find('input').attr('checked', 'checked');
+    jQuery(this).closest('form').find('.am-cart-checkout-buttons-update').click();
+});
+</script>

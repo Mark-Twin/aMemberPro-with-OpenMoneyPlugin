@@ -1,0 +1,7 @@
+<?php
+$this->layoutNoTitle = true;
+$title = ___('Please login'); $this->setLayout('layout-login.phtml');?>
+<?php echo $content; ?>
+<?php if (!$di->config->get('signup_disable')) : ?>
+<div class="am-signup-link"><?php __e('Not registered yet?') ?> <a href="<?php echo $this->url('signup' . (isset($hidden['saved_form']) ? "/{$hidden['saved_form']}" : '')) ?>"><?php __e('Signup here') ?></a></div>
+<?php endif; ?>

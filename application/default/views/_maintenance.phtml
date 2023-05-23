@@ -1,0 +1,5 @@
+<?php if ($di->config->get('maintenance') && $di->authAdmin->getUserId()): ?>
+<div style="width: 100%;height: 2em;font-size: 12pt;font-weight: bold;color: white;background-color: #E34B3D;text-align: center;padding-top: 1em;z-index: 1;position: relative;">
+<?php __e('Maintenance mode is currently enabled. Only logged-in administrators like you can access it. %sDisable%s', '<a style="color:white" href="'.$this->url('admin-setup/advanced').'">', '</a>'); ?>
+</div>
+<?php endif;

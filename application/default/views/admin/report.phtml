@@ -1,0 +1,50 @@
+<h1><?php __e('Generate Report') ?></h1>
+<div class="reports">
+<select id="report" size="1" class="am-combobox">
+    <option value="">-- <?php __e('Select option'); ?> --</option>
+<?php $id=0; foreach ($reports as $r): $id++; ?>
+    <option value="<?php echo $r->getId()?>"><?php p($r->getTitle())?>
+    <?php if ($d = $r->getDescription()): p(' - ' . $r->getDescription()); endif ?>
+    </option>
+<?php endforeach ; ?>
+</select>
+</div>
+<br />
+<div class="forms">
+<?php foreach ($reports as $r): ?>
+<div id="form-<?php echo $r->getId()?>" class="formdiv" style="display:none"></div>
+<?php endforeach ?>
+</div>
+
+<style type="text/css">
+<!--
+    .reports {
+        text-align: left;
+        max-width: 700px;
+    }
+    #report {
+        width:100%;
+    }
+    .forms {
+        text-align: left;
+        max-width: 700px;
+    }
+-->
+</style>
+<script type="text/javascript">
+jQuery(function(){
+    jQuery("select#report").change(function()
+    {
+        jQuery(".formdiv").hide();
+        var id = "form-" + this.value;
+        if (jQuery('#' + id).data('loaded')) {
+            jQuery("#"+id).show();
+        } else {
+            jQuery("#"+id).load(amUrl('/admin-reports/getform'), {id : this.value}, function(){
+                jQuery("#"+id).data('loaded', true)
+                jQuery("#"+id).show();
+            })
+        }
+    }).change();
+});
+</script>

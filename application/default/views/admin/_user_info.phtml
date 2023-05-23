@@ -1,0 +1,59 @@
+<?php
+
+$totalPaid = $di->db->selectCell("SELECT ROUND(SUM(amount/base_currency_multi),2) "
+    . "FROM ?_invoice_payment "
+    . "WHERE user_id=?", $user->pk());
+$totalRefund = $di->db->selectCell("SELECT ROUND(SUM(amount/base_currency_multi),2) "
+    . "FROM ?_invoice_refund "
+    . "WHERE user_id=?", $user->pk());
+
+$status = '<span class="user-status user-status-pending">' . ___('Pending') . '</span>';
+switch ($user->status)
+{
+    case User::STATUS_PENDING:
+        if ($totalPaid)
+            if ($totalPaid > $totalRefund)
+                $status = '<span class="user-status user-status-future">' . ___('Future') . '</span>';
+            else
+                $status = '<span class="user-status user-status-refunded">' . ___('Refunded') . '</span>';
+        break;
+    case User::STATUS_ACTIVE:
+        $status = '<span class="user-status user-status-active">' . ___('Active') . '</span>';
+        break;
+    case User::STATUS_EXPIRED:
+        $status = '<span class="user-status user-status-expired">' . ___('Expired') . '</span>';
+        break;
+}
+
+?>
+<div class="info" id="am-user-profile-info">
+    <div style="float:right">
+    <?php if ($di->authAdmin->getUser()->hasPermission('grid_u', 'delete')) : ?>
+    <a style="color:#F44336;" target="_top"
+       href="<?php echo $this->url('admin-users/delete', array('id' => $user->pk())); ?>"
+    ><?php __e('Delete User') ?></a>
+    <?php endif; ?>
+    </div>
+    <?php
+    $loginLink = $di->authAdmin->getUser()->hasPermission('grid_u', 'login-as') ?
+        sprintf(' <a class="link" href="%s" target="_blank">%s</a>',
+            $this->url('admin-users/login-as', array('id' => $user->pk())),
+            ___('Login as User')) 
+        : '';
+    
+    printf('%s %s: <strong>%d</strong> <span style="opacity:.5">&middot;</span> %s: <strong>%s</strong>%s <span style="opacity:.5">&middot;</span> %s%s: <a class="link" href="%s">%s</a> <span style="opacity:.5">&middot;</span> %s: <span style="color:#488f37">%s</span>%s',
+        $status,
+        ___('ID'), $user->pk(),
+        ___('Username'), $user->login,
+        $loginLink,
+        ($user->name_f || $user->name_l) ?
+        sprintf('%s: <strong>%s</strong> <span style="opacity:.5">&middot;</span> ', ___('Name'), trim(Am_Html::escape($user->name_f." ".$user->name_l))) :
+        '',
+        ___('Email'),
+        $this->url('admin-email', array('search-type'=>'advanced', 'search'=>json_encode(array('member_id_filter'=>array('val'=>$user->pk()))))),
+        Am_Html::escape($user->email),
+        ___('Total Paid'), Am_Currency::render($totalPaid),
+        ($totalRefund > 0 ? sprintf(' <span style="opacity:.5">&middot;</span> %s: <span class="red">%s<span>', ___('Refunds'), Am_Currency::render($totalRefund)) : '')
+        );
+    ?>
+</div>

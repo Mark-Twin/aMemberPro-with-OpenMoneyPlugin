@@ -1,0 +1,5 @@
+<?php $title = $di->config->get('site_title', 'Index Page'); $this->setLayout('layout.phtml'); ?>
+<?php __e('If you are a registered member, please %slogin%s','<a href="' . $di->url('login') . '">','</a>') ?>.
+<?php if (!$di->config->get('signup_disable')) : ?>
+<?php __e('If you are not registered yet, please %ssignup%s','<a href="'. $di->url('signup') .'">','</a>') ?>.
+<?php endif; ?>

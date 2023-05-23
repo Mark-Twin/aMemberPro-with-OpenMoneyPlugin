@@ -1,0 +1,34 @@
+<?php
+$user = $di->auth->getUser();
+$showMenu = $user && empty($this->layoutNoMenu);
+$showIdentityBlock = $user && empty($this->noUserIdentityBlock);
+$showLang = empty($this->layoutNoLang);
+?>
+<?php if (!defined('AM_ADMIN') || !AM_ADMIN): ?>
+    <?php if (!$showMenu && !$showIdentityBlock && $showLang) : ?>
+        <?php include $this->_script('_lang-choice.phtml'); ?>
+    <?php else: ?>
+    <div class="am-account-toolbar">
+        <div class="am-account-toolbar-items">
+            <?php if ($showMenu) : ?>
+            <a class="am-tabs-narrow-dashboard" href="<?php echo $this->url('member') ?>"><img src="<?php p($this->_scriptImg('/dashboard-r.png')); ?>" /></a>
+            <a class="am-tabs-narrow-switch"><img href="javascript:;" src="<?php p($this->_scriptImg('/menu.png')); ?>" /></a>
+            <?php endif; ?>
+            <?php if ($showLang): ?>
+                <?php include $this->_script('_lang-choice.phtml'); ?>
+            <?php endif; ?>
+            <?php if ($showIdentityBlock) : ?>
+                <?php echo $this->blocks('member/identity') ?>
+            <?php endif; ?>
+        </div>
+        <?php if ($showMenu) : ?>
+            <?php include $this->_script('member/_menu-narrow.phtml'); ?>
+        <?php endif; ?>
+    </div>
+        <?php if ($showMenu) : ?>
+            <?php include $this->_script('member/_menu.phtml'); ?>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>
+<?php include $this->_script('_msg.phtml'); ?>
+<?php echo $this->blocks('member/top') ?>

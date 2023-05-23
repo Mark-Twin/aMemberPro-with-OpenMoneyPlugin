@@ -1,0 +1,14 @@
+<table class="am4shortcode-block"> 
+<?php foreach($shortcodes->getShortcodes() as $s) : ?>
+    <tr>
+        <td class="am4shortcode-syntax" nowrap><span class="am4shortcode expandable"><?php echo $s->getSyntax();?></span></td><td class="am4shortcode-short"><?php echo $s->getDescription();?></td>
+    </tr>
+    <tr class="am4shortcode-help">
+        <td colspan="2" class="am4shortcode-help"><div class="am4shortcode-help"><?php echo $s->getHelp();?></div></td>
+        
+    </tr>
+<?php endforeach; ?>
+</table>
+<?php
+am4View::init("shortcode",null, am4View::TYPE_JS)->render();
+?>

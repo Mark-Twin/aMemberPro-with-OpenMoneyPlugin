@@ -1,0 +1,26 @@
+<?php
+$this->blocks()->requireCss('helpdesk-user.css');
+/* @var $di Am_Di */
+$di;
+?>
+<?php if (!$catActive && $di->modules->get('helpdesk')->getConfig('show_faq_search')) : ?>
+<?php echo $this->render('blocks/helpdesk/_search-form.phtml') ?>
+<?php endif; ?>
+<?php if ($categories && !$catActive) : ?>
+    <div class="am-block">
+        <ul class="am-helpdesk-faq-cat">
+        <?php foreach ($categories as $cat) : ?>
+            <?php if ($cat == $catActive) : ?>
+                <li class="am-helpdesk-faq-cat-item"><h2><?php p($cat) ?></h2></li>
+            <?php else: ?>
+                <li class="am-helpdesk-faq-cat-item"><h2><a href="<?php echo $this->url('helpdesk/faq/c/'.urlencode($cat)) ?>"><?php p($cat) ?></a></h2></li>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+<ul class="am-helpdesk-faq-list">
+<?php foreach ($faq as $f) : ?>
+    <li class="am-helpdesk-faq-list-item"><a href="<?php echo $this->url('helpdesk/faq/i/'.urlencode($f->title)) ?>"><?php p($f->title) ?></a></li>
+<?php endforeach; ?>
+</ul>

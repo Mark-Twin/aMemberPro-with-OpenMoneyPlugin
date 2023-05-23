@@ -1,0 +1,6 @@
+<?php $this->headMeta()->setName('robots', 'noindex,nofollow'); ?>
+<?php $title=___('Payment Error'); $this->setLayout('layout.phtml'); ?>
+<?php include $this->_script('_error.phtml'); ?>
+
+<a href="<?php p($pay_link) ?>"><?php __e('Try again') ?></a>
+

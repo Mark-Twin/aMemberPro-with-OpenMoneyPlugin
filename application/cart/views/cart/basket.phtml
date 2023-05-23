@@ -1,0 +1,54 @@
+<?php
+$title = $di->config->get('site_title') . ' : ' . ___('Your Basket');
+$isAjax = !empty($isAjax);
+
+if (!$isAjax)
+{
+    $this->setLayout('cart/layout-wide.phtml');
+}
+$isBasket = true;
+?>
+<?php echo $this->blocks('cart/basket/before') ?>
+<div class="am-cart-checkout">
+    <div>
+            <?php if (count($cart->getItems())) : ?>
+            <form action="<?php echo $this->url('cart/view-basket') ?>" method="post">
+                <?php include $this->_script('cart/_basket.phtml') ?>
+                <?php include $this->_script('cart/_coupon.phtml') ?>
+                <div class="am-cart-checkout-buttons">
+                    <input type="submit" class="am-cart-checkout-buttons-checkout" name="do-checkout" value="<?php __e('Checkout') ?>" />
+                    <input type="submit" class="am-cart-checkout-buttons-update" name="calculate" value="<?php __e('Update') ?>" />
+                    <?php if ($isAjax) : ?>
+                        <a href="javascript:;" onclick="jQuery('#ajax-basket').amPopup('close');" class="local-link"><?php __e('Continue Shopping') ?></a>
+                    <?php else: ?>
+                        <a href="<?php p((isset($b) && $b) ? $b : $this->url('cart', false)) ?>"><?php __e('Continue Shopping') ?></a>
+    <?php endif; ?>
+                    <input type="hidden" name="b" value="<?php p($b) ?>"/>
+                </div>
+            </form>
+            <?php else: ?>
+            <div class="am-cart-checkout-empty">
+                <?php if ($isAjax) : ?>
+                    <?php __e('Your cart is empty. Click %shere%s to continue shopping.', '<a class="local-link" href="javascript:;" onclick="jQuery(\'#ajax-basket\').amPopup(\'close\');">', '</a>') ?>
+                <?php else : ?>
+                    <?php __e('Your cart is empty. Click %shere%s to continue shopping.', '<a href="' . $this->url('cart') . '">', '</a>') ?>
+            <?php endif; ?>
+            </div>
+<?php endif; ?>
+    </div>
+</div>
+<?php echo $this->blocks('cart/basket/after') ?>
+<?php if ($isAjax) : ?>
+    <script type="text/javascript">
+        jQuery(function () {
+            jQuery('.am-cart-checkout-buttons-update, .am-cart-checkout-buttons-apply').click(function() {
+                var f = jQuery(this).closest('form');
+                jQuery.post(f.attr('action'), f.serializeArray(), function (html) {
+                    cart.loadOnly();
+                    jQuery('#ajax-basket').html(html);
+                });
+                return false;
+            });
+        });
+    </script>
+<?php endif; ?>

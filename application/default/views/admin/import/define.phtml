@@ -1,0 +1,56 @@
+<?php $this->setLayout('admin/layout.phtml'); ?>
+<div id="import-area">
+    <?php echo $table ?>
+    <br />
+    <?php echo $form ?>
+</div>
+<div class="info">
+    <p><strong><?php __e('Please note: By default, aMember does not change users password and login values to a generated value in cases where an existing email address is found. You may decide to update an existing record, in the next step of the import process, where a matching email or username already exists.') ?></strong></p>
+</div>
+<script type="text/javascript">
+    (function($){
+        function setupHooks() {
+            jQuery('input.datepicker').datepicker({
+                defaultDate: window.uiDefaultDate,
+                dateFormat: window.uiDateFormat,
+                changeMonth: true,
+                changeYear: true
+            });
+
+            jQuery("#import-area input, #import-area select").change(function(){
+                jQuery(this.form).ajaxSubmit({
+                    target: '#import-area'
+                });
+            })
+
+            jQuery("select[name^=field_]").each(function(){
+                if (this.value == 'FIXED') {
+                    jQuery(this).next().show();
+                } else {
+                    jQuery(this).next().hide();
+                }
+            });
+            jQuery("select[name^=field_]").change(function(){
+                if (this.value == 'FIXED') {
+                    jQuery(this).next().show();
+                } else {
+                    jQuery(this).next().hide();
+                }
+            });
+            jQuery("input[type=button]").click(function(){
+                this.form.action = this.form.action.replace(/(\/)[a-z]+(\/*)$/, '$1back$2');
+                this.form.submit();
+            })
+
+        }
+
+        jQuery(function(){
+            jQuery(document).ajaxSuccess(function(event, xhr, settings){
+                if (settings.target == '#import-area') {
+                    setupHooks();
+                }
+            });
+            setupHooks();
+        });
+    })(jQuery);
+</script>

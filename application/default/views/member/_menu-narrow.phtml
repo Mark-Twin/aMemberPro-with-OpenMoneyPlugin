@@ -1,0 +1,30 @@
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    jQuery('.am-tabs-narrow-switch').click(function(){
+        jQuery('.am-tabs-narrow-stuff').toggle();
+        jQuery('.am-tabs-narrow-wrapper').toggleClass('am-tabs-narrow-wrapper-open');
+    });
+    jQuery(window).scroll(function(){
+        jQuery('.am-account-toolbar').
+                toggleClass('am-account-toolbar-fixed',
+                jQuery(window).scrollTop() > jQuery('.am-body-content-top').position().top);
+    });
+});
+</script>
+<div class="am-tabs-narrow-wrapper">
+    <div class="am-tabs-narrow-wrapper-tail am-tabs-narrow-stuff"></div>
+<?php
+$m = new Am_View_Helper_Menu();
+$m->setView($this);
+
+echo $m->renderMenu($this->di->navigationUser,
+    array(
+        'ulClass' => 'am-tabs-narrow am-tabs-narrow-stuff',
+        'activeClass' => 'active',
+        'normalClass' => 'normal',
+        'disabledClass' => 'disabled',
+        'maxDepth' => 1,
+    )
+);
+?>
+</div>

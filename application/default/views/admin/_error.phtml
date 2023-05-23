@@ -1,0 +1,8 @@
+<a name="e"></a>
+<?php if (isset($error)): ?>
+<ul class="error">
+    <?php foreach ((array)$error as $e): ?>
+        <li><?php p($e) ?></li>
+    <?php endforeach ?>
+</ul>
+<?php endif ?>

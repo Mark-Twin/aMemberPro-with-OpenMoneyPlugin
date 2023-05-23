@@ -1,0 +1,53 @@
+<?php $lastInvoicesList = $di->invoiceTable->selectLast($num,$statuses); ?>
+<?php if ($lastInvoicesList) : ?>
+<div class="admin-last admin-lastinvoices">
+    <h2><?php __e('Last %s Invoices', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <tr>
+                <th class="helper-corner-left" nowrap="nowrap"><?php __e('Date/Time') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Invoice') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Items') ?></th>
+                <th><?php __e('Billing Terms') ?></th>
+                <th class="helper-corner-right"><?php __e('User') ?></th>
+            </tr>
+            <?php foreach ($lastInvoicesList as $i): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td nowrap="nowrap"><time datetime="<?php p(date('c', amstrtotime($i->tm_added))) ?>" title="<?php p($this->getElapsedTime($i->tm_added)) ?>">
+                    <?php if (sqlDate($i->tm_added) == sqlDate('today')) : ?>
+                        <?php p(amTime($i->tm_added)) ?>
+                    <?php else: ?>
+                        <?php p(amDate($i->tm_added)) ?><br /><small style="color:#aaa"><?php p(amTime($i->tm_added)) ?></small>
+                    <?php endif; ?>
+                    </time></td>
+                <td class="container-width-narrow-hide"><a class="link" href="<?php echo $this->url('admin-user-payments/index/user_id/'.$i->user_id.'#invoice-'.$i->invoice_id) ?>" data-tooltip-url="<?php echo $this->url('admin-payments/invoice-card', "id={$i->invoice_id}") ?>"><?php p("{$i->invoice_id}/{$i->public_id}") ?></a><br />
+                    <small><?php p($i->paysys_id ?: 'none') ?>, <?php echo $i->getStatusTextColor() ?></small></td>
+                <td class="container-width-narrow-hide"><?php p($i->items) ?></td>
+                <td><?php echo $i->getTerms() ?></td>
+                <td><?php if ($i->tm_added >= $i->added && (amstrtotime($i->tm_added) - amstrtotime($i->added)) < 3600) : ?>
+                    <span class="widget-label widget-label_today"><?php __e('new') ?></span>
+                    <?php endif; ?>
+                    <?php if (trim($i->name)) : ?>
+                        <strong><?php p($i->name) ?></strong>
+                        (<a class="link" href="<?php echo $this->userUrl($i->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$i->user_id}") ?>"><?php p($i->login) ?></a>)
+                    <?php else: ?>
+                        <a class="link" href="<?php echo $this->userUrl($i->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$i->user_id}") ?>"><?php p($i->login) ?></a>
+                    <?php endif; ?>
+                    <br />
+                    <?php p($i->email) ?></td>
+            </tr>
+            <tr class="grid-row <?php echo (@$arownum++%2) ? 'odd' : 'even' ?>">
+                <td colspan="5" class="container-width-narrow-show">
+                    <a class="link" href="<?php echo $this->url('admin-user-payments/index/user_id/'.$i->user_id.'#invoice-'.$i->invoice_id) ?>"><?php p($i->invoice_id).p('/').p($i->public_id) ?></a> <small>(<?php echo $i->getStatusTextColor() ?>)</small> - <?php p($i->items) ?>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s Invoices', $num); ?></h2>
+    <p><?php __e("You don't have any invoices yet") ?></p>
+</div>
+<?php endif; ?>

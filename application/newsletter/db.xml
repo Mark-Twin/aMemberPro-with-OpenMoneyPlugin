@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema version="4.0.0">
+    
+  <table name="newsletter_list">
+    <field name="list_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="plugin_id" type="varchar" len="64" notnull="0" />
+    <field name="plugin_list_id" type="varchar" len="255" notnull="0" />
+    <field name="title" type="varchar" len="60" notnull="1"/>
+    <field name="desc" type="text"/>
+    <field name="hide" type="smallint" size="1" default="0" />
+    <field name="disabled" type="smallint" notnull="1" default="0"/>
+    <field name="auto_subscribe" type="smallint" notnull="1" default="0"/>
+    <field name="auto_unsubscribe" type="varchar" len="255" notnull="0" />
+    <field name="vars" type="text" />
+    <index name="PRIMARY" unique="1">
+      <field name="list_id"/>
+    </index>
+  </table>
+  
+  <table name="newsletter_user_subscription">
+    <field name="subscription_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" notnull="1" />
+    <field name="list_id" type="int" notnull="1" />
+    <!-- should the e-mails be sent to that subscription -->
+    <field name="is_active" type="smallint" notnull="1" default="1" />
+    <!-- subscription status - auto-subscribed, user-directly-requested or user-directly-unsubscribed -->
+    <field name="type" type="enum" len="'auto','user','unsubscribed'" notnull="1" default="auto" />
+    <index name="PRIMARY" unique="1">
+      <field name="subscription_id"/>
+    </index>
+    <index name="user_list" unique="1">
+      <field name="user_id"/>
+      <field name="list_id"/>
+    </index>
+    <index name="list">
+      <field name="list_id"/>
+    </index>
+  </table>
+  
+  <table name='email_template'>
+    <field name="newsletter_lists" type="varchar" len="255" notnull="0" />
+  </table>
+
+<!--
+  <table name="newsletter_archive">
+    <field name="archive_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="threads" type="varchar" len="255" notnull="1"/>
+    <field name="subject" type="varchar" len="255" notnull="1"/>
+    <field name="message" type="text"/>
+    <field name="add_date" type="datetime"/>
+    <field name="is_html" type="smallint" notnull="1" default="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="archive_id"/>
+    </index>
+  </table>
+-->
+</schema>

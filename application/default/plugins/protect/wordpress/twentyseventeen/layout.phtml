@@ -1,0 +1,15 @@
+<?php
+Am_Di::getInstance()->plugins_protect->get('wordpress')
+    ->startLayout($this, isset($meta_title) ? $meta_title : $title, true, $body_class);
+ob_start();
+get_header();
+$_ = ob_get_clean();
+echo str_replace(' has-sidebar', '', $_); ?>
+<div class="wrap">
+    <div id="primary" class="content-area">
+        <main id="main" class="site-main" role="main">
+            <?php include dirname(__FILE__)."/../amember.php"; ?>
+        </main>
+    </div>
+</div>
+<?php get_footer();

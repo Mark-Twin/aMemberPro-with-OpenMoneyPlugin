@@ -1,0 +1,20 @@
+<?php 
+$body_class = "am-page-signup am-page-signup-$code";
+if (empty($title)) $title=___('Sign-up');
+else $title=___($title);
+$this->setLayout('layout.phtml'); 
+include $this->_script('_error.phtml');
+
+$this->headScript()
+        ->appendFile($this->_scriptJs('jquery/jquery.validate.js'));
+?>
+<div class="am-signup">
+<?php echo $this->blocks('signup/login/before', "%s", array('record' => $record, 'code' => $code)) ?>
+<?php include $this->_script('signup/_login-offer.phtml'); ?>
+<?php echo $this->blocks('signup/login/after', "%s", array('record' => $record, 'code' => $code)) ?>
+    
+<?php echo $this->blocks('signup/form/before', "%s", array('record' => $record, 'code' => $code)) ?>
+<?php include $this->_script('_form.phtml'); ?>
+<?php echo $this->blocks('signup/form/after', "%s", array('record' => $record, 'code' => $code)) ?>
+</div>
+<?php include $this->_script('js.country_state.js'); ?>

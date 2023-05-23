@@ -1,0 +1,61 @@
+<div class="widget-quickstart">
+    <div class="widget-quickstart-content">
+        <div class="widget-quickstart-disable">
+            <a href="<?php echo $this->url('admin/disable-quickstart')?>" class="link">do not show this again</a>
+        </div>
+        <h2>Thank you for choosing aMember Pro software! This guide was designed to help you start using it.</h2>
+        <ul>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/currency.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-setup').'">', '</a>') ?>
+                %sChoose base currency%s for your installation, it is not possible to change base currency once you get first payment
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/theme.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-setup/themes-default').'">', '</a>') ?>
+                Upload Logo image in Default Theme %sconfiguration page%s or enable usage of WordPress theme if you use WordPress integration.
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/settings.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-setup/plugins').'">', '</a>') ?>
+                Visit %sSetup%s and enable all necessary modules and plugins.
+                Press SAVE. When you did it, choose newly enable plugins at the top of the setup page and configure each of them.
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/product.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-products').'">', '</a>') ?>
+                Visit %sProducts Manager%s to add new products - subscription types. You can also define product
+                categories to group products.
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/content.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-content').'">', '</a>') ?>
+                Visit %sContent Manager%s to protect site folders, upload members-only files and pages.
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/user.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-fields').'">', '</a>') ?>
+                You can add additional fields to user profile if necessary in section %sAdd User Fields%s
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/form.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-saved-form').'">', '</a>') ?>
+                Configure your Signup Form in %sDrag & Drop Forms Editor%s
+                <?php $this->tr()->stop() ?>
+            </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/signup.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('signup').'">', '</a>') ?>
+                Try to start new %ssign up%s. On success, you should receive an e-mail
+                message from aMember, and get access to configured files and folders.
+                <?php $this->tr()->stop() ?>
+           </li>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/login.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('member').'">', '</a>',
+                                         '<a class="link" target="_blank" href="'.$this->url('admin-logs').'">', '</a>'); ?>
+                Try to %slog in%s as the new customer. If all handled correctly, you should get access
+                to configured protected content. If not, visit %slogs section%s to find idea why something
+                went wrong.
+                <?php $this->tr()->stop(); ?>
+           </li>
+        </ul>
+    </div>
+</div>

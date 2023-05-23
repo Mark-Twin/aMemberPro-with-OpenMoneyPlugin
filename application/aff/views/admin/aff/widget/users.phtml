@@ -1,0 +1,45 @@
+<?php $lastUsersList = $di->userTable->selectLast($num, null, 'AND is_affiliate>0'); ?>
+<?php if ($lastUsersList) : ?>
+<div class="admin-last admin-lastusers">
+    <h2><?php __e('Last %s Registered Affiliates', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <tr>
+                <th class="helper-corner-left"><?php __e('User') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Added') ?></th>
+            </tr>
+            <?php foreach ($lastUsersList as $u): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td><?php if (trim($u->getName())): ?>
+                        <strong><?php p($u->getName()) ?></strong>
+                        (<a class="link" href="<?php echo $this->userUrl($u->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$u->user_id}") ?>"><?php p($u->login) ?></a>)
+                    <?php else: ?>
+                        <a class="link" href="<?php echo $this->userUrl($u->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$u->user_id}") ?>"><?php p($u->login) ?></a>
+                    <?php endif; ?>
+                    <br />
+                    <?php p($u->email) ?></td>
+                <td class="container-width-narrow-hide"><time datetime="<?php p(date('c', amstrtotime($u->added))) ?>" title="<?php p($this->getElapsedTime($u->added)) ?>">
+                    <?php if (sqlDate($u->added) == sqlDate('today')) : ?>
+                        <?php p(amTime($u->added)) ?>
+                    <?php else: ?>
+                        <?php p(amDate($u->added)) ?><br /><small style="color:#aaa"><?php p(amTime($u->added)) ?></small>
+                    <?php endif; ?>
+                    </time></td>
+            </tr>
+            <tr class="grid-row <?php echo (@$arownum++%2) ? 'odd' : 'even' ?>">
+                <td colspan="4" class="container-width-narrow-show">
+                    <div class="admin-last_time">
+                        &#x1f550; <time datetime="<?php p(date('c', amstrtotime($u->added))) ?>" title="<?php p($this->getElapsedTime($u->added)) ?>"><?php p(amDatetime($u->added)) ?></time>
+                    </div>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s Registered Affiliates', $num); ?></h2>
+    <p><?php __e("You don't have any affiliates yet") ?></p>
+</div>
+<?php endif; ?>

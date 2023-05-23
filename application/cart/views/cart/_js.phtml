@@ -1,0 +1,24 @@
+<script type="text/javascript">
+jQuery(document).on('click', '.am-cart-qty-el .am-cart-qty-el-minus', function () {
+    var input = jQuery(this).closest('.am-cart-qty-el').find('input[type=text]');
+    input.val(parseInt(input.val()) - 1);
+    jQuery(this).closest('form').find('.am-cart-checkout-buttons-update').click();
+    return false;
+});
+jQuery(document).on('click', '.am-cart-qty-el .am-cart-qty-el-plus', function() {
+    var input = jQuery(this).closest('.am-cart-qty-el').find('input[type=text]');
+    input.val(parseInt(input.val()) + 1);
+    jQuery(this).closest('form').find('.am-cart-checkout-buttons-update').click();
+    return false;
+});
+jQuery(document).on('change', '.billing-plan-select', function () {
+    var flag = jQuery(this).data('map')[jQuery(this).val()];
+    jQuery(this).closest('.am-cart-product').find('.am-cart-product-content-qty').toggle(flag);
+    if (!flag) {
+        jQuery(this).closest('.am-cart-product').find('.am-cart-product-content-qty input[type=text]').val(1);
+    }
+    jQuery(this).closest('.am-cart-product').find('.billing-plan-options').hide();
+    jQuery('#product-options-' + jQuery(this).data('product_id') + '-' + jQuery(this).val()).show();
+});
+jQuery('.billing-plan-select').change();
+</script>

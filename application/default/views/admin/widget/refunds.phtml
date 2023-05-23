@@ -1,0 +1,52 @@
+<?php $lastRefundsList = $di->invoiceRefundTable->selectLast($num); ?>
+<?php if ($lastRefundsList) : ?>
+<div class="admin-last admin-lastrefunds">
+    <h2><?php __e('Last %s Refunds', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <tr>
+                <th class="helper-corner-left" nowrap="nowrap"><?php __e('Date/Time') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Invoice') ?></th>
+                <th class="container-width-narrow-hide"><?php __e('Items') ?></th>
+                <th style="text-align:right" nowrap="nowrap"><?php __e('Amount') ?></th>
+                <th class="helper-corner-right"><?php __e('User') ?></th>
+            </tr>
+            <?php foreach ($lastRefundsList as $p): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td nowrap="nowrap"><time datetime="<?php p(date('c', amstrtotime($p->dattm))) ?>" title="<?php p($this->getElapsedTime($p->dattm)) ?>">
+                    <?php if (sqlDate($p->dattm) == sqlDate('today')) : ?>
+                        <?php p(amTime($p->dattm)) ?>
+                    <?php else: ?>
+                        <?php p(amDate($p->dattm)) ?><br /><small><?php p(amTime($p->dattm)) ?></small>
+                    <?php endif; ?>
+                    </time></td>
+                <td class="container-width-narrow-hide"><a class="link" href="<?php echo $this->url('admin-user-payments/index/user_id/'.$p->user_id.'#invoice-'.$p->invoice_id) ?>" data-tooltip-url="<?php echo $this->url('admin-payments/invoice-card', "id={$p->invoice_id}") ?>"><?php p($p->invoice_id) ?>/<?php p($p->public_id) ?></a><br />
+                    <small><?php p($p->paysys_id) ?></small></td>
+                <td class="container-width-narrow-hide"><?php p($p->items) ?></td>
+                <td align="right" nowrap="nowrap">
+                    &minus; <?php p(Am_Currency::render($p->amount, $p->currency)) ?>
+                </td>
+                <td><?php if (trim($p->name)) : ?>
+                        <strong><?php p($p->name) ?></strong>
+                        (<a class="link" href="<?php echo $this->userUrl($p->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$p->user_id}") ?>"><?php p($p->login) ?></a>)
+                    <?php else: ?>
+                        <a class="link" href="<?php echo $this->userUrl($p->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$p->user_id}") ?>"><?php p($p->login) ?></a>
+                    <?php endif; ?>
+                    <br />
+                    <?php p($p->email) ?></td>
+            </tr>
+            <tr class="grid-row <?php echo (@$arownum++%2) ? 'odd' : 'even' ?>">
+                <td colspan="5" class="container-width-narrow-show">
+                    <a class="link" href="<?php echo $this->url('admin-user-payments/index/user_id/'.$p->user_id.'#invoice-'.$p->invoice_id) ?>"><?php p($p->invoice_id) ?>/<?php p($p->public_id) ?></a> - <?php p($p->items) ?>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s Refunds', $num); ?></h2>
+    <p><?php __e("You don't have any refunds yet") ?></p>
+</div>
+<?php endif; ?>

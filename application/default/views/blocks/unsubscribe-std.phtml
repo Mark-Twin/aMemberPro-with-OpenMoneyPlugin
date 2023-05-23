@@ -1,0 +1,13 @@
+<?php
+/**
+ * This block is displayed if newsletter module is not enabled
+ */
+?>
+<?php __e('Do you really want to unsubscribe from %s periodical messages?', 
+    $this->di->config->get('site_title')); ?>
+<form method="post">
+   <input type="hidden" name="e" value="<?php p($e)?>" /> 
+   <input type="hidden" name="s" value="<?php p($s)?>" /> 
+   <input type="submit" name="yes" value="<?php __e('Yes, unsubscribe')?>" />
+   <input type="submit" name="no" value="<?php __e('No, keep me subscribed')?>" />
+</form>

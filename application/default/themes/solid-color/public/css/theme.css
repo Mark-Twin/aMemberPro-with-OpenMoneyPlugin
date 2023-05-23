@@ -1,0 +1,160 @@
+
+body, html {
+    font-size: %font_size%px;
+    background: none;
+}
+
+html {
+    background: %bg%;
+    background-size: %bg_size%;
+    background-attachment: %bg_attachment%;
+}
+
+.am-common {
+    font-family: %font_family%, san-serif;
+}
+
+.am-common a {
+    color: %link_color%;
+}
+
+.ajax-link:after, .local-link:after, .local:after {
+    border-bottom: 1px %link_color% dashed;
+    opacity: .5;
+}
+
+.am-layout {
+    min-height: initial;
+    margin: 0;
+    background: none;
+}
+
+.am-header .am-header-content-wrapper {
+    border: none;
+    background: none;
+}
+
+.am-header {
+    background: none;
+}
+
+.am-header-line {
+    border:none;
+    background: none;
+}
+
+.am-footer .am-footer-content-wrapper {
+    background: none;
+    color: inherit;
+    height: auto;
+}
+
+.am-footer-text {
+    padding-top:1em;
+    padding-bottom:1em;
+    text-align: center;
+}
+
+.am-body {
+    background: none;
+}
+
+.am-body .am-body-content-wrapper {
+    border: none;
+    box-shadow: %content_shadow%;
+    border-radius: %border_radius%px;
+}
+
+.am-body-content {
+    min-height: 300px;
+}
+
+.am-header-content-wrapper {
+    padding: 0;
+}
+
+.am-header-content-content {
+    display: none;
+}
+
+.am-header .am-header-content .am-header-content-logo {
+    float: none;
+    margin: 0;
+}
+
+.am-header .am-header-content {
+    text-align: %logo_align%;
+}
+
+.am-main {
+    max-width: %max_width%px;
+}
+
+.am-header-content img {
+    width: %logo_width%;
+}
+
+.am-footer-actions {
+    display:none;
+}
+
+.am-footer .am-footer-content-wrapper {
+    color: %color_c%;
+    font-size:.8rem;
+}
+
+.am-page-login .am-body-content-wrapper {
+    background: none;
+    box-shadow: none;
+}
+
+.am-auth-form form {
+    border: none;
+    overflow: hidden;
+    box-shadow: 0px 0px 5px #eee;
+    box-shadow: 0px 0px 5px #00000022;
+}
+
+.am-auth-form form legend {
+    border: none;
+    background: #f9f9f9;
+    padding: 1em 1em 1.5em;
+}
+
+.am-auth-form div.row div.element,
+.am-auth-form div.row div.element-title {
+    padding-right: 2em;
+    padding-left: 2em;
+}
+
+@media all and (min-width:500px) {
+
+    .am-auth-form div.row div.element-title {
+        padding-right: .5em;
+    }
+    .am-auth-form div.row div.element {
+        padding-left: .5em;
+    }
+}
+
+.am-popup {
+    border-color: %color_d%;
+}
+
+.am-popup .am-popup-header {
+    background: %color%;
+    color: %color_c%;
+}
+
+.am-popup .am-popup-close-icon:after {
+    color: %color_c%;
+}
+
+.am-fb-login-button-wrapper.am-fb-login-form-after:before,
+.am-fb-login-button-wrapper.am-fb-login-form-before:after {
+    background: %color%;
+}
+
+.am-signup-link {
+    color: %color_c%;
+}

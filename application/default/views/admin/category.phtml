@@ -1,0 +1,258 @@
+<div class="tree-full-wrapper">
+<?php
+if (!$isAjax) {
+    $this->setLayout('admin/layout.phtml');
+}
+function renderNode($id, Am_Record $c, Am_View $view) {
+    $out = sprintf('<li id="node-%d" data-id="%d"><div class="tree-node-entity">
+            <div class="tree-actions">
+            <a title="%s" href="javascript:;" class="edit">%s</a>
+            <a title="%s" href="javascript:;" class="add">%s</a>
+            <a title="%s" href="javascript:;" class="del">%s</a>
+            <span class="c-id-wrapper">#<span class="c-id" title="Node ID">%d</span></span>
+            </div>
+            <span class="text"><strong class="c-title" title="Node Title">%s</strong></span>
+        </div>',
+            $id,
+            $id,
+            ___('Edit'),
+            $view->icon('edit'),
+            ___('Add Child'),
+            $view->icon('add'),
+            ___('Delete'),
+            $view->icon('delete'),
+            $c->pk(),
+            Am_Html::escape($c->title)
+    );
+    $out .= '<ul>';
+    foreach ($c->getChildNodes() as $child)
+        $out .= renderNode($child->pk(), $child, $view);
+    $out .= '</ul>';
+    $out .= '</li>';
+    return $out;
+}
+function getNodeData(Am_Record $c, & $data) {
+    $data[$c->pk()] = $c->toArray() + array('id' => $c->pk());
+    foreach ($c->getChildNodes() as $child)
+        getNodeData($child, $data);
+}
+?>
+<?php if ($note) : ?>
+<div class="info"><?php p($note) ?></div>
+<?php endif; ?>
+<div class="tree-wrapper">
+<ul class="tree-nodes">
+<?php
+foreach ($nodes as $node) {
+    echo renderNode($node->pk(), $node, $this);
+}
+$data = array();
+foreach ($nodes as $node) {
+    getNodeData($node, $data);
+}
+?>
+</ul>
+<!-- template for creating new nodes -->
+<ul style="display: none">
+<?php
+$tmpl->title = "TITLE";
+echo str_replace('999', 'TPL', renderNode(999, $tmpl, $this));
+?>
+</ul>
+</div>
+<input type="button" class="add-root" value="<?php p($add_label) ?>" />
+<script type="text/javascript">
+    var nodes = <?php echo json_encode($data); ?>;
+</script>
+<div id="node-form" style="display:none">
+    <div class="am-form">
+        <form method="post" action="<?php $this->pUrl(null, 'save') ?>">
+            <div class="row">
+                <div class="element-title"><label for="node-title"><?php __e('Parent') ?></label></div>
+                <div class="element">
+                    <select name="parent_id" id="el-parent_id">
+                        <?= $this->formOptions($options) ?>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="element-title"><label for="node-title"><?php __e('Title') ?></label></div>
+                <div class="element"><input type="text" id="node-title" name="title" class="el-wide translate" /></div>
+            </div>
+            <div class="row">
+                <div class="element-title"><label for="node-description"><?php __e('Description') ?></label></div>
+                <div class="element">
+                    <textarea id="node-description" class="el-wide translate" rows="3" name="description"></textarea>
+                </div>
+            </div>
+            <?php if ($tmpl instanceof ProductCategory) : ?>
+            <div class="row">
+                <div class="element-title">
+                    <label for="node-code"><?php __e('Code') ?></label>
+                </div>
+                <div class="element">
+                    <input id="node-code" type="text" name="code" size="12"/>
+                    <a href="javascript:;" class="generate-pass local"><?php __e('generate') ?></a>
+                </div>
+            </div>
+            <div class="row no-label">
+                <div class="element">
+                    <?php __e('if code is present, products from this category will be hidden in shopping cart and this code is required to see these products. This code should be appended to url as GET paraneter c ie.:') ?><br />
+                    <?php echo $di->surl('cart') ?><strong>?c=<span id="cat-url-preview"></span></strong>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="row">
+                <div class="element-title"><label for="node-sort"><?php __e('Sort') ?></label></div>
+                <div class="element">
+                    <input type="text" id="node-sort" name="sort_order" size="4" value="0" />
+                </div>
+            </div>
+            <input type="hidden" name="id" />
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(function(){
+        var frm = jQuery("#node-form form");
+        function syncParentOptions(options)
+        {
+            var select = jQuery('#el-parent_id').empty();
+            jQuery.each(options, function(i, v) {
+                select.append($('<option></option>').attr('value', v[0]).text(v[1]));
+            });
+        }
+        function findRoot(id)
+        {
+            var found  = jQuery("#node-"+id+" > ul");
+            if (found.length) return found;
+            return jQuery(".tree-nodes");
+        }
+        function findBefore(root, data)
+        {
+            var me = data;
+            var el;
+            root.find('> li').each(function(){
+                var ref = nodes[jQuery(this).data('id')];
+                if (me.sort_order < ref.sort_order ||
+                            (me.sort_order == ref.sort_order &&
+                                me.title < ref.title)) {
+
+                    el = this;
+                    return false;
+                }
+            });
+            return el ? jQuery(el) : false;
+        }
+        function insertNode(el, data)
+        {
+            el.detach();
+            var root = findRoot(data.parent_id);
+            if (b = findBefore(root, data)) {
+                b.before(el);
+            } else {
+                root.append(el);
+            }
+        }
+        jQuery("#node-form").dialog({
+            buttons: {
+                'Ok' : function() {
+                    frm.ajaxSubmit({
+                        success: function(r){
+                            var data = r.record;
+                            var id = data.id;
+                            if (nodes[id]) { // existing category updated
+                                var $el = jQuery('#node-'+id);
+                                $el.find('> div .c-title').text(data.title);
+                                $el.find('> div .c-id').text(data.id);
+                            } else { // new category added
+                                var tpl = jQuery("li#node-TPL").html();
+                                var $el = jQuery('<li id="node-'+id+'">' + tpl + '</li>');
+                                $el.find('.c-title').text(data.title);
+                                $el.find('.c-id').text(data.id);
+                            }
+                            $el.data('id', id);
+                            nodes[id] = data;
+                            insertNode($el, data);
+                            jQuery("#node-form").dialog("close");
+                            syncParentOptions(r.options);
+                        },
+                        clearForm: true
+                    });
+                },
+                'Cancel' : function() { jQuery(this).dialog("close"); }
+            },
+            modal : true,
+            title : "<?php j(___('Edit')) ?>",
+            width: 600,
+            autoOpen: false
+        });
+        jQuery(".tree-wrapper").on('click', "a.edit", function(){
+            frm[0].reset();
+            frm.find('input[type=hidden]').val(""); //reset do not affect hidden fields
+            var li = jQuery(this).closest("li");
+            var id = parseInt(li.attr("id").replace(/node-/, ''));
+            var record = nodes[id];
+            if (!record) return; // ????
+            for (var k in record)
+            {
+                var found = frm.find('[name="'+k+'"]');
+                if (found.length) {
+                    found.val(record[k]);
+                }
+            }
+            frm.find('input, textarea, select').change();
+            jQuery("#node-form").dialog("option", "title", "<?php j(___('Edit')) ?>").dialog("open");
+        });
+        jQuery(".tree-wrapper").on('click', "a.add", function(){
+            var li = jQuery(this).closest("li");
+            var id = parseInt(li.attr("id").replace(/node-/, ''));
+            frm[0].reset();
+            frm.find('input[type=hidden]').val(""); //reset do not affect hidden fields
+            jQuery("[name='parent_id']").val(id);
+            frm.find('input, textarea, slect').change();
+            jQuery("#node-form").dialog("option", "title", "<?php j(___('Add')) ?>").dialog("open");
+        });
+        jQuery(".tree-full-wrapper").on('click', "input.add-root",function(){
+            frm[0].reset();
+            frm.find('input[type=hidden]').val(""); //reset do not affect hidden fields
+            frm.find('input, textarea, select').change();
+            jQuery("#node-form").dialog("option", "title", "<?php j(___('Add')) ?>").dialog("open");
+        });
+        jQuery(".tree-wrapper").on('click', "a.del", function(){
+            if (confirm("<?php j(___('Do you really want to delete this item?')) ?>"))
+            {
+                var li = jQuery(this).closest("li");
+                var id = parseInt(li.attr("id").replace(/node-/, ''));
+                jQuery.ajax({
+                    url : <?php echo json_encode($this->url($di->request->getControllerName() . '/del/id/', false)) ?> + id,
+                    method: 'post',
+                    success: function(r)
+                    {
+                        if (r.status != "OK")
+                        {
+                            flashError("<?php j(___('Error deleting record! Please refresh page and try again')) ?>");
+                            return;
+                        }
+                        jQuery("li#node-" + id + " > ul > li").detach().appendTo(li.closest("ul"));
+                        li.remove();
+                        syncParentOptions(r.options);
+                    }
+                });
+            }
+        });
+        jQuery("a.generate-pass").click(function(){
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz";
+            var pass = "";
+            var len = 10;
+            for(var i=0; i<len; i++){
+                pass += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            jQuery(this).closest('.row').find("input").val(pass);
+        });
+        jQuery('#node-code').change(function(){
+            jQuery('#cat-url-preview').empty().text(jQuery(this).val());
+        }).change();
+    });
+</script>
+</div>

@@ -1,0 +1,14 @@
+<?php
+if (empty($title)) $title = ___('Shopping Cart');
+$this->setLayout('layout.phtml');
+$this->headLink()->appendStylesheet($this->_scriptCss('cart.css'));
+$this->headScript()
+        ->appendFile($this->_scriptJs('cart.js'));
+?>
+<div class="am-cart">
+    <div class="am-cart-error">
+        <?php include $this->_script('_error.phtml'); ?>
+    </div>
+    <?php echo $content ?>
+</div>
+<?php include $this->_script('cart/_js.phtml');

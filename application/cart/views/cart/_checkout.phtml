@@ -1,0 +1,52 @@
+<div class="am-cart-checkout">
+    <div>
+        <?php include $this->_script('cart/_basket.phtml'); ?>
+        <h2>
+            <?php
+            if (count($paysystems) > 1) :
+                __e('Select Payment Method');
+            else :
+                __e('Payment Method');
+            endif;
+            ?>
+        </h2>
+        <div id="ps-errors-container"></div>
+        <div class="am-cart-checkout-paysys">
+            <?php foreach ($paysystems as $ps): ?>
+                <div class="am-cart-checkout-paysys-item <?php if (!empty($cart->getInvoice()->paysys_id) && ($cart->getInvoice()->paysys_id == $ps->getId())) echo 'active'; ?>" data-paysys_id='<?php p($ps->getId()); ?>'>
+                    <label for="ps-<?php p($ps->getId()) ?>">
+                        <span class='am-cart-checkout-paysys-item-title'><strong><?php echo $ps->getTitle() ?></strong></span>
+                        <span class='am-cart-checkout-paysys-item-description'><?php echo $ps->getDescription() ?></span>
+                    </label>
+                </div>
+            <?php endforeach ?>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function() {
+        jQuery(function() {
+            jQuery('.am-cart-checkout-paysys-item').on('click', function () {
+                jQuery('.am-cart-checkout-paysys-item').removeClass('active');
+                jQuery(this).addClass('active');
+                jQuery('#paysys-id').val(jQuery(this).data('paysys_id'));
+                var url = amUrl('/cart/index/set-paysys', 1);
+                jQuery.post(
+                    url[0], jQuery.merge(url[1], [
+                        { name:'paysys_id', value: jQuery(this).data('paysys_id') }
+                    ]),
+                    function (data) {
+                        if (!data.ok) {
+                            jQuery('#ps-errors-container').html("<div class=errors><ul><li>" + data.error + "</li></ul></div>");
+                        } else {
+                            jQuery('#ps-errors-container').empty();
+                        }
+                    }
+                );
+            });
+            if (jQuery('.am-cart-checkout-paysys-item').length == 1) {
+                jQuery('.am-cart-checkout-paysys-item').click();
+            }
+        });
+    })();
+</script>

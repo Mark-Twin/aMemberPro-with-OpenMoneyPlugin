@@ -1,0 +1,13 @@
+<ul class="am-breadcrumbs">
+    <?php foreach ($path as $uri => $title) : ?>
+        <?php $this->placeholder('bnreadcumbs')->captureStart() ?>
+        <?php if (is_int($uri)) : ?>
+        <li class="am-breadcrumbs-item"><?php p($title) ?></li>
+        <?php else: ?>
+        <li class="am-breadcrumbs-item"><a href="<?php p($uri) ?>"><?php p($title) ?></a></li>
+        <?php endif; ?>
+        <?php $this->placeholder('bnreadcumbs')->captureEnd() ?>
+    <?php endforeach ?>
+    <?php $this->placeholder('bnreadcumbs')->setSeparator('<li class="am-breadcrumbs-separator">&gt;</li>'); ?>
+    <?php echo $this->placeholder('bnreadcumbs'); ?>
+</ul>

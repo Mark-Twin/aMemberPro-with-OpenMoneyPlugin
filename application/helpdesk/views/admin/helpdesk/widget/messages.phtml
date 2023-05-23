@@ -1,0 +1,45 @@
+<?php $lastMessagesList = $di->helpdeskMessageTable->selectLast($num); ?>
+<?php if ($lastMessagesList) : ?>
+<div class="admin-last">
+    <h2><?php __e('Last %s Helpdesk Messages', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <?php foreach ($lastMessagesList as $m): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td><div style="padding-bottom:0.4em; opacity:0.8">
+                    <?php if ($m->admin_id) : ?>
+                        <?php if ($m->a_name_f || $m->a_name_l) : ?>
+                            <strong><?php p($m->a_name_f) ?> <?php p($m->a_name_l) ?></strong>
+                            (<?php p($m->a_login) ?>)
+                        <?php else: ?>
+                            <strong><?php p($m->a_login) ?></strong>
+                        <?php endif; ?>
+                        <span style="background:#ffffcf; padding:0 4px; font-size:8px; line-height:9px; text-transform: uppercase; border-radius:5px;"><?php __e('admin') ?></span>
+                    <?php else: ?>
+                        <?php if ($m->u_name_f || $m->u_name_l) : ?>
+                            <strong><?php p($m->u_name_f) ?> <?php p($m->u_name_l) ?></strong>
+                            (<a class="link" href="<?php echo $this->userUrl($m->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$m->user_id}") ?>"><?php p($m->u_login) ?></a>)
+                        <?php else: ?>
+                            <a class="link" href="<?php echo $this->userUrl($m->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$m->user_id}") ?>"><?php p($m->u_login) ?></a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    &middot;
+                    <time datetime="<?php p(date('c', amstrtotime($m->dattm))) ?>" title="<?php p(amDatetime($m->dattm)) ?>"><small><?php p($this->getElapsedTime($m->dattm)) ?></small></time>
+                    &middot;
+                    <small><?php p($m->subject) ?></small>
+                    </div>
+                    <div style="margin-bottom:1em">
+                    <a class="link" href="<?php echo $this->url('helpdesk/admin/p/view/view/ticket/' . $m->ticket_mask . "#helpdesk-message-" . $m->pk()) ?>"><?php p(mb_substr($m->content, 0, 120)) ?><?php echo mb_strlen($m->content) > 120 ? '&hellip;' : '' ?></a>
+                    </div>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s Helpdesk Messages', $num); ?></h2>
+    <p><?php __e('No data to display yet') ?></p>
+</div>
+<?php endif; ?>

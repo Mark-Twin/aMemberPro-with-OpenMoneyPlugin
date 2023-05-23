@@ -1,0 +1,35 @@
+<script type="text/javascript">
+jQuery(document).on('click',".void-commission", function(event)
+{
+    var link = this;
+    jQuery("#void-commission").html('<?php j(___('Do you really want to void this commission?'))?>');
+    jQuery("#void-commission").dialog({
+        autoOpen: true
+        ,width: 350
+        ,buttons: {
+            "<?php j(___('OK')) ?>" : function(){
+                var url = link.href;
+                jQuery.ajax({
+                  type: 'GET'
+                  ,url: url
+                  ,success: function(data, textStatus, request)
+                  {
+                    jQuery(link).closest('.user-invoice-record-details-commissions').after(data).remove();
+                    jQuery("#void-commission").dialog("close");
+                  }
+                });
+
+            }
+            ,"<?php j(___('Cancel')) ?>" : function(){
+                jQuery(this).dialog("close");
+            }
+        }
+        ,closeOnEscape: true
+        ,title: "<?php j(___('Void Commission'))?>"
+        ,modal: true
+    });
+    return false;
+});
+
+</script>
+<div id="void-commission"></div>

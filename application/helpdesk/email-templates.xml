@@ -1,0 +1,70 @@
+<table_data name="email_template">
+    <row type="email_template">
+        <field name="name">helpdesk.notify_new_message</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: New Message for Your Ticket [#%ticket.ticket_mask%]</field>
+        <field name="txt">You have received a new message in helpdesk
+for your ticket [%ticket.subject%]
+
+     Follow a link below to view this message:
+     %url%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">helpdesk.notify_new_message_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: New Message for Ticket [#%ticket.ticket_mask%]</field>
+        <field name="txt">You have received a new message in helpdesk
+for ticket [%ticket.subject%]
+
+     Follow a link below to view this message:
+     %url%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">helpdesk.new_ticket</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: New Ticket [#%ticket.ticket_mask%]</field>
+        <field name="txt">You created ticket [%ticket.subject%]
+in our helpdesk system.
+
+Thank you for your enquiry.
+We will respond within 24 hours.
+
+    Follow a link below to view your ticket:
+    %url%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">helpdesk.notify_assign</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Ticket [#%ticket.ticket_mask%] is assigned to you</field>
+        <field name="txt">Ticket [%ticket.subject%]
+is assigned to you.
+
+    Follow a link below to view this ticket:
+    %url%
+        </field>
+    </row>
+     <row type="email_template">
+        <field name="name">helpdesk.notify_autoclose</field>
+        <field name="email_template_layout_id">1</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Ticket [#%ticket.ticket_mask%] has been closed automatically</field>
+        <field name="txt">Your ticket [%ticket.subject%] has been closed automatically due to inactivity.
+If the issue hasn't been resolved to your satisfaction yet please let us know.
+
+    Follow a link below to view this ticket:
+    %url%
+        </field>
+    </row>
+</table_data>

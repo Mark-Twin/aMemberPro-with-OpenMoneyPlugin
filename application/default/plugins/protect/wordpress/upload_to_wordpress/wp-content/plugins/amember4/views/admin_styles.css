@@ -1,0 +1,85 @@
+/* 
+    Document   : admin-styles
+    Created on : Apr 14, 2011, 3:42:29 PM
+    Author     : alexander
+    Description:
+        Will be included on all admin pages;
+
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+.amember_error{
+    color : red;
+    font-weight: bold;
+}
+
+#am-protection-error {
+    color: red; 
+    font-weight: bold;
+    
+}
+
+.amember-protection-block{
+
+}
+
+    
+.am4-additional-setting{
+    padding-left: 20px;
+}
+
+
+
+/* Shortcode styles */
+.am4shortcode-block{
+    border-spacing: 4px;
+}
+.am4shortcode-block td{
+    padding: 0px 2px 0px 2px;
+    align: left;
+    vertical-align: top;
+    height: 2.5em;
+    font-size: 100%;
+}
+td.am4shortcode-syntax{
+    font-weight: bold;
+    font-size: 100%;
+    width:40%
+}
+td.am4shortcode-short{
+    font-size: 100%;
+    width:60%
+}
+tr.am4shortcode-help{
+    display:none;
+}
+td.am4shortcode-help{
+    padding: 10px 10px 10px 40px;
+}
+.am4shortcode-help table{
+    border-spacing: 2px 10px;
+}
+.am4shortcode-help td,th{
+    vertical-align: top;
+    text-align: left;
+    font-size:  100%;
+}
+div.am4shortcode-help{
+    line-height: 120%;
+}
+.am4shortcode-help div{
+    margin-bottom : 2px;
+}
+div.am4show-build{
+    border: 1px solid black;
+    padding: 3px 3px 3px 3px;   
+}
+
+.am4shortcode {
+    font-weight: bold;
+}
+

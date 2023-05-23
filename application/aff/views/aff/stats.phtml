@@ -1,0 +1,89 @@
+<?php $title = ___('Affiliate stats'); $this->setLayout('member/layout.phtml');
+$this->headLink()->appendStylesheet($this->_scriptCss('aff.css'));
+echo $this->blocks('aff/top');
+if ($rows) :
+    $this->enableReports();
+?>
+<?php echo $report; ?>
+<h2><?php __e('Report') ?><?php if (isset($period)) :?> (<?php p(amDate($period[0])); ?>&ndash;<?php p(amDate($period[1])) ?>)<?php endif;?></h2>
+<?php if (isset($period)) : ?>
+<p><a href="<?php echo $this->url('aff/member/stats') ?>"><?php __e('back to full report') ?></a></p>
+<?php endif; ?>
+<div class="grid-container">
+    <table class="grid">
+        <tr>
+            <th><?php __e('Date') ?></th>
+            <th style="text-align:right"><?php __e('Transactions') ?></th>
+            <th style="text-align:right"><?php __e('Commission Earned') ?></th>
+            <th style="text-align:right"><?php __e('All/Unique Clicks') ?></th>
+        </tr>
+        <?php foreach ($rows as $key => $row) : ?>
+        <tr class="grid-row">
+            <td><?php echo $row['date_href'] ? sprintf('<a href="%s" class="%s">%s</a>',
+                $row['date_href'],
+                (strpos($row['date_href'], 'javascript:') === 0 ? 'local' : ''),
+                $this->escape($row['date'])) : $this->escape($row['date']); ?></td>
+            <td style="text-align:right"><?php p($row['sales']) ?></td>
+            <?php $comm = $row['commission'] >= 0 ?
+                Am_Currency::render($row['commission']) :
+                '- ' . Am_Currency::render(abs($row['commission'])); ?>
+            <td style="text-align:right"><?php p($comm) ?></td>
+            <?php $click = !$row['clicks_all'] ? '&ndash;' : sprintf('%d/%d', $row['clicks_all'], $row['clicks']); ?>
+            <td style="text-align:right"><?php echo $row['clicks_href'] ? sprintf('<a href="%s" class="local aff-detail">%s</a>',$row['clicks_href'], $click) : $click ?></td>
+        </tr>
+        <tr class="grid-row" id="detail-<?php p($key) ?>" class="aff-details" style="display: none">
+            <td colspan="4">
+                <div style="float: right;">
+                    <a href="javascript:;" class="local detail-close"><?php __e('Close') ?></a>
+                </div>
+                <div class="content"></div>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+        <tr class="grid-row" style="font-weight: bold">
+            <td><?php __e('TOTAL') ?></td>
+            <td style="text-align:right"><?php p($totals['sales']) ?></td>
+            <?php $comm = $totals['commission'] >= 0 ?
+                Am_Currency::render($totals['commission']) :
+                '- ' . Am_Currency::render(abs($totals['commission'])); ?>
+            <td style="text-align:right"><?php p($comm) ?></td>
+            <td style="text-align:right"><?php echo !$totals['clicks_all'] ? '&ndash;' : sprintf('%d/%d', $totals['clicks_all'], $totals['clicks']); ?></td>
+        </tr>
+    </table>
+</div>
+<div id="aff-detail"></div>
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        jQuery("a.detail-close").click(function(){
+            jQuery(this).parents("tr").hide();
+        });
+    });
+    function showAffDetails(date)
+    {
+        var url = "<?php echo j($this->url('aff/member/stats', array('detailDate'=>'DATE'), false)) ?>";
+        jQuery("tr#detail-"+date).toggle();
+        jQuery("tr#detail-"+date+":visible .content").load(url.replace(/DATE/, date));
+    }
+    function affDetail(from, to, label)
+    {
+        var url = "<?php j($this->url('aff/member/clicks-detail', array('from' => 'FROMDATE', 'to' => 'TODATE'), false)) ?>";
+        jQuery("#aff-detail").load(url.replace(/FROMDATE/, encodeURIComponent(from)).replace(/TODATE/, encodeURIComponent(to)), function(){
+            jQuery("#aff-detail").amPopup({
+                title: '<?php __e('Affiliate Clicks for') ?>' + ' ' + label
+                ,height: 400
+            });
+        });
+    }
+</script>
+<div class="am-aff-stats-export">
+    <a class="am-aff-stats-export-report" href="<?php echo $this->url('aff/member/stats', "monthyear=$monthyear&csv=1") ?>"><?php __e('Download Report (CSV File)') ?></a>
+    <?php if ($canViewDetails) : ?>
+    |
+    <a class="am-aff-stats-export-details" href="<?php echo $this->url('aff/member/export-details', "monthyear=$monthyear") ?>"><?php __e('Download Transaction (CSV File)') ?></a>
+    <?php endif; ?>
+</div>
+<?php else : //$rows ?>
+<div class="am-block-nodata">
+    <p><?php __e('There is not any statistical data yet'); ?></p>
+</div>
+<?php endif;

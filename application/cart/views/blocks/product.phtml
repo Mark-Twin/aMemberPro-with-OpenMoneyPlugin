@@ -1,0 +1,96 @@
+<?php $product_url = $product->path ?
+    $this->url('product/' . urlencode($product->path), false) :
+    $this->url("cart/index/product/id/{$product->pk()}/c/{$this->cc}", false); ?>
+<div id="am-cart-product-<?php p($product->product_id) ?>" class="am-cart-product<?php echo (empty($displayProductDetails) && $di->config->get('cart.layout') == 1) ? ' am-cart-product-two-column' : '' ?><?php echo empty($displayProductDetails) ? ' am-cart-product-brief' : '' ?>">
+    <div class="am-cart-product-content<?php if (!empty($displayProductDetails)) echo ' am-cart-product-content-details'; ?>">
+        <div class="am-cart-product-content-title">
+           <?php if (empty($displayProductDetails)) : ?>
+                <a href="<?php p($product_url) ?>"><?php __e($product->title) ?></a>
+           <?php else : ?>
+                <h2><?php __e($product->title) ?></h2>
+           <?php endif; ?>
+        </div>
+        <div class="am-cart-product-content-desc">
+            <?php if($product->img): ?>
+            <div class="am-cart-product-content-desc-img-wrapper">
+                <?php if (!empty($displayProductDetails) && $product->img_detail_path) : ?>
+                <img class="am-cart-product-content-desc-img"
+                      src="<?php echo $this->url("data/public/{$product->img_detail_path}") ?>"
+                      alt="<?php p($product->title) ?>"
+                      title="<?php p($product->title) ?>" />
+                <?php else: ?>
+                <a href="<?php p($product_url) ?>"><img class="am-cart-product-content-desc-img"
+                      src="<?php echo $this->url("data/public/{$product->img_path}") ?>"
+                      alt="<?php p($product->title) ?>"
+                      title="<?php p($product->title) ?>" /></a>
+                <?php endif; ?>
+            </div>
+            <?php endif ?>
+            <?php if(empty($displayProductDetails)) : ?>
+                <div class="am-cart-product-content-desc-short">
+                <?php echo $product->getDescription(false); ?>
+                </div>
+            <?php else: ?>
+                <div class="am-cart-product-content-desc-full">
+                <?php echo $product->cart_description ? $product->cart_description : $product->getDescription(false) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <div class="am-cart-product-status">
+            <?php $item = $this->cart->getItem($product) ?>
+            <?php include $this->_script('cart/_product_status.phtml') ?>
+        </div>
+        <div class="am-cart-product-content-add-container">
+            <div class="am-cart-product-content-terms">
+                <?php
+                $plans = $product->getBillingPlans(true);
+                if (count($plans)==1) {
+                    ?>
+                    <input type="hidden" name="plan[<?php p($product->pk()) ?>]" data-product_id="<?php p($product->pk()) ?>" value="<?php p($plans[0]->pk()) ?>" />
+                    <?php
+                    echo $product->getBillingPlan()->getTerms();
+                } else {
+                    $options = array();
+                    $map =array();
+                    foreach ($plans as $plan) {
+                        $map[$plan->pk()] = (bool)$plan->variable_qty;
+                        $options[$plan->pk()] = $plan->getTerms();
+                    }
+                    $map = json_encode($map);
+                    echo "<select class='billing-plan-select' data-product_id='{$product->pk()}' data-map='{$map}' name='plan[{$product->product_id}]' size='1'>\n"
+                    . Am_Html::renderOptions($options, $product->default_billing_plan_id)
+                    . "</select>\n";
+                }
+                ?>
+            </div>
+            <?php if (!empty($displayProductDetails) || !$product->getOptions()) : ?>
+            <?php if (count($plans)>1 || $plans[0]->variable_qty) : ?>
+            <div class="am-cart-product-content-qty">
+                <span class="am-cart-product-qty-label"><?php __e('Quantity') ?></span>
+                <div class="am-cart-qty-el">
+                    <input type="button" class="am-cart-qty-el-minus" value="&minus;" />
+                    <?php echo $this->formText("qty[{$product->pk()}]", 1, array('size' => 1)) ?>
+                    <input type="button" class="am-cart-qty-el-plus" value="&plus;" />
+                </div>
+            </div>
+            <?php endif; ?>
+            <?php endif; ?>
+            <?php if (isset($opForm)) : ?>
+            <?php $this->headScript()->appendFile($this->_scriptJs('jquery/jquery.validate.js')); ?>
+            <div class="am-cart-product-content-options">
+                <?php echo $opForm ?>
+            </div>
+            <?php endif; ?>
+            <div class="am-cart-product-content-buttons">
+                <?php if (empty($displayProductDetails) && $product->getOptions()) : ?>
+                <a href="<?php p($product_url) ?>" class="am-cart-details"><?php __e('See details') ?></a>
+                <?php else: ?>
+                <input class="am-cart-button-add" type="button" name="add" value="<?php __e('Add to Basket')?>" onclick="<?php if (isset($opForm)) echo "if($('form#".$opForm->getId()."').valid()) "; ?>cart.<?php echo $di->modules->loadGet('cart')->getConfig('add_to_basket_action', 'add'); ?>(this,<?php echo $product->product_id; ?>)">
+                    <?php if (!$di->modules->loadGet('cart')->getConfig('layout_no_quick_order')) : ?>
+                    <input class="am-cart-button-order" type="button" name="order" value="<?php __e('Quick Order')?>" onclick="<?php if (isset($opForm)) echo "if($('form#".$opForm->getId()."').valid()) "; ?>cart.addAndCheckout(this,<?php echo $product->product_id; ?>); ">
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>

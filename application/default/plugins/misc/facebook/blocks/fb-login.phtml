@@ -1,0 +1,9 @@
+<?php 
+$plugin->includeJSSDK();
+$plugin->includeLoginJS();
+?>
+<div class="am-fb-login-button-wrapper am-fb-<?php echo str_replace('/', '-', $plugin->getConfig('login_postion', 'login/form/after')) ?>">
+    <div class="am-fb-login-button">
+        <div class="fb-login-button" data-max-rows="1" data-size="<?php p($plugin->getConfig('size')) ?>" data-show-faces="false" data-auto-logout-link="false" onlogin="facebook_login_login();" data-scope="email"></div>
+    </div>
+</div>

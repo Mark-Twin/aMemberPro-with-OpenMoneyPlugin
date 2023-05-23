@@ -1,0 +1,21 @@
+<div class="user-card">
+    <img class="user-card_avatar" src="//www.gravatar.com/avatar/<?php echo md5(strtolower(trim($user->email))) ?>?s=40&d=mm" />
+    <h2><?php p($user->getName() ?: $user->login) ?></h2>
+    <p><?php p($user->email) ?></p>
+    <?php if ($user->comment) : ?>
+    <p class="user-card_comment"><?php p($user->comment) ?></p>
+    <?php endif; ?>
+    <p class="user-card_payments">
+        <?php __e('Total Spent') ?>: <span style="color:#488f37"><?php echo Am_Currency::render($totalPaid) ?></span>
+        <?php if ($totalRefund > 0 ) : ?>
+        <br />
+        <?php __e('Refunds') ?>: <span class="red"><?php echo Am_Currency::render($totalRefund) ?></span>
+        <?php endif; ?>
+    </p>
+    <p class="user-card_products"><?php p(implode(', ', $di->productTable->getProductTitles($user->getActiveProductIds()))) ?></p>
+    <?php echo $this->blocks('admin/user-card', '%s', array('user' => $user)); ?>
+    <?php if ($user->last_login) : ?>
+    <p class="user-card_signin"><?php __e('Sign In') ?>: <?php p($this->getElapsedTime($user->last_login)) ?></p>
+    <?php endif; ?>
+    <p class="user-card_signup"><?php __e('Sign Up') ?>: <?php p($this->getElapsedTime($user->added)) ?></p>
+</div>

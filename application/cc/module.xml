@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>cc</id>
+    <name>Credit Card Billing</name>
+    <desc>This module provides ability to bill credit cards directly on your website</desc>
+    <version>5.5.4</version>
+    
+</module>

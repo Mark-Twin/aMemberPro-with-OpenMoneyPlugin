@@ -1,0 +1,29 @@
+<?php
+$title = ___("Processing your Transaction");
+$this->setLayout('layout.phtml');
+?>
+<br />
+<div class="make-payment-button">
+    <h2><?php __e('Click button to continue') ?></h2>
+    <form action="<?php echo $this->url; ?>" method="post" id="micropayment-form" >
+        <input type="hidden" name="project" value="<?php echo $this->project; ?>" />
+        <input type="hidden" name="amount" value="<?php echo $this->amount; ?>" />
+        <input type="hidden" name="freepaymentid" value="<?php echo $this->freepaymentid; ?>" />
+        <input type="hidden" name="seal" value="<?php echo $this->seal; ?>" />
+        <?php
+        foreach($this->methods as $k => $v)
+        {
+            $checked = '';
+            if($this->url == $k) $checked = ' checked="checked" ';
+            echo "<label class='radio'><input type='radio' name='module' value='$k' $checked/>
+                <b>$v</b></label><br/>";
+        }
+        ?>
+        <input type="submit" value="<?php __e('Continue') ?>" />
+    </form>
+    <script type="text/javascript">
+            jQuery(":radio[name^='module']").change(function(){
+                jQuery("#micropayment-form").attr('action',jQuery(this).val());
+            });       
+    </script>            
+</div>

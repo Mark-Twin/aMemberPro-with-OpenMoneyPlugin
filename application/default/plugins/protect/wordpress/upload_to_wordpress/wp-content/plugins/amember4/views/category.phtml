@@ -1,0 +1,55 @@
+<?php
+include "protection.phtml";
+?>
+<div id='am-category-protection'>
+    <table class="form-table">
+        <tr><th colspan="2"><b><?php _e('Actions for category listing (when unauthorized user or guest try to access protected category):', 'am4-plugin');?> </b></th></tr>
+        <?php foreach(array('guest', 'user') as $t) : ?>
+        <tr>
+            <th scope="row"><?php _e('Action for', 'am4-plugin');?> <?php echo $t;?></th>
+            <td>
+                <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_cat'],'show');?> name="options[<?php echo $t;?>_action_cat]" value="show"> <?php _e('Show post headers', 'am4-plugin');?></div>
+                <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_cat'],'page');?> name="options[<?php echo $t;?>_action_cat]" value="page"> <?php _e('Redirect to page:', 'am4-plugin');?> <br/>
+                <div >
+                    <select name="options[<?php echo $t;?>_action_cat_page]">
+                        <?php $this->pagesOptions($options[$t.'_action_cat_page']);?>
+                    </select>
+                </div></div>
+                <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_cat'],'redirect');?> name="options[<?php echo $t;?>_action_cat]" value="redirect"> <?php _e('Redirect to url:', 'am4-plugin');?> <br/>
+                <div>
+                    <input type='text' name="options[<?php echo $t;?>_action_cat_redirect]" size="60" value="<?php echo $options[$t.'_action_cat_redirect'];?>">
+                </div></div>
+                <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_cat'],'login');?> name="options[<?php echo $t;?>_action_cat]" value="login"> <?php if($t=='guest')  _e('Redirect to login page', 'am4-plugin'); else _e('Redirect to membership renewal page', 'am4-plugin');?></div>
+                   
+            </td>
+        </tr>
+        <?php endforeach; ?>
+        
+        <tr>
+            <th scope="row" colspan="2"><b><?php _e('Menu Item Protection for Category Link', 'am4-plugin');?></b><br/>
+                <?php _e('What should happen when link to Category will be placed into WordPress Custom Menu:', 'am4-plugin');?> 
+            </th>
+        </tr>
+        <?php foreach(array('guest', 'user') as $t) : ?>
+        <tr>
+            <th scope ="row"><?php _e('Action for', 'am4-plugin');?> <?php echo $t;?></td>
+            <td>
+                <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_cat_menu'],'hide');?> name="options[<?php echo $t;?>_action_cat_menu]" value="hide"> <?php _e('Exclude category link from menu', 'am4-plugin');?></div>
+                <div><input class="action_input" type="radio" <?php checked($options[$t.'_action_cat_menu'],'show');?> name="options[<?php echo $t;?>_action_cat_menu]" value="show"> <?php _e('Show link even if', 'am4-plugin');?> <?php echo $t;?> <?php _e('do not have access to category', 'am4-plugin');?><br/></div>                            
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+    
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+    jQuery("#am-protection-checkbox").change(function(){
+           if(jQuery(this).attr("checked")) {
+               jQuery("#am-category-protection").show(200);
+           }else{
+               jQuery("#am-category-protection").hide(200);
+           }
+        }).trigger("change");    
+});
+</script>

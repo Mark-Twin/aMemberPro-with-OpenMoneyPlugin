@@ -1,0 +1,10 @@
+<?php
+$this->layoutNoTitle = true;
+$title = ___('Setup/Configuration : ');
+?>
+<h1><?php echo $title ?> : <?php p($pageObj->getTitle()) ?></h1>
+<?php 
+/* @var $form Am_Form */
+$renderer = new Am_Form_Renderer_Admin();
+/* @var $renderer HTML_QuickForm2_Renderer_Default */
+echo $form->render($renderer);

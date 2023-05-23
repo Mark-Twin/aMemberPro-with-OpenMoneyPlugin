@@ -1,0 +1,26 @@
+<?php include $this->_script($di->modules->loadGet('cart')->getConfig('basket_layout') ? 'blocks/_basket-short.phtml' : 'blocks/_basket-full.phtml'); ?>
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.am-cart-product').removeClass('am-cart-product-in-basket');
+    jQuery('.am-cart-product-content-options').show();
+    jQuery('.am-cart-product-status').hide();
+    jQuery('.am-cart-product').
+        find('input[type=button][name=add]').removeAttr('disabled').show();
+    jQuery('.am-cart-product').
+        find('input[type=button][name=order]').attr('value', '<?php __e('Quick Order') ?>');
+<?php foreach ($cart->getItems() as $item) : ?>
+    jQuery('#am-cart-product-<?php p($item->item_id) ?>').addClass('am-cart-product-in-basket');
+    jQuery('#am-cart-product-<?php p($item->item_id) ?>').
+        find('.am-cart-product-status').
+        empty().
+        append('<?php include $this->_script('cart/_product_status.phtml')  ?>').show();
+    jQuery('#am-cart-product-<?php p($item->item_id) ?> .am-cart-product-content-options').hide();
+    <?php if (!$item->variable_qty) : ?>
+    jQuery('#am-cart-product-<?php p($item->item_id) ?>').
+        find('input[type=button][name=add]').prop('disabled', 'disabled').hide();
+    jQuery('#am-cart-product-<?php p($item->item_id) ?>').
+        find('input[type=button][name=order]').prop('value', '<?php __e('Checkout') ?>');
+    <?php endif; ?>
+<?php endforeach; ?>
+});
+</script>

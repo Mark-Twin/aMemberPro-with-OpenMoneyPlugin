@@ -1,0 +1,75 @@
+<?php if ($strategy->isMessageAvalable($message)) : ?>
+<?php $uploads = $message->loadGetAttachments(); ?>
+<div class="am-helpdesk-message <?php
+    if ($message->type=='comment') {
+        echo 'am-helpdesk-message-comment';
+    } elseif ($strategy->isMessageForReply($message)) {
+        echo 'am-helpdesk-message-inbound';
+    } else {
+        echo 'am-helpdesk-message-outbound';
+    }
+?>" id="helpdesk-message-<?php echo $this->obfuscate($message->message_id) ?>">
+    <div class="am-helpdesk-message-header">
+        <div class="am-helpdesk-message-action-fold">
+            <a href="javascript:;" title="<?php __e('Close') ?>">&minus;</a>
+        </div>
+        <?php if (count($uploads)) : ?>
+        <div class="am-helpdesk-message-has-attachments am-helpdesk-message-brief">
+            <img title="<?php p(implode(", ", array_map(function($el) {return $el->name;}, $uploads))); ?>" src="<?php p($this->_scriptImg('attachment.png')) ?>" />
+        </div>
+        <?php endif; ?>
+        <?php if ($strategy->isShowAvatar()) :?>
+        <div class="am-helpdesk-message-author-avatar am-helpdesk-message-full">
+            <?php echo $strategy->getAvatar($message); ?>
+        </div>
+        <?php endif; ?>
+        <span class="am-helpdesk-message-author"><?php p($strategy->getName($message)) ?></span> &middot;
+        <time
+            class="am-helpdesk-message-date"
+            title="<?php p(amDatetime($message->dattm)) ?>"
+            datetime="<?php p(date('c', amstrtotime($message->dattm))) ?>"
+            ><?php p($this->getElapsedTime($message->dattm)) ?></time><span class="am-helpdesk-message-preview am-helpdesk-message-brief">, <span class="am-helpdesk-message-preview-content"><?php p(mb_substr(preg_replace('/(\s{2,})/m', ' ', strip_tags(trim($message->content))), 0, 120)) ?>&hellip;</span></span>
+    </div>
+    <div class="am-helpdesk-message-content">
+        <pre><?php echo $this->hyperlinks($this->skip($message->content)) ?></pre>
+        <?php if (count($uploads)) : ?>
+        <ul class="am-helpdesk-message-attachments">
+        <?php foreach ($message->loadGetAttachments() as $upload) : ?>
+            <li class="am-helpdesk-message-attachments-item"><a class="link" href="<?php p($url = $strategy->assembleUrl(array(
+                'page_id' => 'view',
+                'action' => 'file',
+                'message_id' => $this->obfuscate($message->message_id),
+                'id' => $this->obfuscate($upload->upload_id)
+                ), 'inside-pages', false)) ?>" target="_blank" <?php if (strpos($upload->mime, 'image/') === 0) : ?>data-tooltip='<img width="250px" src="<?php p($url) ?>" />'<?php endif; ?>><?php p($upload->name) ?></a> (<?php p($upload->getSizeReadable()) ?>)</li>
+        <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
+    </div>
+    <div class="am-helpdesk-message-actions">
+        <?php if ($strategy->canEditMessage($message)) : ?>
+        <div class="am-helpdesk-message-action am-helpdesk-message-action-reply">
+            <a class="local" href="<?php
+            echo $di->helpdeskStrategy->assembleUrl(array(
+                'page_id' => 'view',
+                'action' => 'reply',
+                'message_id' => $this->obfuscate($message->message_id),
+                'ticket' => $ticket->ticket_mask,
+                'type' => 'comment'
+            ), 'inside-pages') ?>"><?php __e('Edit') ?></a>
+        </div>
+        <?php elseif ($strategy->isMessageForReply($message) && $strategy->canEditTicket($ticket)) : ?>
+        <div class="am-helpdesk-message-action am-helpdesk-message-action-reply">
+            <a class="local" href="<?php
+            echo $di->helpdeskStrategy->assembleUrl(array(
+                'page_id' => 'view',
+                'action' => 'reply',
+                'message_id' => $this->obfuscate($message->message_id),
+                'ticket' => $ticket->ticket_mask,
+                'type' => 'message'
+            ), 'inside-pages') ?>"><?php __e('Reply') ?></a>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php include $this->_script($strategy->getTemplatePath() . '/_reply-panel.phtml'); ?>
+</div>
+<?php endif; ?>

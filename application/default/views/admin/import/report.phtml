@@ -1,0 +1,85 @@
+<?php $title = ___('Import Finished');
+$this->setLayout('admin/layout.phtml'); ?>
+<?php $b_url = $this->url('admin-users', array(
+        '_u_search' => array(
+            'import' => array(
+                    'id' => $import_id
+                )
+        )
+    )); ?>
+<div class="info">
+    <p><?php __e('To verify import result go to %sBrowse Users%s', '<a class="link" href="' . $b_url . '">', '</a>') ?></p>
+    <p><?php __e('Please run %sRebuild Db%s to update status for imported customers',
+    '<a class="link" href="' . $this->url('admin-rebuild') . '">', '</a>') ?></p>
+</div>
+<div id="import-area">
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <tr class="grid-row">
+                <td width="20%"><strong><?php __e('Lines Skipped:') ?></strong></td>
+                <?php if ($stat[Import_Log::TYPE_SKIP]) : ?>
+                    <td class="expandable" title="<?php __e('Click to Expand') ?>"  data-type="log-skip">
+                        <div class="arrow"></div>
+                        <?php p($stat[Import_Log::TYPE_SKIP]) ?>
+                    </td>
+                <?php else: ?>
+                    <td>0</td>
+                <?php endif; ?>
+            </tr>
+            <?php foreach ($skip as $data) : ?>
+                <tr class="grid-row" style="display:none" rel="log-skip">
+                    <td colspan="2" class="expandable-data">
+                        <pre><?php print_r($data) ?></pre>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <tr class="grid-row">
+                <td><strong><?php __e('Lines Success:') ?></strong></td>
+                <td><a href="<?php echo $b_url ?>" class="link"><?php p($stat[Import_Log::TYPE_SUCCESS]) ?></a></td>
+            </tr>
+            <tr class="grid-row">
+                <td><strong><?php __e('Lines Proccessed:') ?></strong></td>
+                <td><?php p($stat[Import_Log::TYPE_PROCCESSED]) ?></td>
+            </tr>
+            <tr class="grid-row">
+                <td><strong><?php __e('Duration:') ?></strong></td>
+                <td><?php p($duration) ?></td>
+            </tr>
+            <tr class="grid-row">
+                <td><strong><?php __e('Errors:') ?></strong></td>
+                <?php if ($stat[Import_Log::TYPE_ERROR]) : ?>
+                    <td class="expandable" title="<?php __e('Click to Expand') ?>" data-type="log-error">
+                        <div class="arrow"></div>
+                        <?php p($stat[Import_Log::TYPE_ERROR]) ?>
+                    </td>
+                <?php else: ?>
+                    <td>0</td>
+                <?php endif; ?>
+            </tr>
+            <?php foreach ($errors as $error) : ?>
+                <tr class="grid-row" style="display:none" rel="log-error">
+                    <td colspan="2" class="expandable-data">
+                    <?php p($error['msg']) ?>
+                        <hr>
+                        <pre><?php print_r($error['lineParsed']) ?></pre>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+(function($){
+    jQuery(function(){
+        jQuery(".expandable").click(function(){
+            if (jQuery(this).hasClass('expanded')) {
+                jQuery(this).removeClass('expanded');
+                jQuery('[rel=' + jQuery(this).data('type') + ']').hide();
+            } else {
+                jQuery(this).addClass('expanded');
+                jQuery('[rel=' + jQuery(this).data('type') + ']').show();
+            }
+        });
+    });
+})(jQuery);
+</script>

@@ -1,0 +1,16 @@
+<?php
+$title = ___("Redirect to NetDebit booking form.");
+$this->setLayout('layout.phtml');
+?>
+
+<meta name="NetDebit" content="JSPayment" />
+<meta name="NetDebitsysID" content="71815..773040080" />
+<!-- Beginn NetDebit - Payment V3.0 -->
+<script language="JavaScript" type="text/javascript" src="http://www.fixport.de/secuSYS/NDCODE.php?F=<?php echo $this->F; ?>&amp;PID=<?php echo $this->PID; ?>&amp;CON=<?php echo $this->CON; ?>&amp;SID=<?php echo $this->SID; ?>"></script>
+<!-- Ende   NetDebit - Payment V3.0 -->
+
+<p align="center">
+<a href="http://www.netdebit-payment.de" onclick="GATE_NDV2('<?php echo $this->VAR1; ?>','VAR2','<?php echo $this->ZAH; ?>','<?php echo $this->POS; ?>','<?php echo $this->KUN; ?>','<?php echo $this->KNR; ?>'); return false;">
+<b>Zahlung über NetDebit per Lastschrift oder Kreditkarte</b>
+</a>
+</p>

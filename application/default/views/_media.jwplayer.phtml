@@ -1,0 +1,90 @@
+<?php
+    $scriptId = "am-$type-" . filterId($this->id);
+    $mediaId = filterId($this->id);
+    $divId = "div-".$scriptId;
+    $rootUrl = $isSecure ? ROOT_SURL : ROOT_URL;
+    $jwPlayerJs = $rootUrl . "/application/default/views/public/js/jwplayer/jwplayer.js";
+    $playerParams['width'] = $width;
+    $playerParams['height'] = $height;
+    $playerParams['file'] = $media;
+    $playerParams['image'] = $this->poster;
+    $playerParams['flashplayer'] = $rootUrl . "/application/default/views/public/js/jwplayer/jwplayer.flash.swf";
+    $playerParams['html5player'] = $rootUrl . "/application/default/views/public/js/jwplayer/jwplayer.html5.js";
+    $types = array(
+        'video/mp4' =>'mp4',
+        'video/flv' =>'flv',
+        'video/webm' =>'webm',
+        'audio/mp4' => 'aac',
+        'audio/mpeg' => 'mp3',
+        'audio/ogg' => 'vorbis'
+        );
+    $playerParams['type'] = @$types[$mime];
+?>
+    <?php if (!empty($media)) : // user has access to media ?>
+jQuery(document).ready(function($) {
+    if (!window.hasOwnProperty('amMediaLoader')) {
+        window.amMediaLoader = true;
+        window.amMediaLoaderLoaded = false;
+        var runAllMedia = function()
+        {
+            window.amMediaLoaderLoaded = true;
+            for (var r in window.amMediaQueue) {
+                if (window.amMediaQueue.hasOwnProperty(r)) {
+                    window.amMediaQueue[r]();
+                }
+            }
+        }
+
+        // if !jwplayer  loaded, load it in async mode
+        if (typeof jwplayer == 'function')
+        {
+            runAllMedia();
+        } else {
+            jQuery.getScript('<?php p($jwPlayerJs)?>', function(){
+                jwplayer.key = '<?php p($playerParams['key']);?>';
+                runAllMedia();
+            });
+        }
+    }
+
+    var runMedia<?php echo $mediaId; ?> = function()
+    {
+        var $a = jQuery('<a id="<?php p($divId) ?>" class="am-video"><?php if ($this->poster) { echo '<div class="am-video-poster-icon"></div><div class="am-video-poster"><img src="' . $this->escape($this->poster) . '" alt="" /></div>'; } ?></a>');
+        $a.attr("href","<?php p($media) ?>");
+        $a.css({
+            width : '100%',
+            'max-width' : '<?php p($width)?>px',
+            'height' : '<?php p($height)?>px',
+            display: 'inline-block'
+        });
+        jQuery("script#<?php echo $scriptId ?>").after($a);
+        jQuery(window).resize(function(){
+            $a.css({
+                height: parseInt($a.innerWidth()*<?php p($height)?>/<?php p($width)?>) + 'px'
+            });
+        });
+        $a.wrap('<div class="am-video-wrapper"><center></center></div>');
+        jQuery(window).resize();
+        jwplayer('<?php p($divId)?>').setup(<?php echo (empty($playerParams) ? '{}' : json_encode($playerParams)) ?>);
+        jQuery('#'+'<?php p($divId)?>').css({display: 'inline-block'});
+
+    }
+    if (window.amMediaLoaderLoaded) {
+        setTimeout(function(){
+            runMedia<?php echo $mediaId; ?>();
+        }, 0);
+    } else {
+        if (!window.hasOwnProperty('amMediaQueue')) {
+            window.amMediaQueue = {};
+        }
+        window.amMediaQueue.runMedia<?php echo $mediaId; ?> = runMedia<?php echo $mediaId; ?>;
+    }
+});
+<?php else: // no media ?>
+jQuery(document).ready(function($) {
+    var $a = jQuery('<a id="<?php p($divId)?>" class="am-video-no-access"></a>');
+    $a.attr("href",'<?php echo $link;?>' + '?_amember_redirect_url=' + btoa(window.location.href));
+    $a.text('<?php j($error) ?>');
+    jQuery("script#<?php echo $scriptId ?>").after($a);
+});
+<?php endif; ?>

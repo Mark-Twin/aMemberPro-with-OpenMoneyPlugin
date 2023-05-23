@@ -1,0 +1,137 @@
+<?php echo '<'.'?php' ?>
+
+/**
+ * <?php echo ucfirst($plugin) ?> Integration Plugin
+ * Checklist (mark tested items with x):
+ * [x] - template generated
+ * [ ] - go to aMember Cp -> Setup -> Plugins and enable this plugin
+ * [ ] - test user creation
+ *       try to create user in aMember and add access manually.
+ *       Login to <?php echo ucfirst($plugin) ?> and check that
+ *       that corresponding user appeared in users list and all necessary
+ *       fields transferred
+ * [ ] - test password generation: login to <?php echo $plugin?> as the new user
+ * [ ] - update user record in amember and try to login and view profile in the script
+ * [ ] - implement single-login
+ *
+ **/
+class Am_Protect_<?php echo ucfirst(toCamelCase($plugin))?> extends Am_Protect_Databased
+{
+    const PLUGIN_DATE = '$Date$';
+    const PLUGIN_REVISION = '@<?php echo "@VERSION@"?>@';
+<?php if ($password_type == 'custom'): ?>
+    const <?php echo strtoupper($plugin)?> = '<?php p($plugin) ?>';
+<?php endif ?>
+
+    protected $guessTablePattern = "<?php echo $table['user'] ?>";
+    protected $guessFieldsPattern = array(
+        <?php foreach ($guessFields as $f) echo "'$f',"; ?>
+
+    );
+    protected $groupMode = <?php echo $group_mode ?>;
+
+    public function afterAddConfigItems(Am_Form_Setup_ProtectDatabased $form)
+    {
+        parent::afterAddConfigItems($form);
+        // additional configuration items for the plugin may be inserted here
+    }
+
+    public function getPasswordFormat()
+    {
+        return <?php echo ($password_type == 'custom') ? 'self::'.strtoupper($plugin) : $password_type?>;
+    }
+<?php if ($password_type == 'custom'): ?>
+
+    public function cryptPassword($pass, &$salt = null, User $user = null)
+    {
+        return null; // must return crypted password and use or set salt if necessary
+    }
+<?php endif ?>
+<?php if (empty($table['session'])) : ?>
+
+    /**
+     * Return record of customer currently logged-in to the
+     * third-party script, or null if not found or not logged-in
+     * @return Am_Record|null
+     */
+    public function getLoggedInRecord()
+    {
+        // for single-login must return
+    }
+
+    public function loginUser(Am_Record $record, $password)
+    {
+        // login user to third-party script
+    }
+
+    public function logoutUser(User $user)
+    {
+        // logout user from third-party script
+    }
+<?php endif; ?>
+
+    public function createTable()
+    {
+        $table = new Am_Protect_Table($this, $this->getDb(), '?_<?php echo $table['user']?>', '<?php echo $key['user']?>');
+        $table->setFieldsMapping(array(
+<?php foreach ($userFields as $s):?>
+            <?php echo $s ?>
+
+<?php endforeach ?>
+        ));
+        <?php if (!empty($table['usergroup'])): ?>
+
+        $table->setGroupsTableConfig(array(
+            Am_Protect_Table::GROUP_TABLE   =>  '?_<?php echo $table['usergroup']?>',
+            Am_Protect_Table::GROUP_GID     =>  '<?php echo $field['usergroup']['Am_Protect_Table::GROUP_GID']?>',
+            Am_Protect_Table::GROUP_UID     =>  '<?php echo $field['usergroup']['Am_Protect_Table::GROUP_UID']?>'
+        ));
+        <?php endif ?>
+
+        return $table;
+    }
+<?php if ($group_mode != 'Am_Protect_Databased::GROUP_NONE'):?>
+
+    public function getAvailableUserGroupsSql()
+    {
+        return "SELECT
+            <?php echo $field['group']['id'] ?> as id,
+            <?php echo $field['group']['title']?> as title,
+            NULL as is_banned, #must be customized
+            NULL as is_admin # must be customized
+            FROM ?_<?php echo $table['group']?>";
+    }
+<?php endif ?>
+<?php if (!empty($table['session'])): ?>
+
+    public function createSessionTable()
+    {
+        $table = new Am_Protect_SessionTable(
+            $this, $this->getDb(),
+            '?_<?php echo $table['session'] ?>', '<?php echo $key['session'] ?>');
+        $table->setTableConfig(array(
+                Am_Protect_SessionTable::FIELD_SID => '<?php echo $key['session'] ?>',
+<?php foreach ($field['session'] as $k => $f): ?>
+<?php if (empty($f['field'])) continue; ?>
+                <?php echo $f['field'] ?> => '<?php echo $k?>',
+<?php endforeach ?>
+                Am_Protect_SessionTable::SESSION_COOKIE => $this->getSessionCookieName(),
+            )
+        );
+        return $table;
+    }
+
+    function getSessionCookieName()
+    {
+        //return name of cookie that used for sessions
+    }
+<?php endif ?>
+
+    function getReadme()
+    {
+        return <<<CUT
+    <?php echo $plugin?> README
+
+CUT;
+    }
+}

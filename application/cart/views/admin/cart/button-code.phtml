@@ -1,0 +1,9 @@
+<h1><?php __e('Generate Button HTML') ?></h1>
+<div class="info"><?php __e(
+   "This code can be inserted into any HTML page on your website "
+  ."or into any WordPress post or page")?></div>
+<?php if (@$htmlcode): ?>
+    <textarea class="el-wide" rows="10"><?php p($htmlcode) ?></textarea>
+<?php else: ?>
+    <?php echo $form ?>
+<?php endif; ?>

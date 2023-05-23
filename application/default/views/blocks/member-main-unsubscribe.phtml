@@ -1,0 +1,25 @@
+<?php
+$u = $this->user;
+$checked = $u->unsubscribed ? 'checked="checked"' : '';
+?>
+<label for="checkbox-unsubscribed">
+    <input type="checkbox" name="unsubscribed" id="checkbox-unsubscribed" value="1" <?php echo $checked ?> />
+    <?php __e("Unsubscribe from all e-mail messages") ?>
+</label>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    jQuery("#checkbox-unsubscribed").change(function(){
+        var vars = [
+            {name:'unsubscribed', value:(this.checked ? 1 : 0)}
+        ];
+        <?php if (!empty($this->s) && !empty($this->e)): ?>
+        vars.push({ name:'s', value:<?php echo json_encode($this->s) ?>});
+        vars.push({ name:'e', value:<?php echo json_encode($this->e) ?>});
+        <?php endif // end of unsubscribe-without-login code ?>
+        var url = amUrl("/ajax/unsubscribed", 1);
+        jQuery.post(url[0], jQuery.merge(vars, url[1]), function(){
+            amFlashMessage('<?php __e('Status of your subscription has been changed.') ?>');
+        });
+    });
+});
+</script>

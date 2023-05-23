@@ -1,0 +1,17 @@
+<div class="am-cart-layout-one-coll">
+    <div class="am-cart-layout-one-coll-coll">
+        <div class="am-cart-layout-one-coll-content">
+            <ul class="am-cart-front-category-list">
+                <?php foreach ($productCategoryOptions as $id => $title): ?>
+                <?php if (!$id) continue; ?>
+                <li class="am-cart-front-category-list-item">
+                    <a href="<?php echo $this->url('cart',array('c'=>$id)) ?>"><?php p($title) ?></a>
+                    <?php if($productCategories[$id]->description) : ?>
+                    <span class="am-cart-front-category-list-item-desc"><?php echo $productCategories[$id]->description ?></span>
+                    <?php endif; ?>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </div>
+</div>

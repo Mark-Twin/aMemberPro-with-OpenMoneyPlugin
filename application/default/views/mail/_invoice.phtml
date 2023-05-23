@@ -1,0 +1,83 @@
+<?php
+$taxes = array();
+foreach ($invoice->getItems() as $item) {
+    if ($item->tax_rate && $item->{$prefix.'tax'}) {
+        if (!isset($taxes[$item->tax_rate])) {
+            $taxes[$item->tax_rate] = 0;
+        }
+        $taxes[$item->tax_rate] += $item->{$prefix.'tax'};
+    }
+}
+if (!$taxes) {
+    $taxes[$invoice->tax_rate] = $invoice->{$prefix.'tax'};
+}
+?>
+<table width="100%" style="border-collapse:collapse">
+<?php $num=1; ?>
+    <tr style="border-bottom:1px solid #eee; background:white; font-weight:bold;">
+        <th width="1%" style="padding:0.5em" nowrap="nowrap">#</th>
+        <th style="padding:0.5em"><?php __e('Subscription/Product Title');?></th>
+        <th style="padding:0.5em; text-align:right"><?php __e('Unit Price');?></th>
+        <th style="padding:0.5em; text-align:right"><?php __e('Total Price');?></th>
+    </tr>
+
+<?php foreach ($invoice->getItems() as $item) : ?>
+    <tr style="border-bottom:1px solid #eee; background:white">
+        <td width="1%" style="padding:0.5em" nowrap="nowrap"><?php p($num++) ?>.</td>
+        <td style="padding:0.5em"><?php
+            $item_title = ___($item->item_title);
+            $options = array();
+            foreach($item->getOptions() as $optKey => $opt) {
+                $options[] = sprintf('%s: %s',
+                    $opt['optionLabel'],
+                    is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']);
+            }
+            if ($options) {
+                $item_title .= sprintf(' (%s)', implode(', ', $options));
+            }
+            p($item_title) ?></td>
+        <td style="padding:0.5em; text-align:right"><?php p($item->qty) ?>&times;<?php p(Am_Currency::render($item->{$prefix.'price'}, $invoice->currency)) ?></td>
+        <td style="padding:0.5em; text-align:right"><?php p(Am_Currency::render(moneyRound($item->{$prefix.'price'} * $item->qty), $invoice->currency)) ?></td>
+    </tr>
+<?php endforeach; ?>
+<?php if ($invoice->{$prefix.'subtotal'} != $invoice->{$prefix.'total'}) : ?>
+    <tr style="border-bottom:1px solid #eee; background:#eee">
+        <td style="padding:0.5em"></td>
+        <td colspan="2" style="padding:0.5em; text-align:right"><?php __e('Subtotal') ?></td>
+        <td style="padding:0.5em; text-align:right"><?php p(Am_Currency::render($invoice->{$prefix.'subtotal'}, $invoice->currency)) ?></td>
+    </tr>
+<?php endif; ?>
+<?php if ($invoice->{$prefix.'discount'} > 0) : ?>
+<tr style="border-bottom:1px solid #eee; background:#eee">
+    <td style="padding:0.5em"></td>
+    <td colspan="2" style="padding:0.5em; text-align:right"><?php __e('Discount') ?></td>
+    <td style="padding:0.5em; text-align:right"><?php p(Am_Currency::render($invoice->{$prefix.'discount'}, $invoice->currency)) ?></td>
+</tr>
+<?php endif; ?>
+<?php if ($invoice->{$prefix.'shipping'} > 0) : ?>
+<tr style="border-bottom:1px solid #eee; background:#eee">
+    <td style="padding:0.5em"></td>
+    <td colspan="2" style="padding:0.5em; text-align:right"><?php __e('Shipping') ?></td>
+    <td style="padding:0.5em; text-align:right"><?php p(Am_Currency::render($invoice->{$prefix.'shipping'}, $invoice->currency)) ?></td>
+</tr>
+<?php endif; ?>
+<?php if ($invoice->{$prefix.'tax'} > 0) : ?>
+<?php foreach ($taxes as $rate => $total) : ?>
+<tr style="border-bottom:1px solid #eee; background:#eee">
+    <td style="padding:0.5em"></td>
+    <td colspan="2" style="padding:0.5em; text-align:right"><?php __e('Tax') ?> (<?php p($rate) ?>%)</td>
+    <td style="padding:0.5em; text-align:right"><?php echo $invoice->getCurrency($total) ?></td>
+</tr>
+<?php endforeach; ?>
+<?php endif; ?>
+<tr style="border-bottom:1px solid #eee; background:#eee; font-weight:bold">
+    <td style="padding:0.5em"></td>
+    <td colspan="2" style="padding:0.5em; text-align:right"><?php __e('Total') ?></td>
+    <td style="padding:0.5em; text-align:right"><?php p(Am_Currency::render($invoice->{$prefix.'total'}, $invoice->currency)) ?></td>
+</tr>
+<?php if ($invoice->rebill_times) : ?>
+<tr style="border-bottom:1px solid #eee; background:white">
+    <td colspan="4" style="padding:0.5em"><?php __e('Subscription Terms');?> : <?php __e($invoice->getTerms()) ?></td>
+</tr>
+<?php endif; ?>
+</table>

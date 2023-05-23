@@ -1,0 +1,21 @@
+<?php
+$di->plugins_protect->get('wordpress')
+    ->startLayout($this, isset($meta_title) ? $meta_title : $title, true, $body_class);
+ob_start();
+get_header();
+$_ = ob_get_clean();
+echo str_replace('body class="', 'body class="et_full_width_page ', $_);
+?>
+<div id="main-content">
+    <div class="container">
+        <div id="content-area" class="clearfix">
+            <div id="left-area">
+                <article>
+<?php include dirname(__FILE__)."/../amember.php"; ?>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+get_footer();

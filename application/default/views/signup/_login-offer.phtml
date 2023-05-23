@@ -1,0 +1,20 @@
+<?php if (empty($this->noLoginOffer)):?>
+<!-- login box on signup page widget -->
+<?php if (!$di->auth->getUserId()):?>
+<?php
+  parse_str(@$_SERVER['QUERY_STRING'], $_);
+  $redirect = isset($_['amember_redirect_url']) ? $_['amember_redirect_url'] : $_SERVER['REQUEST_URI'];
+?>
+<div class="am-info am-login-text"><?php __e("If you already have an account on our website, please %slog in%s to continue",
+        '<a href="' . $this->url('login', array('amember_redirect_url'=>$redirect)) . '" class="ajax-link" title="' . $this->escape($di->config->get('site_title')) . '">', '</a>') ?></div>
+<?php else: // if logged-in ?>
+<div class="am-info am-login-text">
+        <?php __e("You are logged-in as %s. %sLogout%s to signup as new user.",
+                "<strong>" . $di->auth->getUsername() . "</strong>",
+                "<a href='" . $this->url('logout', array('amember_redirect_url'=>$_SERVER['REQUEST_URI'])) . "'>",
+                "</a>"
+        ); ?>
+</div>
+<?php endif // if not logged-in ?>
+<!-- login box on signup page widget end -->
+<?php endif ?>

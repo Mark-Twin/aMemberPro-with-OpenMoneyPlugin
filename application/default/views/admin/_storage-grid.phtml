@@ -1,0 +1,141 @@
+<?php if (count($this->plugins) > 1) : ?>
+<div class="am-tabs-wrapper">
+    <ul class="am-tabs">
+    <?php foreach ($this->plugins as $id => $pl):?>
+        <li class="<?php echo ($id == $active_plugin) ? 'active' : 'normal'; ?>">
+            <a class="filesmanager-storage" href="javascript:;" data-href="<?php p($pl->link) ?>"><?php p($pl->title) ?></a>
+        </li>
+    <?php endforeach?>
+    </ul>
+</div>
+<?php endif; ?>
+<div class="info">
+    <?php p($description)?>
+    <?php if (!empty($refresh)):?>
+        <a class="filesmanager-refresh local" href="javascript:" data-href="<?php p($refresh->_link) ?>"><?php __e('Refresh')?></a>
+    <?php endif ?>
+    <?php if (!empty($upload)):?>
+        <a class="filesmanager-upload" href="javascript:"><?php __e('Upload')?></a>
+        <input type="hidden" value="<?php p($upload->render()); ?>" id="filesmanager-upload-code"/>
+    <?php endif ?>
+    <?php if (!empty($createfolder)):?>
+        <a class="filesmanager-createfolder" href="javascript:" data-href="<?php p($upload->_link) ?>"><?php __e('Create Folder')?></a>
+    <?php endif ?>
+</div>
+<div class="input-storage-filter-wrapper">
+    <div class="input-storage-filter-inner-wrapper">
+        <input class="input-storage-filter"
+               type="text"
+               name="q"
+               autocomplete="off"
+               placeholder="<?php __e('type part of file name to filter…') ?>" />
+        <div class="input-storage-filter-empty">&nbsp;</div>
+    </div>
+</div>
+<div class="grid-container grid-storage">
+    <table class="grid grid-no-highlight">
+        <tr>
+            <th><?php __e('Name') ?></th>
+            <th><?php __e('Size') ?></th>
+            <?php if (!empty($deletefile)) : ?>
+            <th class="actions"><?php __e('Actions') ?></th>
+            <?php endif; ?>
+        </tr>
+        <?php foreach ($items as $item): /* @var Am_Storage_Item $item */ ?>
+        <tr class="grid-row" data-title="<?php p(strtolower($item->getName())) ?>">
+            <?php if ($item instanceof Am_Storage_Folder): ?>
+                <td colspan="2" class="grid-storage-name">
+                    <?= $this->icon('storage-folder') ?>
+                    <strong><a href="javascript:" class="filesmanager-folder local"
+                               data-href="<?php p($item->_link)?>"><?php p($item->getName()) ?></a></strong>
+                </td>
+            <?php else: ?>
+                <td class="grid-storage-name">
+                    <?= $this->icon('storage-file') ?>
+                    <a href="javascript:" class="filesmanager-file local"
+                       data-info="<?php p(json_encode($item->_data_info))?>"><?php p($item->getName()) ?></a>
+                    <?php if (strpos($item->getMime(), 'image/') === 0 && is_numeric($item->_data_info['upload_id'])) : ?>
+                        <img src="<?php echo $this->url('admin-upload/get', array('id' => (int)$item->_data_info['upload_id'])) ?>" style="float:right; margin-left: 1em; max-height: 30px; max-width:150px" />
+                    <?php endif; ?>
+                </td>
+                <td align="right" width="1%" nowrap><?php echo $item->getSizeReadable($item->getSize()) ?></td>
+            <?php endif ?>
+            <?php if (!empty($deletefile)) : ?>
+                <td class="actions" width="1%">
+                    <?php if ($item instanceof Am_Storage_File): ?>
+                    <a class="filesmanager-delete" href="<?php p(str_replace("__PATH__", $item->getPath(), $deletefile->_link)) ?>"><?php echo $this->icon('delete', ___('Delete')) ?></a>
+                    <?php endif; ?>
+                </td>
+            <?php endif; ?>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</div>
+<script type="text/javascript">
+    window.storageCurrentUrl = <?php echo json_encode($currentUrl) ?>;
+
+    jQuery(document).off('click','.filesmanager-file').on('click','.filesmanager-file', function(){
+        jQuery(this).closest('.filesmanager-container').get(0).uploader.
+        upload('addFile', jQuery(this).data('info'));
+        jQuery(this).closest('.filesmanager-container').dialog('close');
+    });
+
+    jQuery(document)
+    .off('click','.filesmanager-refresh, .filesmanager-storage, .filesmanager-folder')
+    .on('click','.filesmanager-refresh, .filesmanager-storage, .filesmanager-folder', function(){
+        jQuery(this).closest('.filesmanager-container').load(jQuery(this).data('href'));
+    });
+
+    jQuery(document)
+    .off('click','.filesmanager-delete')
+    .on('click','.filesmanager-delete', function(){
+        jQuery(this).closest('.filesmanager-container').load(jQuery(this).attr('href'));
+        return false;
+    })
+
+    jQuery(document)
+    .off('click','.filesmanager-upload')
+    .on('click','.filesmanager-upload', function(){
+        jQuery(".filesmanager-upload-div").remove();
+        var $div = jQuery('<div id="filesmanager-upload-div">');
+        $div.html(jQuery('#filesmanager-upload-code').val());
+        jQuery(window).append($div);
+
+        $div.find('form').ajaxForm({
+            beforeSubmit : function(arr, $form, options){
+                return true;
+            },
+            error: function(xhr, statusText, error)
+            {
+            },
+            success : function(responseXml, statusText, xhr) {
+            }
+        });
+
+        $div.dialog({
+            modal: true,
+            width: 400,
+            height: 400,
+            title: "<?php j(___('Upload')) ?>"
+        });
+    });
+</script>
+<script type="text/javascript">
+jQuery(function(){
+    jQuery(document).on('keyup change', '.input-storage-filter', function(){
+         jQuery('.input-storage-filter-empty').toggle(this.value.length != 0);
+
+         var $context = jQuery('.grid-storage');
+         if (this.value.length) {
+             jQuery('.grid-row', $context).hide();
+             jQuery('.grid-row[data-title*="' + this.value.toLowerCase() + '"]', $context).show();
+         } else {
+             jQuery('.grid-row', $context).show();
+         }
+    });
+
+    jQuery('.input-storage-filter-empty').click(function(){
+        jQuery(this).closest('.input-storage-filter-wrapper').find('.input-storage-filter').val('').change();
+    });
+});
+</script>

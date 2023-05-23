@@ -1,0 +1,18 @@
+<?php $this->setLayout('admin/layout.phtml'); ?>
+<div class="info">
+    <p><?php __e('You can import users from CSV file to aMember.') ?> <?php __e('Text in your file should be encoded in UTF-8 encoding.') ?></p>
+    <p><?php __e('To save a spreadsheet as a comma separate value (CSV) file (OpenOffice):') ?></p>
+    <ul class="list">
+        <li><?php __e('Choose %1$sFile%2$s > %1$sSave As%2$s.', '<strong>', '</strong>') ?></li>
+        <li><?php __e('In the File name box, type a name for the file.') ?></li>
+        <li><?php __e('In the File type list, select %1$sText CSV%2$s and click %1$sSave%2$s. You may see the message box. Click %1$sKeep Current Format%2$s.', '<strong>', '</strong>') ?></li>
+        <li><?php __e('In the Export of text files dialog, select the options you want and then click %1$sOK%2$s.', '<strong>', '</strong>') ?></li>
+    </ul>
+    <p><?php __e('You can download %sexample&nbsp;file%s.', '<a class="link" href="' . 'http://www.amember.com/downloads/import-example.csv' . '">', '</a>') ?></p>
+    <p><strong><?php __e('IMPORTANT NOTE:');?></strong>
+        <?php __e('This is necessary to run aMember CP -> Rebuild DB -> Rebuild Core and Invoice database after import')?></p>
+</div>
+<div id="import-area">
+    <?php echo @$form ?>
+</div>
+<?php echo @$importHistory ?>

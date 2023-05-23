@@ -1,0 +1,29 @@
+<?php
+$title = ___('Affiliate Payouts');
+$this->setLayout('member/layout.phtml');
+echo $this->blocks('aff/top');
+?>
+<?php if ($payouts): ?>
+<div class="grid-container">
+    <table class="grid am-aff-payout">
+        <tr>
+            <th><?php __e('Payout Date') ?></th>
+            <th><?php __e('Threshold Date') ?></th>
+            <th><?php __e('Payout Method') ?></th>
+            <th><?php __e('Amount') ?></th>
+            <th><?php __e('Is Paid?') ?></th>
+        </tr>
+        <?php foreach ($payouts as $p) : ?>
+            <tr class="grid-row <?php if (@$i++%2) echo ' odd'; ?>">
+                <td><?php echo amDate($p->date)?></td>
+                <td><?php echo amDate($p->thresehold_date)?></td>
+                <td><?php p($p->type) ?></td>
+                <td><?php p(Am_Currency::render($p->amount)) ?></td>
+                <td><?php p($p->is_paid ? ___('Yes') : ___('No')) ?></td>
+            </tr>
+        <?php endforeach ?>
+    </table>
+</div>
+<?php else: ?>
+    <div class="am-block-nodata"><?php __e('No payouts have been made to your account yet'); ?></div>
+<?php endif; ?>

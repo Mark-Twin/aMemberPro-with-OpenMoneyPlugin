@@ -1,0 +1,35 @@
+<script type="text/javascript">
+jQuery(document).on('click',".calc-commission", function(event)
+{
+    var link = this;
+    jQuery("#calc-commission").html('<?php j(___('Do you really want to Calculate Commission for this invoice? Commission will be added to affiliate account.'))?>');
+    jQuery("#calc-commission").dialog({
+        autoOpen: true
+        ,width: 350
+        ,buttons: {
+            "<?php j(___('OK')) ?>" : function(){
+                var url = link.href;
+                jQuery.ajax({
+                  type: 'GET'
+                  ,url: url
+                  ,success: function(data, textStatus, request)
+                  {
+                    jQuery(link).closest('.user-invoice-record-details-commissions').after(data).remove();
+                    jQuery("#calc-commission").dialog("close");
+                  }
+                });
+
+            }
+            ,"<?php j(___('Cancel')) ?>" : function(){
+                jQuery(this).dialog("close");
+            }
+        }
+        ,closeOnEscape: true
+        ,title: "<?php j(___('Calculate Commission'))?>"
+        ,modal: true
+    });
+    return false;
+});
+
+</script>
+<div id="calc-commission"></div>

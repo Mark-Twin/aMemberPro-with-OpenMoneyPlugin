@@ -1,0 +1,120 @@
+<?php
+/**
+ * This file is included into amember/thanks.html and cc/cc_info.html
+ * for displaying of payment receipt information
+ */
+?>
+<?php echo $this->blocks('receipt/before') ?>
+<?php
+$taxes = array();
+foreach ($invoice->getItems() as $item) {
+    if ($item->tax_rate && $item->first_tax) {
+        if (!isset($taxes[$item->tax_rate])) {
+            $taxes[$item->tax_rate] = 0;
+        }
+        $taxes[$item->tax_rate] += $item->first_tax;
+    }
+}
+if (!$taxes) {
+    $taxes[$invoice->tax_rate] = $invoice->first_tax;
+}
+?>
+<div class="am-receipt">
+    <div class="am-receipt-content">
+        <table class="am-receipt-table">
+            <thead>
+                <tr class="am-receipt-row-head">
+                    <th class="am-receipt-product"><?php __e('Subscription/Product Title') ?></th>
+                    <th class="am-receipt-qty"><?php __e('Qty') ?></th>
+                    <th class="am-receipt-unit-price"><?php __e('Unit Price') ?></th>
+                    <th class="am-receipt-price"><?php __e('Total Price') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($invoice->getItems() as $p): ?>
+                <tr>
+                    <td>
+                        <?php p($p->item_title)?>
+                        <!-- options -->
+                        <div class="am-receipt-product-options">
+                        <?php foreach ($p->getOptions() as $optKey => $opt): ?>
+                            <br /><b><i><?php p($opt['optionLabel']) ?>:</i></b>
+                                 <i><?php p(is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']) ?></i>
+                                 <?php if ($opt['first_price'] || $opt['second_price']) : ?>
+                                 <i style='color: gray;'><?= $opt['first_price'] > 0 ? '+' : '&minus;' ?> <?php
+                                        $o = new stdclass;
+                                        $o->first_price = $opt['first_price'];
+                                        $o->second_price = $opt['second_price'];
+                                        $o->first_period = $invoice->first_period;
+                                        $o->second_period = $invoice->second_period;
+                                        $o->rebill_times = $invoice->rebill_times;
+                                        $o->currency = $invoice->currency;
+                                        $t = new Am_TermsText($o);
+                                    echo $t->getStringForOption(); ?></i>
+                                 <?php endif ?>
+                        <?php endforeach // item->getOptions() ?>
+                        </div>
+                    </td>
+                    <td class="am-receipt-qty">
+                        <?php p($p->qty) ?>
+                    </td>
+                    <td class="am-receipt-unit-price">
+                        <?php p($invoice->getCurrency($p->first_price)) ?>
+                    </td>
+                    <td class="am-receipt-price">
+                            <?php if ($p->first_discount > 0): ?>
+                        <span class="am-receipt-discounted-price"><?php echo $invoice->getCurrency($p->getFirstSubtotal())?></span>
+                            <?php endif ?>
+                            <?php echo $invoice->getCurrency($p->getFirstTotal()) ?>
+                    </td>
+                </tr>
+                <?php endforeach ?>
+                <tr class="am-receipt-row-delimiter">
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td class="am-receipt-indent"></td>
+                    <td class="am-receipt-total" colspan="2"><strong><?php __e('Subtotal') ?></strong></td>
+                    <td class="am-receipt-total am-receipt-price">
+                        <strong><?php echo $invoice->getCurrency($invoice->first_subtotal) ?></strong>
+                    </td>
+                </tr>
+                <?php if ($invoice->first_discount > 0) : ?>
+                <tr>
+                    <td class="am-receipt-indent"></td>
+                    <td colspan="2"><?php __e('Discount') ?></td>
+                    <td class="am-receipt-price"><?php echo $invoice->getCurrency($invoice->first_discount)?></td>
+                </tr>
+                <?php endif; ?>
+                <?php if ($invoice->first_shipping > 0): ?>
+                <tr>
+                    <td class="am-receipt-indent"></td>
+                    <td colspan="2"><?php __e('Shipping') ?></td>
+                    <td class="am-receipt-price"><?php echo $invoice->getCurrency($invoice->first_shipping)?></td>
+                </tr>
+                <?php endif ?>
+                <?php if ($invoice->first_tax > 0): ?>
+                <?php foreach ($taxes as $rate => $total) : ?>
+                <tr>
+                    <td class="am-receipt-indent"></td>
+                    <td colspan="2"><?php __e('Tax Amount') ?> (<?php p($rate) ?>%)</td>
+                    <td class="am-receipt-price"><?php echo $invoice->getCurrency($total)?></td>
+                </tr>
+                <?php endforeach; ?>
+                <?php endif ?>
+                <tr class="am-receipt-row-total">
+                    <td class="am-receipt-indent"></td>
+                    <td class="am-receipt-total" colspan="2"><strong><?php __e('Total') ?></strong></td>
+                    <td class="am-receipt-total am-receipt-price"><strong><?php echo $invoice->getCurrency($invoice->first_total)?></strong></td>
+                </tr>
+                <tr class="am-receipt-row-terms">
+                    <td colspan="5" class="am-receipt-terms">
+                        <strong><?php __e('Subscription Terms')?></strong>:
+                        <i><?php p(___($invoice->getTerms())); ?></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php echo $this->blocks('receipt/after') ?>

@@ -1,0 +1,60 @@
+<?php
+$this->layoutNoMenu = true;
+if (class_exists('Zend_Registry', false) && Zend_Registry::isRegistered('Zend_Translate'))
+{
+    if(!isset($title))
+        $title = ___('An Error has occurred');
+    $plzcnt = ___('Please contact webmaster');
+}
+else
+{
+    if(!isset($title))
+        $title = 'An Error has occurred';
+    $plzcnt = 'Please contact webmaster';
+}
+foreach ($this->headScript()->getKeys() as $k)
+    $this->headScript()->offsetUnset($k);
+
+if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') 
+    $this->setLayout("layout.phtml");
+
+?>
+
+<table width="100%"><tr><td>
+<?php if (is_array($error)): ?>
+<ul>
+<?php foreach ($error as $e): ?>
+<li><span style="color: #F44336;"><?php if ($is_html): ?><?php echo $e ?><?php else: ?><?php p($e) ?><?php endif ?></span></li>
+</ul>
+<?php endforeach ?>
+<?php else: ?>
+<span style="color: #F44336;"><?php if ($is_html): ?><?php echo $error ?><?php else: ?><?php p($error) ?><?php endif ?></span>
+<?php endif ?>
+
+<?php if (!empty($trace) && is_string($trace)): ?>
+<pre><?php echo nl2br($trace)?></pre>
+<?php elseif (!empty($trace) && is_array($trace)): ?>
+<pre>
+<table class="trace" border="0">
+<tr>
+    <th>File</th>
+    <th>Line</th>
+    <th>Method</th>
+    <th>Class</th>
+    <th>&nbsp;</th>
+    <th>Params</th>
+</tr>
+<?php foreach ($trace as $r): ?>
+<tr>
+<?php foreach ($r as $s): ?>
+<td><?php if (!is_array($s)): ?><?php echo $s ?><?php else: ?>{$s|var_dump}<?php endif ?></td>
+<?php endforeach ?>
+</tr>
+<?php endforeach ?>
+</table><?php endif ?>
+</pre></td></tr></table>
+
+<br /><br />
+<?php p($plzcnt) ?>: <a href="mailto:<?php p($di->config->get('technical_email', $di->config->get('admin_email'))) ?>"><?php p($di->config->get('technical_email', $di->config->get('admin_email'))) ?></a>.
+
+

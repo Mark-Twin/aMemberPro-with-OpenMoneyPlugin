@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>webhooks</id>
+    <name>Webhooks</name>
+    <desc>send data to remote addresses for configured events</desc>
+    <version>5.5.4</version>
+</module>

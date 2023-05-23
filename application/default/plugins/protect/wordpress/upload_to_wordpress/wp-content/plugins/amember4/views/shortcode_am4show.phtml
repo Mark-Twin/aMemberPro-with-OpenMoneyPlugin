@@ -1,0 +1,156 @@
+<div><b><?php _e('Build protection shortcode:', 'am4-plugin');?> </b></div>
+
+<div class="am4show-build">
+    <div><input type="checkbox" id='not_have_enabled' value="not_have"> <?php _e('User do not have subscriptions:', 'am4-plugin');?><br/>
+    <?php $this->resourceAccess("not_have", '', 'not_have', __('Select Products that user should not have', 'am4-plugin'), self::RESOURCE_ACCESS_SKIP_PERIOD);?>
+    </div>
+    <div><input type="checkbox" id="have_enabled" value="have"> <?php _e('User have subscriptions:', 'am4-plugin');?><br/>
+    <?php $this->resourceAccess("have", '', 'have', __('Select Products that user should have', 'am4-plugin'));?>
+    </div>
+    <div><input type="checkbox" id="guest_error_enabled" value="guest_error"> <?php _e('Error for guest:', 'am4-plugin');?><br/>
+    <div class="am4-additional-setting">
+        <?php $this->errorMessageSelect("","guest_error");?>
+    </div></div>
+    <div><input type="checkbox" id="user_error_enabled" value="user_error"> <?php _e('Error for user:', 'am4-plugin');?><br/>
+    <div class="am4-additional-setting">
+        <?php $this->errorMessageSelect("","user_error");?>
+    </div></div>
+    <table>
+        <tr><th><?php _e('Result:', 'am4-plugin');?> </th><td><span class="am4shortcode"></td></tr>
+    </table>
+</div>
+<script type="text/javascript">
+    function am4ShowBuild(){
+        var d = jQuery('.am4show-build');
+        var r = '[am4show ';
+        jQuery("input[id$='enabled']:checked", d).each(function (){
+            var elname = this.value;
+            var e = jQuery("input[name^='"+elname+"']");
+            if(e.attr("type") == 'radio'){
+                e = jQuery("input[name='"+elname+"']:checked");
+                if(!e.length) return;
+                var value = e.val();
+            }else{
+                var data ={};
+                e.each(function(){
+                    var reg = RegExp(elname+"\\[(\\w+)\\]\\[([-]*\\w+)\\]\\[(\\w+)\\]");
+                    var found = this.name.match(reg);
+                    if(found){
+                        if(!data[found[1]]) data[found[1]] = {};
+                        if(!data[found[1]][found[2]]) data[found[1]][found[2]] = {};
+                        data[found[1]][found[2]][found[3]] = this.value;
+                    }
+                });
+                if(data){
+                    var value = '';
+                    for(t in data){
+                        for(id in data[t]){
+                            value += (t=='product'? 'p' : 'g');
+                            value += id;
+                            if(parseInt(data[t][id]['stop'])){
+                                value += ','+parseInt(data[t][id]['start'])+','+parseInt(data[t][id]['stop']);
+                            }else{
+                                if(parseInt(data[t][id]['start'])){
+                                    var type = data[t][id]['start'].slice(-1);
+                                    value += ','+parseInt(data[t][id]['start']) + (type == 'p' ? 'p' : '');
+                                }
+                            }
+                            value+=';';
+                        }
+                    }
+                }
+            }
+            r+= " "+this.value+"='"+value+"' ";
+        });
+        r += '][/am4show]';
+        jQuery('.am4shortcode',d).html(r);
+    }
+    jQuery(document).ready(function (){
+        jQuery(document).on("change", ".am4show-build :input", am4ShowBuild);
+        am4ShowBuild();
+    });
+</script>
+
+<div><?php _e('Text within shortcode will be displayed only if user have access.', 'am4-plugin');?></div>
+<div><i><?php _e('Parameters:', 'am4-plugin');?></i></div>
+        
+        <table>
+        <tr>
+            <th>notactive</th>
+            <td>
+                <div><?php _e('If notactive attribute is specified in shortcode, it will act exactly the same way as am4guest shortcode', 'am4-plugin'); ?></div>
+                <div><i>Example:</i></div>
+                <div><b>[am4show notactive=0]content[/am4show]</b> is equivalent to [am4guest]content[/am4guest]</div>
+            </td>
+            
+            
+        </tr>
+        <tr>
+            <th>have</th>
+            <td><div><?php _e('Access that user should have. Format: type1[,start1[,stop1]][;type2[,start2[,stop2]]]', 'am4-plugin');?></div>
+                <div><?php _e('type represents Product or Category: p1 - means product with id 1, g1 means Category with id 1 ', 'am4-plugin');?></div>
+                <div><?php _e('id can be set to -1. p-1 - means any product, g-1 means any category', 'am4-plugin');?> </div>
+                <div><?php _e('start and stop  are number of days', 'am4-plugin');?></div>
+                <div><i><?php _e('Examples:', 'am4-plugin');?></i></div>
+                <div><b>have='p2;g1'</b> - <?php _e('show block for users who have active product #2 or Category #1', 'am4-plugin');?></div>
+                <div><b>have='p1,0,10;p2,30,60'</b> - <?php _e('show block for users who have active product #1 and product was purchased not more then 10 days ago', 'am4-plugin');?> 
+                 <?php _e('also show block for users who have product #2 and product was purchased not less then 30 days ago but not more then 60 days ago.', 'am4-plugin');?></div>
+                <div><?php _e('Both start and stop values can be omited. For example:', 'am4-plugin');?> </div>
+                <div><b>have='p1,10;p2'</b> <?php _e('show block for users who purchase product 1 not less then ten days ago, and have active subscription for product 2', 'am4-plugin');?></div>
+                <div><?php _e("stop value can be set to -1 as well. If stop value will be set to -1, block will be displayed even if user's subscription to product expired.", 'am4-plugin');?></div>
+                <div><b>have='p1,0,-1'</b> - <?php _e('means that block will be displayed for users who purchase product #1 before (even if subscription expired already)', 'am4-plugin');?></div>
+                <div><b>have='p=-1,10,20'</b> - <?php _e('show block for users who have any product  and product was purchased not less then 10 days ago but not more then 20 days ago', 'am4-plugin');?></div>
+            </td>
+        </tr>
+        <tr>
+            <th>require_all</th>
+            <td>
+                <div><?php _e('Works in conjuction with above attribute. Require all products specified in have="" in order to show content', 'am4-plugin');?></div>
+                <div><i><?php _e('Example:', 'am4-plugin');?></i> [am4show have='p1;p2'] 
+                    <?php _e('Block will be displayed only if user have both products', 'am4-plugin');?>
+                    [/am4show]</div>
+
+            </td>
+        </tr>
+        
+        <tr>
+            <th>
+                <b>not_have</b>
+            </th>
+            <td>
+                <div><?php _e('Products or Categories that user should not have. Format: type1[;type2]', 'am4-plugin');?></div>
+                <div><?php _e('type meaning the same as above.', 'am4-plugin');?></div>
+                <div><i><?php _e('Examples:', 'am4-plugin');?></i></div>
+                <div>not_have='p1;p2' - <?php _e("block will be displayed if user don't have product #1 and don't have product #2", 'am4-plugin');?></div>
+            </td>
+        </tr>
+        <tr>
+            <th><b>user_error</b></th>
+            <td>
+                <div><?php _e("Error that will be displayed for user when he don't have an access. Can be created", 'am4-plugin');?> <a href='admin.php?page=am4-errormessages'><?php _e('here', 'am4-plugin');?></a></div>
+            </td>
+        </tr>
+        <tr>
+            <th><b>guest_error</b></th>
+            <td>
+                <div><?php _e('Error that will be displayed for guest. Can be created', 'am4-plugin');?> <a href='admin.php?page=am4-errormessages'><?php _e('here', 'am4-plugin');?></a></div>
+                <div><?php _e('Both error settings can be omited. Block will be hidden if user will not have an access.', 'am4-plugin');?></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2><div><i><?php _e('Examples:', 'am4-plugin');?> </i></div>
+                <div><b>[am4show have='p1' user_error='amember_error' guest_error='amember_guest_error']</b>
+                <?php _e('This block will be be displayed only if user have active subscription to product 1.', 'am4-plugin');?> 
+                <?php _e("If user don't have such subscription,  'amember_error' message will be displayed instead of block contents.", 'am4-plugin');?>
+                <?php _e("Guest will see 'amember_guest_error' message.", 'am4-plugin');?> 
+                <b>[/am4show]</b></div>
+                <div>
+                <b>[am4show not_have='g1']</b> <?php _e("This block will be displayed only if user don't have Category  #1", 'am4-plugin');?> <b>[/am4show]</b><br/>
+                <b>[am4show]</b> <?php _e("This block will be displayed for active users only", 'am4-plugin');?> <b>[/am4show]</b>
+                </div>
+            </td>
+            
+        </tr>
+        </table>
+        
+        

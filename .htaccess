@@ -1,0 +1,49 @@
+#  Sample Nginx rules configuration:
+#  aMember rules (replace /amember to actual aMember Pro path from site root)
+#
+#       location ~* ^/amember/.*\.(js|ico|gif|jpg|png|css|swf|csv|svg)$ {}
+#       location ~* ^/amember/setup/index.php$ { try_files not-existing-file @php; }
+#       location ~* ^/amember/js.php { try_files not-existing-file @php; }
+#       location ~* ^/amember/index.php$ { try_files not-existing-file @php; }
+#       location ~* ^/amember/public.php$ { try_files not-existing-file @php; }
+#
+#       location ~* ^/amember/public { rewrite ^.*$ /amember/public.php; }
+#       location ~* ^/amember/setup { rewrite ^.*$ /amember/setup/index.php; }
+#       location ~* ^/amember { rewrite ^.*$ /amember/index.php; }
+#
+#       location ~* /amember/data/public/* {}
+#       location ~* /amember/data/.* {internal;}
+#
+#  you must already have something like that in your nginx configuration:
+#
+#       location ~ \.php$ {
+#          try_files not-existing-file @php;
+#       }
+#       location @php {
+#         fastcgi_pass 127.0.0.1:9000;
+#         include fastcgi_params;
+#       }
+#
+#  it is necessary to have @php section, as it is referred by aMember rules, and
+#  it must be located at bottom
+#
+#
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+# You may need to uncomment the following line if rewrite fails to work
+# RewriteBase must be setup to base URL of your aMember installation without
+# domain name
+#    RewriteBase /amember
+    # Workaround for a bug introduced in Apache 2.4.18 (caused endless loop)
+    RewriteCond %{ENV:REDIRECT_STATUS} 200
+    RewriteRule .* - [L]
+    # Continue to normal aMember rules
+    RewriteRule ^public public.php [L]
+    RewriteRule ^js.php js.php [L]
+    RewriteRule !\.(js|ico|gif|jpg|png|css|swf|csv|html|pdf|woff|ttf|eot|svg)$ index.php
+</IfModule>
+
+<IfModule mod_php5.c>
+php_value auto_prepend_file none
+#  php_flag magic_quotes_gpc off
+</IfModule>

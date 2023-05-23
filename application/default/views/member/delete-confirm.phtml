@@ -1,0 +1,44 @@
+<?php
+$title = ___('Delete Account and Personal Data');
+$this->setLayout('member/layout.phtml'); ?>
+<p><?php __e("We're sorry to see you go."); ?></p>
+<p>
+    <?php __e("This action can't be reverted so please think twice!"); ?>
+</p>
+<p>    <?php __e('Your Personal Data will be removed from the system. '
+        . 'If you have active subscriptions, they will be cancelled. '
+        . 'If you were subscribed to newsletters, your subscriptions will be cancelled '
+    . 'and your email address will be removed from mailing lists.');
+    ?>
+</p>
+
+<?php if(Am_Di::getInstance()->config->get('enable-personal-data-download')) : ?>
+<p>
+    <?php __e('To see what Personal Data we have, click %sthis link%s.', "<a href='".$this->url('personal-data/download')."'>", "</a>"); ?>
+</p>
+<?php endif;?>
+<?php if(!empty($invoices)) : ?>
+<hr>
+    <p><h2><?php __e("Subscriptions that will be cancelled automatically");?></h2></p>
+    <p><?php foreach($invoices as $invoice) : ?>
+        <?php include "_invoice.phtml"; ?>
+    <?php endforeach; ?></p>
+<?php endif; ?>
+
+<?php if(!empty($member_products)) : ?>
+<hr>
+    <p><h2><?php __e("Access to these products will be deleted");?></h2></p>
+    <p><?php include $this->_script("blocks/member-main-subscriptions.phtml");?></p>
+<?php endif; ?>
+
+<?php if(!empty($otherConfirmations)) : ?>
+    <?php foreach($otherConfirmations as $block) : ?>
+        <hr>
+        <p><?php echo $block; ?></p>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<hr>
+<p><h1><?php __e("Confirm Account and Personal Data Removal")?></h1></p>
+<?php echo $form; ?>    
+

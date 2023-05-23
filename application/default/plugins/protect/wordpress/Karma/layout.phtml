@@ -1,0 +1,22 @@
+<?php
+do_action('template_redirect');
+Am_Di::getInstance()->plugins_protect->get('wordpress')
+    ->startLayout($this, isset($meta_title) ? $meta_title : $title, true, $body_class);
+get_header();
+?>
+</div><!-- header-area -->
+</div><!-- end rays -->
+</div><!-- end header-holder -->
+</div><!-- end header -->
+<div id="main">
+<div class="main-area">
+<div class="main-holder">
+<div id="content" class="content_full_width">
+<?php
+include dirname(__FILE__)."/../amember.php";
+?>
+
+</div><!-- end content -->
+</div><!-- end main-holder -->
+</div>
+<?php get_footer();

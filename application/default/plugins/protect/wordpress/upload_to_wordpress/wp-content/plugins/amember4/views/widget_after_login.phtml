@@ -1,0 +1,32 @@
+<?php if($isLoggedIn) : ?>
+<div><b><?php print $instance['welcome_title'];?> <?php echo $user['name_f'];?> <?php echo $user['name_l'];?>!</b></div>
+    <?php if($instance['amember_links'] && is_array($links)) : ?>
+    <ul>
+        <?php foreach($links as $l) : ?>
+            <li><?php echo $l;?></li>
+        <?php endforeach; ?>
+    </ul>
+
+    <?php endif; // amember_links; ?>
+
+    <ul>
+        <?php if($instance['dashboard_link']): ?>
+            <li><a href="<?php print $instance['dashboard_page_url'];?>"><?php print $instance['dashboard_title'];?></a></li>
+        <?php endif; ?>
+
+        <?php if($instance['renew_subscription_link']): ?>
+            <li><a href="<?php print $instance['renewal_page_url'];?>"><?php print $instance['renew_subscription_title'];?></a></li>
+        <?php endif; ?>
+            
+        <?php if($instance['payment_history_link']): ?>
+            <li><a href="<?php print $instance['history_page_url'];?>"><?php print $instance['payment_history_title'];?></a></li> 
+        <?php endif; ?>
+        
+        <?php if($instance['change_profile_link']): ?>
+            <li><a href="<?php print $instance['profile_page_url'];?>"><?php print $instance['change_profile_title'];?></a></li>
+        <?php endif; ?>
+    </ul>
+<?php endif; // isLoggedIn?>        
+    <ul>
+        <?php if($instance['logout_link']) :  ?><li><a href="<?php echo $instance['logout_page_url'];?>"><?php print $instance['logout_title'];?></a></li> <?php endif; ?>
+    </ul>

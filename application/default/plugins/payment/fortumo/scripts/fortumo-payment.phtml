@@ -1,0 +1,46 @@
+<?php
+$title = ___("Payment Confirmation");
+$this->setLayout('layout.phtml');
+?>
+<?php include $this->_script('_receipt.phtml'); ?>
+<style>
+    .operator{
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+</style>
+<div class="am-info">
+<h2>Payment information</h2>
+    <div>
+    Please select your country: <select name="country" id="fortumo-country"><?php echo Am_Html::renderOptions(array_merge(array('' => '-- Please Select --'), $data->getCountries()));?></select>
+</div>
+
+<?php foreach($data->getOperators() as $country=>$operators) : ?>
+<div class="operators" id="operators-<?php echo $country;?>">
+    <?php foreach($operators as $name=>$op) : ?>
+    <div class="operator" id="<?php echo $name;?>">
+        <?php if($op['all_operators']=='true') : ?>
+            In order to complete payment send SMS with text <b><?php echo $op['keyword']." ".$invoice->public_id;?></b> to number <b><?php echo $op['shortcode'];?></b><br/>
+	    <?php echo $op['text'];?>
+            <?php else : ?>
+            <b><?php echo $name;?></b><br/>
+            Send SMS with text <b><?php echo $op['keyword']." ".$invoice->public_id;?></b> to number <b><?php echo $op['shortcode'];?></b><br/>
+            <?php echo $op['text']?>
+            
+        <?php endif;?>
+    </div>
+    <?php endforeach; ?>
+</div>
+<?php endforeach; ?>
+</div>
+<script>
+    jQuery(document).ready(function($){
+        jQuery("#fortumo-country").change(function(){
+            jQuery(".operators").hide();
+            jQuery("#operators-"+jQuery("#fortumo-country").val()).show();
+        }).change();
+        
+        
+    });
+    
+</script>

@@ -1,0 +1,12 @@
+<?php $this->blocks()->requireJs('user.js'); ?>
+<div id="am-block-active-subscriptions">
+<?php if ($activeInvoices): ?>
+    <h1><?php __e('Your Subscriptions') ?></h1>
+    <?php foreach ($activeInvoices as $invoice): ?>
+    <?php include $this->_script('member/_invoice.phtml'); ?>
+    <?php endforeach ?>
+<?php endif ?>
+</div>
+<div class="cancel-subscription-popup" data-popup-title="<?php __e('Cancel Subscription')?>" style="display:none">
+    <?php include $this->_script('member/_cancel.phtml') ?>
+</div>

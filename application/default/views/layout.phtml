@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title><?php p(isset($meta_title) ? $meta_title : $title) ?></title>
+        <?php $this->printLayoutHead(); ?>
+    </head>
+    <body<?php if (!empty($body_class)): ?> class="<?php p($body_class) ?>"<?php endif; ?>>
+        <?php echo $this->placeholder('body-start'); ?>
+        <?php include $this->_script('_maintenance.phtml'); ?>
+        <div class="am-layout am-common">
+            <a name="top"></a>
+            <div class="am-header">
+                <div class="am-header-content-wrapper am-main">
+                    <div class="am-header-content">
+                        <?php include $this->_script('_logo.phtml'); ?>
+                        <div class="am-header-content-content">
+                            <?php echo $theme->getConfig('header'); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="am-header-line">
+
+            </div>
+            <div class="am-body">
+                <div class="am-body-content-wrapper am-main">
+                    <?php include $this->_script('_content.phtml'); ?>
+                </div>
+            </div>
+        </div>
+        <div class="am-footer">
+            <div class="am-footer-content-wrapper am-main">
+                <div class="am-footer-content">
+                    <div class="am-footer-actions">
+                        <a href="#top"><img src="<?php echo $this->_scriptImg('/top.png') ?>" /></a>
+                    </div>
+                    <div class="am-credits">Built on <a href="http://www.amember.com/" style="text-decoration: none;" title="flexible, user-friendly membership software (subscription script)">aMember Pro&trade; membership software</a></div>
+                    <div class="am-footer-text"><?php echo str_replace(
+                        array('%site_title%', '%year%'),
+                        array($di->config->get('site_title'), date('Y')), $theme->getConfig('footer', "&copy; %year% - {$di->config->get('site_title')}")); ?></div>
+                </div>
+            </div>
+        </div>
+        <?php echo $this->placeholder('body-finish'); ?>
+    </body>
+</html>

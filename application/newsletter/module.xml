@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>newsletter</id>
+    <name>Newsletters</name>
+    <desc>Sending and receiving e-mail messages (newsletters) to customers</desc>
+    <version>5.5.4</version>
+</module>

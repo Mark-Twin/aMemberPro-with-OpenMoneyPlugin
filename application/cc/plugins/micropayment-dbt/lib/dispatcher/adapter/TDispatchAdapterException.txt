@@ -1,0 +1,6 @@
+protocol_not_supported			= service protocol "{1}" not supported by "{0}" yet
+protocol_unknown				= adapter "{0}" don't know service protocol "{1}"
+adapter_datatype_not_supported	= Response data type "{0}" not supported
+adapter_protocol_not_supported	= {0} do not support service protocol "{1}" use another Adapter
+
+servicemethod_result_missing	= service method named "{0}" requires result "{1}"

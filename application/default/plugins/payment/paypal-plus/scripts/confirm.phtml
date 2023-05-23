@@ -1,0 +1,18 @@
+<?php
+$title = ___("Processing your Transaction");
+$this->setLayout('layout.phtml');
+?>
+<br />
+<?php include $this->_script('_receipt.phtml'); ?>
+<br />
+<br />
+<div id="ppplus"> </div>
+<script type="application/javascript">
+ var ppp = PAYPAL.apps.PPP({
+ "approvalUrl": "<?php echo $approval_url;?>",
+ "placeholder": "ppplus",
+ "mode": "<?php p($mode)?>",
+ "country": "<?php p($country);?>",
+ "language" :   "<?php p($language);?>"
+ });
+</script>

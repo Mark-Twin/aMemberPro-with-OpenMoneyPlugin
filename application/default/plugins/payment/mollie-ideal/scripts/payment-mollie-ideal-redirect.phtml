@@ -1,0 +1,46 @@
+<?php
+$title = ___("iDEAL betaling");
+$this->setLayout('layout.phtml');
+?>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->public; ?>/style.css">
+
+<table id="outer">
+<tr>
+    <td align="center">
+    <img src="<?php echo $this->public; ?>/ideal.gif" align="right">
+    <h2>iDEAL betaling</h2>
+    <b>Selecteer uw bank</b><br/>Selecteer uw bank en klik op 'Verder' om door te<br/>gaan naar het iDEAL betaalscherm van uw bank.
+    <br/><br/>
+
+    <form method="post" action="<?php echo $this->action; ?>" target="_top">
+    <input type="hidden" name="description" value="<?php echo $this->description; ?>">
+    <input type="hidden" name="price" value="<?php echo $this->price; ?>">
+    <input type="hidden" name="payment_id" value="<?php echo $this->payment_id; ?>">
+    <input type="hidden" name="member_id" value="<?php echo $this->member_id; ?>">
+    <input type="hidden" name="profile_key" value="<?php echo $this->profile_key; ?>">
+    <input type="hidden" name="checksum" value="<?php echo $this->checksum; ?>">
+    
+    <table id="inner">
+    <tr>
+        <td><b>Omschrijving</b></td><td width="300px"><?php echo $this->description; ?></td>
+    </tr>
+    <tr>
+        <td><b>Bedrag</b></td><td><?php echo number_format($this->price, 2, ',', ''); ?></td>
+    </tr>
+    <tr>
+        <td><b>Uw bank</b></td><td><?php echo $this->banksSelect; ?></td>
+    </tr>
+    </table>
+
+    <br/><br/>
+
+    <input type="submit" value="Verder" />
+    </form>
+
+    </td>
+</tr></table>
+<div id="info">
+<a href="#" onClick="JavaScript:window.open('http://www.mollie.nl/docs/ideal.php', '_blank','width=400,height=500');return false;">Wat is iDEAL en wat is Mollie?</a>
+</div>
+

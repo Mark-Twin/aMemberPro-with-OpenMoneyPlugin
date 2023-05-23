@@ -1,0 +1,423 @@
+<?php
+$isLive = $di->modules->loadGet('helpdesk')->getConfig('live');
+
+$lockUrl = $strategy->assembleUrl(array(
+    'page_id' => 'view',
+    'action' => 'lock',
+    'ticket' => $ticket->ticket_mask,
+), 'inside-pages', false);
+$lockUrl = explode('?', $lockUrl, 2);
+if (empty($lockUrl[1])) $lockUrl[1] = '';
+?>
+<?php if ($isLive) : ?>
+<script type="text/javascript">
+    function amHelpdeskUpdate(js)
+    {
+        jQuery.getScript(js).fail(function(){
+            amHelpdeskUpdate(js);
+        });
+    }
+</script>
+<?php endif; ?>
+<h1><?php p($ticket->subject) ?> #<?php p($ticket->ticket_mask) ?>
+    <?php if ($category) : ?>
+      &middot; <span class="am-helpdesk-ticket-category"><?php p($category->title) ?></span>
+    <?php endif; ?>
+</h1>
+<?php if (defined('AM_ADMIN') && AM_ADMIN && $ticket->isLocked($di->authAdmin->getUser())) : ?>
+<ul class="error">
+    <li><?php __e('User %s is already working on this ticket.', $ticket->lock_admin); ?></li>
+</ul>
+<?php elseif(defined('AM_ADMIN') && AM_ADMIN): ?>
+<script type="text/javascript">
+function ticket_lock() {
+    jQuery.post(<?php echo json_encode($lockUrl[0]) ?>, <?php echo json_encode($lockUrl[1]); ?>);
+}
+ticket_lock();
+setInterval(ticket_lock, 1000*60);
+</script>
+<?php endif; ?>
+<div class="am-helpdesk">
+    <?php if ($strategy instanceof Am_Helpdesk_Strategy_Admin) : ?>
+        <?php include $this->_script($strategy->getTemplatePath() . '/_history.phtml'); ?>
+        <?php if ($user->comment) : ?>
+        <div class="warning_box"><?php p($user->comment) ?></div>
+        <?php endif; ?>
+        <ul class="am-helpdesk-ticket-fields">
+        <?php foreach ($customFields as $fn => $field) : ?>
+            <?php if ($out = $this->getTicketField($ticket, $fn)) : ?>
+            <li class="am-helpdesk-ticket-fields-item"><?php __e($field->title) ?>: <strong><?php p($out) ?></strong></li>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+    <div class="am-helpdesk-ticket" id="helpdesk-ticket-<?php p($ticket->ticket_mask) ?>">
+        <div class="am-helpdesk-ticket-header">
+            <div class="am-helpdesk-ticket-status">
+                <?php
+                if ($strategy instanceof Am_Helpdesk_Strategy_Admin) {
+                    include $this->_script($strategy->getTemplatePath() . '/_select-status-form.phtml');
+                }
+                ?>
+            </div>
+            <div class="am-helpdesk-ticket-info">
+            <?php __e('Created')?>: <strong><?php p(amDatetime($ticket->created)) ?></strong>
+            <?php if ($ticket->owner_id && $strategy->canViewOwner($ticket)) : ?>
+            <?php $owner = $ticket->getOwner() ?>
+            <?php __e('Owner')?>:
+                <?php if ($owner->name_f || $owner->name_l) : ?>
+                    <strong><?php p($owner->login) ?> (<?php p(trim("$owner->name_f $owner->name_l")) ?>)</strong>
+                <?php else: ?>
+                    <strong><?php p($owner->login) ?></strong>
+                <?php endif; ?>
+            <?php endif; ?>
+            </div>
+        </div>
+        <div class="am-helpdesk-ticket-actions-conteiner">
+            <div class="am-helpdesk-ticket-actions">
+                <?php if ($strategy instanceof Am_Helpdesk_Strategy_Admin) : ?>
+                <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-reply"><a class="local" href="<?php
+                echo $strategy->assembleUrl(array(
+                    'page_id' => 'view',
+                    'action' => 'reply',
+                    'ticket' => $ticket->ticket_mask,
+                    'type' => 'comment'
+                ), 'inside-pages')
+                ?>"><?php __e('Comment') ?></a></div>
+                <?php endif; ?>
+                <?php if ($strategy->canEditTicket($ticket)) : ?>
+                <div class="am-helpdesk-ticket-action  am-helpdesk-ticket-action-reply"><a class="local" href="<?php
+                echo $strategy->assembleUrl(array(
+                    'page_id' => 'view',
+                    'action' => 'reply',
+                    'ticket' => $ticket->ticket_mask
+                ), 'inside-pages')
+                ?>"><?php __e('Reply') ?></a></div>
+                    <?php if ($ticket->status == HelpdeskTicket::STATUS_CLOSED) : ?>
+                        <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-re-open"><a class="link" href="<?php
+                    echo $strategy->assembleUrl(array(
+                        'page_id' => 'view',
+                        'action' => 'changestatus',
+                        'ticket' => $ticket->ticket_mask,
+                        'status' => HelpdeskTicket::STATUS_NEW
+                    ), 'inside-pages')
+                    ?>"><?php __e('Re-Open Ticket') ?></a></div>
+                    <?php else : ?>
+                        <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-close"><a class="link" href="<?php
+                    echo $strategy->assembleUrl(array(
+                        'page_id' => 'view',
+                        'action' => 'changestatus',
+                        'ticket' => $ticket->ticket_mask,
+                        'status' => HelpdeskTicket::STATUS_CLOSED
+                    ), 'inside-pages')
+                    ?>"><?php __e('Close Ticket') ?></a></div>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($strategy->canEditOwner($ticket)) : ?>
+                    <?php if ($ticket->owner_id && $ticket->owner_id == $di->authAdmin->getUserId()) : ?>
+                        <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-surrender"><a class="link" href="<?php
+                        echo $strategy->assembleUrl(array(
+                            'page_id' => 'view',
+                            'action' => 'surrender',
+                            'ticket' => $ticket->ticket_mask,
+                        ), 'inside-pages')
+                        ?>" title="<?php __e('Unassign this Ticket from yourself') ?>"><?php __e('Surrender') ?></a></div>
+                    <?php elseif (!$ticket->owner_id): ?>
+                        <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-take"><a class="link" href="<?php
+                        echo $strategy->assembleUrl(array(
+                            'page_id' => 'view',
+                            'action' => 'take',
+                            'ticket' => $ticket->ticket_mask,
+                        ), 'inside-pages')
+                        ?>" title="<?php __e('Assign this Ticket to yourself') ?>"><?php __e('Take') ?></a></div>
+                    <?php endif; ?>
+                    <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-assign"><a class="local" href="javascript:;"><?php __e('Change Owner') ?></a></div>
+                <?php endif; ?>
+                <?php if ($strategy->canEditWatcher($ticket)) : ?>
+                    <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-change-watcher"><a class="local" href="javascript:;"><?php __e('Watchers') ?></a></div>
+                <?php endif; ?>
+                <?php if ($strategy->canEditCategory($ticket) && $di->helpdeskCategoryTable->getOptions(true)) : ?>
+                    <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-change-category"><a class="local" href="javascript:;"><?php __e('Change Category') ?></a></div>
+                <?php endif; ?>
+                <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-refresh"><a class="link" href="<?php
+                    p($strategy->ticketUrl($ticket))
+                ?>"><?php __e('Refresh') ?></a></div>
+                <div class="am-helpdesk-ticket-action am-helpdesk-ticket-action-fold-all"><a href="javascript:;">&minus;</a></div>
+            </div>
+            <?php include $this->_script($strategy->getTemplatePath() . '/_reply-panel.phtml'); ?>
+        </div>
+    </div>
+    <?php
+        $js_added = false;
+        foreach ($ticket->getMessages() as $message) {
+            if (!$js_added && $isLive) {
+                $js = json_encode($strategy->newUrl() . '?' . http_build_query(array(
+                    'id' => $this->obfuscate($message->pk())
+                )));
+                $this->placeholder("head-finish")->append(<<<CUT
+<script type="text/javascript">
+jQuery(function(){
+    amHelpdeskUpdate($js);
+});
+</script>
+CUT
+                );
+                $js_added = true;
+            }
+            include $this->_script($strategy->getTemplatePath() . '/_message.phtml');
+        }
+    ?>
+</div>
+<script type="text/javascript">
+(function($){
+    var ticket = <?php echo json_encode($ticket->ticket_mask) ?>;
+    jQuery(function() {
+        jQuery('.am-helpdesk').on('keyup change', 'textarea', function(){
+            var max = 400;
+            this.style.overflow = this.scrollHeight < max ? 'hidden' : 'auto';
+            if (this.clientHeight < max) {
+                if (this.scrollHeight > this.clientHeight) {
+                    this.style.height = Math.min(this.scrollHeight + 25, max) + "px";
+                }
+            }
+        });
+        <?php if ($isLive) : ?>
+        jQuery('.am-helpdesk').on('submit', '.am-helpdesk-reply-panel-content form', function() {
+            var that = this;
+            jQuery(this).ajaxSubmit({
+                    'cache' : false,
+                    success: function() {
+                        jQuery(".am-helpdesk-message-action-reply, .am-helpdesk-ticket-action-reply").removeClass('am-helpdesk-action-active');
+                        jQuery(that).closest('.am-helpdesk-reply-panel').hide();
+                        jQuery(that).closest('.am-helpdesk-reply-panel-content').empty();
+                    }
+            });
+            return false;
+        });
+        <?php endif; ?>
+        jQuery(".am-helpdesk-history-title-action a").click(function(){
+            jQuery('.am-helpdesk-history-content').slideToggle();
+        });
+        jQuery(document).on('click', ".am-helpdesk-ticket-action-reply a, .am-helpdesk-message-action-reply a", function(){
+            jQuery(".am-helpdesk-ticket-action-reply, .am-helpdesk-message-action-reply").removeClass('am-helpdesk-action-active');
+            jQuery(this).closest('.am-helpdesk-ticket-action, .am-helpdesk-message-action').addClass('am-helpdesk-action-active');
+
+            var reply = jQuery(this).closest('.am-helpdesk-ticket-actions, .am-helpdesk-message-actions').siblings('.am-helpdesk-reply-panel');
+            var replyContent = reply.find('.am-helpdesk-reply-panel-content');
+
+            var buffer = '';
+            if (replyContent.html() !== '') {
+                buffer = replyContent.find('textarea').attr('value');
+            }
+
+            jQuery('.am-helpdesk-reply-panel').hide();
+            jQuery('.am-helpdesk-reply-panel-content').empty();
+            replyContent.load(jQuery(this).attr('href'), function(){
+                if (buffer) {
+                    jQuery(this).find('textarea').attr('value', buffer);
+                }
+                reply.show();
+                jQuery(this).find('textarea').focus();
+            })
+            .append('<img src="<?php p($this->_scriptImg("loading-b.svg"))?>" width="28" height="28" />').show();
+
+            return false;
+        });
+
+        jQuery(".am-helpdesk-ticket-status input[type=submit]").hide();
+        jQuery(".am-helpdesk-ticket-status select").change(function(){
+            this.form.submit();
+        });
+
+        jQuery(document).on('click','.am-helpdesk input[name=discard]', function(){
+           jQuery(".am-helpdesk-message-action-reply, .am-helpdesk-ticket-action-reply").removeClass('am-helpdesk-action-active');
+           jQuery(this).closest('.am-helpdesk-reply-panel').hide();
+           jQuery(this).closest('.am-helpdesk-reply-panel-content').empty();
+        });
+
+        jQuery(document).on('click', ".am-helpdesk-message-action-fold a", function(){
+            var $message = jQuery(this).closest('.am-helpdesk-message').find('.am-helpdesk-message-content');
+            var $messageWrapper = jQuery(this).closest('.am-helpdesk-message');
+            if ($message.css('display') === 'none') {
+                jQuery(this).html('&minus;');
+                $messageWrapper.removeClass('am-helpdesk-message-closed');
+                $message.show();
+            } else {
+                jQuery(this).html('+');
+                $message.hide();
+                $messageWrapper.addClass('am-helpdesk-message-closed');
+            }
+        });
+        //leave open only recent 3 messages by default
+        jQuery(".am-helpdesk-message-action-fold a").slice(3).each(function(i, el) {jQuery(el).click();});
+
+        jQuery(document).on('click', ".am-helpdesk-ticket-action-fold-all a", function(){
+            var $messages = jQuery('.am-helpdesk-message-content');
+            if (jQuery(this).hasClass('closed')) {
+                jQuery(this).removeClass('closed');
+                jQuery('.am-helpdesk-message-action-fold a').html('&minus;');
+                jQuery(this).html('&minus;');
+                $messages.show();
+                jQuery('.am-helpdesk-message').removeClass('am-helpdesk-message-closed');
+            } else {
+                jQuery(this).addClass('closed');
+                jQuery('.am-helpdesk-message-action-fold a').html('+');
+                jQuery(this).html('+');
+                $messages.hide();
+                 jQuery('.am-helpdesk-message').addClass('am-helpdesk-message-closed');
+            }
+        });
+
+        jQuery(document).on('click','.am-helpdesk-reply-panel-tool-snippets a', function(){
+            var $this = jQuery(this);
+            var div = jQuery('<div></div>');
+            div.load(amUrl('/helpdesk/admin/p/view/displaysnippets'), {
+                    'ticket' : ticket
+                }, function(){
+                div.dialog({
+                    autoOpen: true,
+                    modal : true,
+                    title : "",
+                    width : 700,
+                    position : {my: "center", at: "center", of: window}
+                });
+                div.find('.grid-wrap').bind('load', function() {
+                    jQuery(this).find('a.am-helpdesk-insert-snippet').unbind().click(function(){
+                        var $target = $this.closest('.am-helpdesk-reply-panel').find('textarea[name=content]');
+                        $target.insertAtCaret(jQuery(this).data('snippet-content'));
+                        $target.change();
+                        div.dialog('close');
+                    });
+                });
+            });
+        });
+        jQuery(document).on('click','.am-helpdesk-reply-panel-tool-faq a', function(){
+            var $this = jQuery(this);
+            var div = jQuery('<div></div>');
+            div.load(amUrl('/helpdesk/admin/p/view/displayfaq'), {}, function(){
+                div.dialog({
+                    autoOpen: true,
+                    modal : true,
+                    title : "",
+                    width : 700,
+                    position : {my: "center", at: "center", of: window}
+                });
+                div.find('.grid-wrap').bind('load', function() {
+                    jQuery(this).find('a.am-helpdesk-insert-faq').unbind().click(function(){
+                        var $target = $this.closest('.am-helpdesk-reply-panel').find('textarea[name=content]');
+                        $target.insertAtCaret(jQuery(this).data('faq-content'));
+                        $target.change();
+                        div.dialog('close');
+                    });
+                });
+            });
+        });
+        jQuery(document).on('submit', '.am-helpdesk-form', function(){
+            jQuery(this).find('input[type=submit], input[type=button]').attr('disabled', 'disabled');
+        });
+        jQuery(document).on('click','.am-helpdesk-ticket-action-assign a', function(){
+            var div = jQuery('<div></div>');
+            div.load(amUrl('/helpdesk/admin/p/view/displayassign'), {}, function(){
+                div.dialog({
+                    autoOpen: true,
+                    modal : true,
+                    title : "",
+                    width : 700,
+                    position : {my: "center", at: "center", of: window}
+                });
+                div.find('.grid-wrap').bind('load', function() {
+                    jQuery(this).find('a.am-helpdesk-assign').unbind().click(function(){
+                        window.location = <?php
+            echo json_encode($strategy->assembleUrl(array(
+                'page_id' => 'view',
+                'action' => 'take',
+                'ticket' => $ticket->ticket_mask,
+            ), 'inside-pages', false))
+            ?> + '/id/' + jQuery(this).data('admin_id');
+                    });
+                });
+            });
+        });
+        jQuery(document).on('click','.am-helpdesk-ticket-action-change-category a', function(){
+            var div = jQuery('<div></div>');
+            div.load(amUrl('/helpdesk/admin/p/view/displayeditcategory'), {}, function(){
+                div.dialog({
+                    autoOpen: true,
+                    modal : true,
+                    title : "",
+                    width : 700,
+                    position : {my: "center", at: "center", of: window}
+                });
+                div.find('.grid-wrap').bind('load', function() {
+                    jQuery(this).find('a.am-helpdesk-edit-category').unbind().click(function(){
+                        window.location = <?php
+            echo json_encode($strategy->assembleUrl(array(
+                'page_id' => 'view',
+                'action' => 'editcategory',
+                'ticket' => $ticket->ticket_mask,
+            ), 'inside-pages', false))
+            ?> + '/id/' + jQuery(this).data('category_id');
+                    });
+                });
+            });
+        });
+        jQuery(document).on('click','.am-helpdesk-ticket-action-change-watcher a', function(){
+            var div = jQuery('<div></div>');
+            div.load(amUrl('/helpdesk/admin/p/view/editwatcher'), {
+                ticket: '<?php j($ticket->ticket_mask) ?>'
+            }, function(){
+                div.dialog({
+                    autoOpen: true,
+                    modal : true,
+                    title : "",
+                    width : 700,
+                    position : {my: "center", at: "center", of: window}
+                });
+                div.find('.am-form form').ajaxForm({
+                    target: '#' + div.attr('id')
+                });
+            });
+        });
+    });
+
+    window.amGetElapsedTime = function(d) {
+        var sdate = d.getTime();
+        var edate = (new Date()).getTime();
+        var time = (edate - sdate)/1000;
+
+        if (time>=0 && time<=59) {
+            // Seconds
+            return <?php echo json_encode(___('just now')) ?>;
+        } else if(time>=60 && time<=3599) {
+            // Minutes
+            var pmin = Math.floor(time / 60);
+            var timeshift = pmin + ' ' + <?php echo json_encode(___('min')) ?>;
+
+        } else if(time>=3600 && time<=86399) {
+            // Hours
+            var phour = Math.floor(time / 3600);
+            var timeshift = phour + ' ' + <?php echo json_encode(___('hrs')) ?>;
+
+        } else if(time>=86400 && time<86400*30) {
+            // Days
+            var pday = Math.floor(time / 86400);
+            var timeshift = pday + ' ' + <?php echo json_encode(___('days')) ?>;
+
+        } else if (time>=86400*30 && time<86400*30*12) {
+            // Month
+            var pmonth = Math.floor(time / (86400 * 30));
+            var timeshift = <?php echo json_encode(___('more than')) ?> + ' ' + pmonth + ' ' + <?php echo json_encode(___('month')) ?>;
+        } else {
+            // Year
+            var pyear = Math.floor(time / (86400 * 30 * 12));
+            var timeshift = <?php echo json_encode(___('more than')) ?> + ' ' + pyear + ' ' + <?php echo json_encode(___('year')) ?>;
+        }
+        return timeshift + ' ' + <?php echo json_encode(___('ago')) ?>;
+    };
+    setInterval(function(){
+        jQuery('.am-helpdesk-message-date').each(function(){
+           jQuery(this).empty().append(amGetElapsedTime(new Date(jQuery(this).attr('datetime'))));
+        });
+    }, 1000 * 60);
+})(jQuery);
+</script>

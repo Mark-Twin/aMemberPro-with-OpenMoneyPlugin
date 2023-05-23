@@ -1,0 +1,14 @@
+<?php
+$request = $di->request;
+$user_id = $request->getInt('user_id', $request->getInt('_u_id'));
+$user = $user_id ? $di->userTable->load($user_id, false) : null;
+
+$this->layoutNoTitle = true;
+$this->setLayout('admin/layout.phtml'); ?>
+<?php include $this->_script('admin/_error.phtml'); ?>
+<?php if ($user) : ?>
+    <?php echo $this->adminTabs($this->di->navigationUserTabs); ?>
+    <?php include $this->_script('admin/_user_info.phtml');?>
+<?php endif; ?>
+<?php echo $content; ?>
+<?php include $this->_script('js.country_state.js');

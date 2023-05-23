@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema version="4.0.0">
+  <table name="webhook">
+    <field name="webhook_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="event_id" type="varchar" len="255" notnull="1"/>
+    <field name="url" type="varchar" len="255" notnull="1"/>
+    <field name="is_disabled" type="int" default="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="webhook_id"/>
+    </index>
+  </table>
+  <table name="webhook_queue">
+    <field name="webhook_queue_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="event_id" type="varchar" len="255" notnull="1"/>
+    <field name="url" type="varchar" len="255" notnull="1"/>
+    <field name="params" type="text" />
+    <field name="added" type="int" notnull="1"/>
+    <field name="sent" type="int"/>
+    <field name="failures" type="int" default="0"/>
+    <field name="priority" type="int" default="0"/>
+    <field name="last_error" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+      <field name="webhook_queue_id"/>
+    </index>
+  </table>
+</schema>

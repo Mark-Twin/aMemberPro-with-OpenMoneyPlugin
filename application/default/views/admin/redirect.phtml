@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><?php p($title) ?></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Refresh" content="0; URL=<?php p($url) ?>">
+        <style type="text/css">
+            <!--
+            body {
+                font-family: Arial;
+                background:#EDEDED;
+            }
+
+            a, a:visited {
+                color: #34536e;
+            }
+
+            .progress-bar-conteiner {
+                display:inline-block;
+                width:400px;
+                color:#333333;
+                background:#dbdbdb;
+                -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;
+                padding:0.2em;
+                text-align: right;
+                margin-bottom: 1em;
+                box-shadow: 0 1px 1px #b0b0b0;
+            }
+
+            .progress-bar {
+                position: relative;
+                text-align:left;
+            }
+
+            .progress-bar-bar {
+                z-index:1;
+                position: absolute;
+                background: #8FABBD;
+                text-align: center;
+                -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;
+            }
+
+            .progress-bar-title {
+                z-index:2;
+                position:absolute;
+                text-align:center;
+                width:100%
+            }
+            -->
+        </style>
+        <?php if (isset($target_top)): ?>
+        <script type="text/javascript">
+        if (self.location.href != top.location.href) {
+            top.location.href = "<?php j($url) ?>";
+        }
+        </script>
+        <?php endif ?>
+    </head>
+    <body>
+        <br /><br />
+        <table height="90%" width="70%" border="0" align="center">
+            <tr valign="middle" align=center>
+                <td>
+                    <strong><?php echo $text ?></strong>
+                    <br />
+                    <br />
+                    <?php if (@$showProgressBar) : ?>                 
+                    <div class="progress-bar-conteiner">
+                        <div class="progress-bar">
+                            <div class="progress-bar-bar" style="width:<?php p($width) ?>%;">
+                                <div style="padding:0.5em;">&nbsp;</div>
+                            </div>
+                            <div class="progress-bar-title">
+                                <div style="padding:0.5em;"><?php p(number_format($proccessed, 0, '.', ' ')) ?> / <?php p(number_format($total, 0, '.', ' ')) ?></div>
+                            </div>
+                            <div style="padding:0.5em">&nbsp;</div>
+                        </div>
+                    </div>
+                    <br />
+                    <?php endif; ?>                    
+                    <a <?php if (isset($target)): ?>target="<?php p($target) ?>"<?php endif ?>href="<?php p($url) ?>"><?php
+                    __e('Click here if you do not want to wait any longer (or if your browser does not automatically forward you).') ?></a>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

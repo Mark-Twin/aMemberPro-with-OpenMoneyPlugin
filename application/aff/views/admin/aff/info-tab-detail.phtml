@@ -1,0 +1,66 @@
+<?php if ($commissions): ?>
+<h2><?php __e('Commissions') ?></h2>
+<div class="grid-container">
+<table class="grid">
+<tr>
+    <th><?php __e('Amount') ?></th>
+    <th><?php __e('Tier') ?></th>
+    <th><?php __e('Record Type') ?></th>
+    <th><?php __e('Payment#/Receipt#') ?></th>
+    <th><?php __e('User') ?></th>
+    <th><?php __e('Product') ?></th>
+</tr>
+<?php 
+foreach ($commissions as $c): 
+/* @var $c Aff_Commission */    
+    $p = $c->getPayment();
+    if ($p) $invoice = $p->getInvoice();
+    if ($p) $user = $di->userTable->load($p->user_id);
+    
+    printf("<tr%s><td>%s</td><td>%s</td><td>%s</td><td>%s/%s</td>
+            <td>%s</td><td>#%d - <a class='link' href='%s'>%s</a></td>
+            </tr>\n",
+            $i++%2 ? ' class="odd grid-row"' : ' class="grid-row"',
+            Am_Currency::render($c->amount),
+            $c->tier ? ($c->tier+1) . '-Tier' : '&ndash;' ,
+            $c->record_type,
+            $c->invoice_payment_id,
+            $c->receipt_id,
+            $user ? sprintf('%s : "%s" &lt;%s&gt;', 
+                $this->escape($user->login),
+                $this->escape($user->name_f . " " . $user->name_l),
+                $this->escape($user->email)): "-",
+                $c->product_id,
+                $this->url('admin-products', array('_product_a'=>'edit','_product_id'=>$c->product_id)),
+                $this->escape($c->product_title)
+            );
+endforeach;
+?>
+</table>
+</div>
+<?php endif; ?>
+
+<?php if ($clicks): ?>
+<h2><?php __e('Clicks') ?></h2>
+<div class="grid-container">
+<table class="grid">
+<tr>
+    <th><?php __e('Date/Time') ?></th>
+    <th><?php __e('IP') ?></th>
+    <th><?php __e('Referer') ?></th>
+</tr>
+<?php 
+foreach ($clicks as $c): 
+    printf("<tr%s><td>%s</td><td>%s</td>
+            <td><a href='%s' target='blank'>%s</a></td>
+            </tr>\n",
+            $i++%2 ? ' class="odd grid-row"' : ' class="grid-row"',
+            amDateTime($c->time),
+            $this->escape($c->remote_addr),
+            $this->escape($c->referer), $this->escape($c->referer)
+            );
+endforeach;
+?>
+</table>
+</div>
+<?php endif; ?>

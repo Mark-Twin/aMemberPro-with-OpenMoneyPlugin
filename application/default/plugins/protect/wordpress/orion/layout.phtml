@@ -1,0 +1,3 @@
+<?php global $_amember_page_title; $_amember_page_title = $title; 
+add_filter('st_doctitle', function($a) {global $_amember_page_title; return array($_amember_page_title);}, 999, 1);?>
+<?php include dirname(__FILE__)."/../default/layout.phtml";?>

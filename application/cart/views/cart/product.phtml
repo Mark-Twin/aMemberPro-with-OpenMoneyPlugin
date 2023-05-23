@@ -1,0 +1,12 @@
+<?php
+$title = $di->config->get('site_title');
+$this->setLayout('cart/layout.phtml');
+?>
+<div class="am-cart-layout-one-coll">
+    <div class="am-cart-layout-one-coll-coll">
+        <div class="am-cart-layout-one-coll-content">
+        <?php echo $content; ?>
+        </div>
+    </div>
+</div>
+<a href="<?php echo $this->url('cart');?>"><?php __e('Back to shopping') ?></a>

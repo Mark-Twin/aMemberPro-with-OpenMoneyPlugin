@@ -1,0 +1,49 @@
+<?php
+$avail = $di->languagesListAdmin;
+$_list = array();
+if ($enabled = $di->getLangEnabled(false)) {
+    foreach ($enabled as $lang) {
+        if (!empty($avail[$lang])) {
+            $_list[$lang] = $avail[$lang];
+        }
+    }
+}
+if ($_list && count($_list) > 1):
+    $_locale = $di->locale->getId();
+    list($_lang) = explode('_', $_locale);
+    echo $this->icon('earth', array('id' => 'lang-switch-icon-open', 'title' => ___('Switch Language')));
+    echo $this->icon('close', array('id' => 'lang-switch-icon-close', 'title' => ___('Close')));
+?>
+<div class="am-lang-choice" style="display: none; position: absolute">
+    <div>
+        <form method="get" action="<?php $this->url('admin') ?>">
+        <?php echo Am_Html::renderArrayAsInputHiddens(array_diff_key($_GET, array('__lang'=>null))); ?>
+        <select name="__lang" size="1" onchange="this.form.submit()"></select>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    jQuery("[name=__lang]").append(<?php echo json_encode(Am_Html::renderOptions($_list, isset($_list[$_locale]) ? $_locale : $_lang)) ?>);
+    jQuery("#lang-switch-icon-open, #lang-switch-icon-close").click(function(){
+        var div = jQuery(".am-lang-choice");
+        div.css({
+            top : jQuery('.user-identity-block').offset().top,
+            left: jQuery('.user-identity-block').offset().left + jQuery('.user-identity-block').width() - 200,
+            width: '205px',
+            zIndex: 5
+        });
+        div.toggle();
+        jQuery(".user-identity-block").toggleClass('user-identity-block_lang-open');
+    });
+    jQuery(window).resize(function(){
+        jQuery(".am-lang-choice").css({
+            top : jQuery('.user-identity-block').offset().top,
+            left: jQuery('.user-identity-block').offset().left + jQuery('.user-identity-block').width() - 200,
+            width: '205px',
+            zIndex: 5
+        });
+    });
+});
+</script>
+<?php endif;

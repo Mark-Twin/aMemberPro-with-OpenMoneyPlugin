@@ -1,0 +1,13 @@
+<?php
+Am_Di::getInstance()->plugins_protect->get('wordpress')
+    ->startLayout($this, isset($meta_title) ? $meta_title : $title, true, $body_class);
+get_header(); ?>
+<div class="page-wrap container fullwidth">
+	<div id="main-content">
+		<div class="main-content-wrap clearfix">
+			<div id="content">
+<?php  include dirname(__FILE__)."/../amember.php"; ?>
+            </div>
+        </div>
+    </div>
+<?php get_footer();

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema version="4.0.0">
+  <table name="aff_banner">
+    <field name="banner_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="sort_order" type="int" notnull="1" default="0" />
+    <field name="type" type="int" notnull="1" />
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="desc" type="text" />
+    <field name="html" type="text" />
+    <field name="upload_id" type="int" notnull="0"/>
+    <field name="upload_big_id" type="int" notnull="0"/>
+    <field name="url" type="varchar" len="255" notnull="1"/>
+    <field name="is_blank" type="tinyint" notnull="0" />
+    <field name="mime" type="varchar" len="64" />
+    <field name="width" type="int" notnull="0" />
+    <field name="height" type="int" notnull="0" /> 
+    <field name="is_disabled" type="smallint" notnull="1" default="0" />
+    <field name="user_group_id" type="varchar" len="255" notnull="0"/>
+    <field name="category" type="varchar" len="255" notnull="0"/>
+    <index name="PRIMARY" unique="1">
+        <field name="banner_id" />
+    </index>
+  </table>
+  <table name="aff_click">
+    <field name="log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="aff_id" type="int" unsigned="1" notnull="0"/>
+    <field name="time" type="datetime" notnull="1" />
+    <field name="banner_id" type="int" notnull="0" />
+    <field name="remote_addr" type="varchar" len="15"/>
+    <field name="referer" type="varchar" len="255"/>
+    <field name="keyword_id" type="int" unsigned="1" notnull="0" />
+    <field name="user_agent" type="varchar" len="255" />
+    <index name="PRIMARY" unique="1">
+      <field name="log_id"/>
+    </index>
+    <index name="aff_id">
+      <field name="aff_id"/>
+      <field name="time"/>
+      <field name="remote_addr"/>
+    </index>
+    <index name="time">
+      <field name="time"/>
+    </index>
+    <index name="keyword_id">
+        <field name="keyword_id" />
+    </index>
+    <index name="visitor_id">
+        <field name="remote_addr" />
+        <field name="user_agent" len="131"/>
+    </index>
+  </table>
+  <!-- register successful signups by the banner link to get banner eff. stats -->
+  <table name="aff_lead">
+    <field name="lead_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="aff_id" type="int" unsigned="1" notnull="0"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="time" type="datetime" notnull="1" />
+    <field name="banner_id" type="int" notnull="0" />
+    <field name="remote_addr" type="varchar" len="15"/>
+    <field name="referer" type="varchar" len="255"/>
+    <field name="first_visited" type="datetime" notnull="0" />
+    <field name="keyword_id" type="int" unsigned="1" notnull="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="lead_id"/>
+    </index>
+    <index name="time">
+      <field name="time"/>
+    </index>
+    <index name="keyword_id">
+        <field name="keyword_id" />
+    </index>
+    
+  </table>
+  <!-- commission records -->
+  <table name="aff_commission">
+    <field name="commission_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="aff_id" type="int" unsigned="1" notnull="1"/>
+    <field name="date" type="date" notnull="1"/>
+    <field name="amount" type="decimal" len="12,2"/>
+    <field name="record_type" type="enum" len="'commission','void'" default="commission" notnull="1"/>
+    <field name="invoice_id" type="int" unsigned="1" notnull="0"/>
+    <field name="invoice_item_id" type="int" unsigned="1" notnull="0"/>
+    <field name="invoice_payment_id" type="int" unsigned="1" notnull="0"/>
+    <field name="receipt_id" type="char" len="32" notnull="0"/>
+    <field name="product_id" type="int" notnull="0"/>
+    <field name="is_first" type="int" notnull="1"/>
+    <field name="payout_detail_id" type="int" unsigned="0" notnull="0" />
+    <field name="tier" type="smallint" default="0"/>
+    <field name="is_voided" type="tinyint" default="0" />
+    <field name="commission_id_void" type="int" unsigned="1" notnull="0" />
+    <field name="keyword_id" type="int" unsigned="1" notnull="0" />
+    <field name="comment" type="varchar" len="255"/>
+    <field name="is_manual" type="tinyint" default="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="commission_id"/>
+    </index>
+    <index name="payment" unique="1">
+      <field name="invoice_id"/>
+      <field name="invoice_payment_id"/>
+      <field name="invoice_item_id"/>
+      <field name="product_id" />
+      <field name="record_type"/>
+      <field name="tier"/>
+    </index>
+    <index name="aff_id">
+      <field name="aff_id"/>
+      <field name="date"/>
+    </index>
+    <index name="ac">
+      <field name="date"/>
+    </index>
+    <index name="keyword_id">
+        <field name="keyword_id" />
+    </index>
+    
+  </table>
+  <table name="aff_commission_rule">
+    <field name="rule_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="comment" type="text" />
+    <field name="sort_order" type="int" default="0" />
+    <!-- global-1 and global-2 is depricated -->
+    <field name="type" type="enum" len="'custom','multi','global','global-2','global-1'" />
+    <field name="tier" type="smallint" default="0"/>
+    <!-- serialized conditions to match -->
+    <field name="conditions" type="text" />
+    <!-- commission size or multiplier in the _c columns for "is_multi" record -->
+    <field name="free_signup_c" type="decimal" len="12,2" />
+    <field name="free_signup_t" type="varchar" len="16" />
+    <field name="first_payment_c" type="decimal" len="12,2" />
+    <field name="first_payment_t" type="varchar" len="16" />
+    <field name="recurring_c" type="decimal" len="12,2" />
+    <field name="recurring_t" type="varchar" len="16" />
+    <!-- multiplier -->
+    <field name="multi" type="decimal" len="12,2" /> 
+    <!-- is the rule disabled -->
+    <field name="is_disabled" type="smallint" default="0" notnull="1" />
+    <!-- is this not a final commission but a multiplier to next found commissions -->
+    <index name="PRIMARY" unique="1">
+      <field name="rule_id"/>
+    </index>
+    <data>
+        <query>
+        INSERT INTO ?_aff_commission_rule 
+        SET comment = 'Default Commission'
+        ,`type` = 'global'
+        ,sort_order = 1000
+        ,free_signup_c = 0
+        ,free_signup_t = '$'
+        ,first_payment_c = 0
+        ,first_payment_t = '%'
+        ,recurring_c = 0
+        ,recurring_t = '%'
+        </query>
+        <query>
+        INSERT INTO ?_aff_commission_rule 
+        SET comment = '2-Tier Affiliates Commission'
+        ,`type` = 'global'
+        ,`tier` = 1
+        ,sort_order = 20000
+        </query>
+    </data>
+  </table>
+  <table name="aff_commission_commission_rule">
+    <field name="commission_commission_rule_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="commission_id" type="int" unsigned="1" notnull="1" />
+    <field name="rule_id" type="int" notnull="1" />
+    <index name="PRIMARY" unique="1">
+        <field name="commission_commission_rule_id" />
+    </index>
+    <index name="commission_rule" unique="1">
+        <field name="commission_id" />
+        <field name="rule_id" />
+    </index>
+  </table>
+  <table name="aff_payout">
+    <field name="payout_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="date" type="date" notnull="1"/>
+    <field name="thresehold_date" type="date" notnull="1"/>
+    <field name="total" type="decimal" len="12,2"/>
+    <field name="type" type="varchar" len="32"/>
+    <index name="PRIMARY" unique="1">
+      <field name="payout_id"/>
+    </index>
+  </table>
+  <table name="aff_payout_detail">
+    <field name="payout_detail_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="aff_id" type="int" unsigned="1" notnull="1"/>
+    <field name="payout_id" type="int" unsigned="1" notnull="1"/>
+    <field name="amount" type="decimal" len="12,2" notnull="1"/>
+    <field name="is_paid" type="tinyint" notnull="1" default="0" />
+    <field name="receipt_id" type="varchar" len="255" />
+    <index name="PRIMARY" unique="1">
+      <field name="payout_detail_id"/>
+    </index>
+    <index name="payout_id" unique="1">
+        <field name="payout_id" />
+        <field name="aff_id" />
+    </index>
+  </table>
+  <table name="aff3_banner">
+    <field name="banner_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="banner_link_id" type="int" notnull="1"/>
+    <field name="url" type="varchar" len="255" notnull="1"/>
+    <field name="type" type="char" len="1" notnull="1"/>
+    <index name="PRIMARY" unique="1">
+        <field name="banner_id" />
+    </index>
+    <index name="banner_type" unique="1">
+        <field name="banner_link_id" />
+        <field name="type" />
+    </index>
+  </table>
+  <table name="coupon">
+    <field name="aff_id" type="int" unsigned="1" notnull="0" />
+  </table>
+  <table name="coupon_batch">
+    <field name="aff_id" type="int" unsigned="1" notnull="0" />
+  </table>
+  <table name="invoice">
+    <field name="aff_id" type="int" unsigned="1" notnull="0" />
+    <field name="keyword_id" type="int" unsigned="1" notnull="0" />
+  </table>
+  <table name="user">
+    <field name="aff_custom_redirect" type="tinyint" notnull="1" default="0" />
+    <index name="aff_id">
+      <field name="aff_id"/>
+    </index>
+  </table>
+  <table name="aff_keyword">
+      <field name="keyword_id" type="int" unsigned="1" notnull="1" extra="auto_increment" />
+      <field name="aff_id" type="int" unsigned="1" notnull="1" />
+      <field name="value" type="varchar" len="255" />
+    <index name="PRIMARY" unique="1">
+      <field name="keyword_id"/>
+    </index>
+    <index name="keyword" unique="1">
+        <field name="aff_id" />
+        <field name="value" len="187" />
+    </index>
+  </table>
+</schema>

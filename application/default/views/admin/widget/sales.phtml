@@ -1,0 +1,127 @@
+<h2><?php p($reportTitle) ?><span class="widget-title-info"> &middot;
+    <?php if (amDate($start) == amDate($stop)) : ?>
+        <?php p(amDate($start)) ?>
+    <?php else: ?>
+        <?php p(amDate($start)) ?>&ndash;<?php p(amDate($stop)) ?>
+    <?php endif; ?>
+</span></h2>
+<div class="admin-dashboard-wrapper">
+<table class="admin-dashboard">
+    <tr>
+        <td class="first">
+            <?php list($count, $amount) = $controller->getSalesStats($start, $stop); ?>
+            <dl>
+                <dt><?php __e('Sales') ?></dt>
+                <dd>
+                    <?php if ($count) : ?>
+                        <a class="link" href="<?php echo $this->url('default/admin-payments/p/index/index', array(
+                            '_payment_filter' => array(
+                                'datf' => 'dattm',
+                                'dat1' => amDate($start),
+                                'dat2' => amDate($stop)
+                            )
+                        )) ?>"><?php p($count); ?> / <?php p(Am_Currency::render($amount)); ?></a>
+                    <?php else: ?>
+                        0
+                    <?php endif; ?>
+                </dd>
+            </dl>
+            <?php list($count, $amount) = $controller->getRefundsStats($start, $stop); ?>
+            <dl>
+                <dt><?php __e('Refunds') ?></dt>
+                <dd>
+                    <?php if ($count) : ?>
+                        <a class="link" href="<?php echo $this->url('default/admin-payments/p/refunds/index', array(
+                            '_refund_filter' => array(
+                                'datf' => 'dattm',
+                                'dat1' => amDate($start),
+                                'dat2' => amDate($stop)
+                            )
+                        )) ?>"><?php p($count); ?> / <?php p(Am_Currency::render($amount)); ?></a>
+                    <?php else : ?>
+                        0
+                    <?php endif; ?>
+                </dd>
+            </dl>
+            <?php if (Am_Di::getInstance()->modules->isEnabled('aff')): ?>
+            <?php $amount = Am_Di::getInstance()->affCommissionTable->getStats($start, $stop); ?>
+                <dl>
+                    <dt><?php __e('Affiliate Commission') ?></dt>
+                    <dd>
+                    <?php if ($amount): ?>
+                        <a class="link" href="<?php echo $this->url('aff/admin-commission', array(
+                            '_affcomm_dat1' => amDate($start),
+                            '_affcomm_dat2' => amDate($stop)
+                        )) ?>"><?php p(Am_Currency::render($amount)); ?></a>
+                    <?php else: ?>
+                        <?php p(Am_Currency::render($amount)); ?>
+                    <?php endif; ?>
+                    </dd>
+                </dl>
+            <?php endif ?>
+            </td>
+            <td>
+                <dl>
+                    <dt><?php __e('Registrations') ?></dt>
+                    <?php $signups = $controller->getSignupsCount($start, $stop) ?>
+                    <dd>
+                        <?php if ($signups) : ?>
+                            <a class="link" href="<?php echo $this->url('admin-users/index', array(
+                            '_u_search' => array(
+                                'added-between' => array(
+                                        'start' => amDate($start),
+                                        'stop' => amDate($stop)
+                                    )
+                                )
+                            )) ?>"><?php p($signups) ?></a>
+                        <?php else: ?>
+                            0
+                        <?php endif; ?>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt><?php __e('Cancellations') ?></dt>
+                    <?php $cancels = $controller->getCancelsStats($start, $stop) ?>
+                    <dd>
+                        <?php if ($cancels) : ?>
+                            <a class="link" href="<?php echo $this->url('default/admin-payments/p/invoices/index', array(
+                            '_invoice_filter' => array(
+                                'datf' => 'tm_cancelled',
+                                'dat1' => amDate($start),
+                                'dat2' => amDate($stop)
+                            )
+                            )) ?>"><?php p($cancels) ?></a>
+                        <?php else: ?>
+                            0
+                        <?php endif; ?>
+                    </dd>
+                </dl>
+                <?php
+                    $dat1 = amDate('now');
+                    $dat2 = amDate('+30 days')
+                ?>
+                <dl>
+                    <dt><?php __e('Rebills') ?> (<small title="<?php p($dat1) ?>&ndash;<?php p($dat2) ?>"><?php __e('next 30 days') ?></small>)</dt>
+                    <?php list($count, $amount) = $controller->getPlannedRebills(
+                        date('Y-m-d 00:00:00', strtotime('now')),
+                        date('Y-m-d 23:59:59', strtotime('+30 days', strtotime('now')))); ?>
+                    <dd>
+                        <?php if ($count) : ?>
+                            <a class="link" href="<?php echo $this->url('default/admin-payments/p/invoices/index', array(
+                            '_invoice_filter' => array(
+                                'datf' => 'rebill_date',
+                                'dat1' => $dat1,
+                                'dat2' => $dat2
+                            ),
+                            '_invoice_sort' => 'rebill_date'
+                            )) ?>">
+                            <?php p($count); ?> / <?php p(Am_Currency::render($amount)); ?></a>
+                        <?php else: ?>
+                            0
+                        <?php endif; ?>
+                    </dd>
+            </dl>
+        </td>
+    </tr>
+</table>
+</div>

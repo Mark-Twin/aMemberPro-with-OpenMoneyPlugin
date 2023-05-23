@@ -1,0 +1,4 @@
+<?php
+
+return 'REPLACE THIS STRING TO YOUR KEYSTRING';
+

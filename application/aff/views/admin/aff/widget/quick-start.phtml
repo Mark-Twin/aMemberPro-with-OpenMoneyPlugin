@@ -1,0 +1,26 @@
+<div class="widget-quickstart">
+    <div class="widget-quickstart-content">
+        <div class="widget-quickstart-disable">
+            <a href="<?php echo $this->url('admin/disable-quickstart')?>" class="link">do not show this again</a>
+        </div>
+        <h2>Thank you for using aMember Pro affiliate program module. This guide helps you to get started with it.</h2>
+        <ul>
+            <li><img src="<?php p($this->_scriptImg('/admin/quickstart/settings.png')) ?>" width="24" height="24" />
+                <?php $this->tr()->start('<a class="link" target="_blank" href="'.$this->url('admin-setup/aff').'">', '</a>') ?>
+                Visit %sAffiliate Program Setup%s and configure your program settings.
+                Most notable settings are :
+                <ul style='padding-left: 3em;'>
+                    <li><b>Accepted payout methods</b> - that is how you are going to pay your affiliates</li>
+                    <li><b>Affiliates payout day</b> - the day when payout will be calculated and generated</li>
+                    <li><b>Minimum Payout</b> - minimal amount to payout</li>
+                    <li><b>Delay Payout</b> - number of days to be passed before affiliate commission will be included into payout. 
+                        That prevents you from paying commissions on refunds and returns, and stops many fraud activities based
+                        on this.</li>
+                    <li>Press SAVE.</li>
+
+                </ul>
+                <?php $this->tr()->stop() ?>
+            </li>
+        </ul>
+    </div>
+</div>

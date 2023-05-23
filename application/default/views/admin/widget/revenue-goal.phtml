@@ -1,0 +1,26 @@
+<h2><?php __e('Revenue Goal') ?><span class="widget-title-info"> &middot; <?php p($reportTitle) ?><?php if ($width > 25) : ?> &middot; <?php __e('forecast') ?> &ndash; <?php echo Am_Currency::render($forecast); ?><?php if (isset($cdiff)) : ?> <span class="widget-revenue-goal-cdiff <?php p($cdiff>0 ? 'widget-revenue-goal-cdiff-plus' : 'widget-revenue-goal-cdiff-minus') ?>" title="<?php p($ctitle) ?>"><?php p(sprintf("%.2f", abs($cdiff))) ?>%</span><?php endif;?><?php endif; ?></span></h2>
+<div class="widget-revenue-goal">
+    <div class="progress-bar-conteiner <?= $ontarget ? ' progress-bar-ontarget' : '' ?>">
+        <div class="progress-bar">
+            <div class="progress-bar-bar" style="width:<?php p($width) ?>%;">
+                <?php if ($width > 25) : ?>
+                <div class="progress-bar-target-diff <?php echo $diff > 0 ? 'progress-bar-target-diff-positive' : 'progress-bar-target-diff-negative' ?>"><?php echo $diff > 0 ? '&plus;' : '&minus;' ?> <?php echo Am_Currency::render(abs($diff)); ?></div>
+                <?php endif; ?>
+                <div style="padding:0.6em;">&nbsp;</div>
+            </div>
+            <div class="progress-bar-title">
+                <div style="padding:0.6em;">
+                    <?php if ($amount >= $goal) : ?>
+                        <?php __e('Completed!') ?> <?php echo Am_Currency::render($amount); ?>
+                    <?php else : ?>
+                        <?php echo Am_Currency::render($amount); ?> <span style="opacity:.3">/</span> <?php echo Am_Currency::render($goal); ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div style="padding:0.6em">&nbsp;</div>
+        </div>
+        <div class="progress-bar-target" title="<?php echo Am_Currency::render($goal_target); ?>">
+            <div class="progress-bar-target-bar" style="width:<?php p($width_target) ?>%;"></div>
+        </div>
+    </div>
+</div>

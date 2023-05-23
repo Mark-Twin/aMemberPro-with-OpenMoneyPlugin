@@ -1,0 +1,74 @@
+<?php
+function renderUser($event, $view) {
+    if ($_ = trim("{$event->name_f} {$event->name_l}")) : ?>
+        <strong><?php p($_) ?></strong>
+        (<a class="link" href="<?php echo $view->userUrl($event->user_id) ?>" data-tooltip-url="<?php echo $view->url('admin-users/card', "id={$event->user_id}") ?>"><?php p($event->login) ?></a>)<!--
+    --><?php else: ?>
+        <a class="link" href="<?php echo $view->userUrl($event->user_id) ?>" data-tooltip-url="<?php echo $view->url('admin-users/card', "id={$event->user_id}") ?>"><?php p($event->login) ?></a><!--
+    --><?php endif;
+}
+function renderAdmin($event, $view) {
+    if ($_ = trim("{$event->a_name_f} {$event->a_name_l}")) : ?>
+        <strong><?php p($_) ?></strong>
+        (<?php p($event->a_login) ?>)<!--
+    --><?php else: ?>
+        <strong><?php p($event->a_login) ?></strong><!--
+    --><?php endif;
+}
+function renderTime($event, $view) {
+    $token = $event->event_date_field;
+    ?><time class="admin-activity_event-time" datetime="<?= date('c', amstrtotime($event->$token)) ?>" title="<?php p(amDatetime($event->$token)) ?>">&#x1f550; <?= $view->getElapsedTime($event->$token) ?></time><?php
+}
+?>
+<?php if ($timeline) : ?>
+<div class="admin-last admin-activity">
+    <h2><?php __e('Recent Activity'); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <?php foreach ($timeline as $event): ?>
+            <tr
+                class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?> <?php echo "admin-activity_event admin-activity_event-{$event->event_type}"; ?>">
+                <td>
+                    <?php if ($event->event_type == 'payment') : ?>
+                    <strong class="admin-activity_payment-amount"><span class="admin-activity_payment-amount-sign">&plus;</span> <span><?php p(Am_Currency::render($event->amount, $event->currency)) ?></span></strong><br />
+                        <?php __e('Payment from') ?> <?php renderUser($event, $this) ?>,
+                        <a class="link" href="<?php echo $this->url("admin-user-payments/index/user_id/{$event->user_id}#invoice-{$event->invoice_id}") ?>" data-tooltip-url="<?php echo $this->url('admin-payments/invoice-card', "id={$event->invoice_id}") ?>"><?php p($event->invoice_id) ?>/<?php p($event->public_id) ?></a>
+                        &ndash; <?php p($event->items) ?>
+                        <br />
+                        <?php renderTime($event, $this) ?><small class="admin-activity_event-extra">, <?php p($event->paysys_id) ?><?php if($event->coupon_code): p(', ' . $event->coupon_code); endif; ?></small>
+                    <?php elseif ($event->event_type == 'refund') : ?>
+                        <strong class="admin-activity_refund-amount"><span class="admin-activity_refund-amount-sign">&minus;</span> <span><?php p(Am_Currency::render($event->amount, $event->currency)) ?></span></strong><br />
+                        <?php __e('Refund from') ?> <?php renderUser($event, $this) ?>,
+                        <a class="link" href="<?php echo $this->url("admin-user-payments/index/user_id/{$event->user_id}#invoice-{$event->invoice_id}") ?>" data-tooltip-url="<?php echo $this->url('admin-payments/invoice-card', "id={$event->invoice_id}") ?>"><?php p($event->invoice_id) ?>/<?php p($event->public_id) ?></a>
+                        &ndash; <?php p($event->items) ?>
+                        <br />
+                        <?php renderTime($event, $this) ?><small class="admin-activity_event-extra">, <?php p($event->paysys_id) ?></small>
+                    <?php elseif ($event->event_type == 'signin') : ?>
+                        <?php renderUser($event, $this) ?> <?php __e('logged in from') ?> <?php p($event->last_ip) ?>
+                        <br />
+                        <?php renderTime($event, $this) ?>
+                    <?php elseif ($event->event_type == 'signup') : ?>
+                        <?php renderUser($event, $this) ?> <?php __e('registered a new account from') ?> <?php p($event->remote_addr) ?>
+                        <br />
+                        <?php renderTime($event, $this) ?><?php if ($event->saved_form_title) : ?><small class="admin-activity_event-extra">, <?php p($event->saved_form_title) ?></small><?php endif; ?>
+                    <?php elseif ($event->event_type == 'download') : ?>
+                        <?php renderUser($event, $this) ?> <?php __e('downloaded file') ?> <a class="link" href="<?php echo $this->url('default/admin-content/p/files', "_files_a=edit&_files_id={$event->file_id}") ?>"><?php p($event->title) ?></a>
+                        <br />
+                        <?php renderTime($event, $this) ?>
+                    <?php elseif ($event->event_type == 'user_note') : ?>
+                        <?php renderAdmin($event, $this) ?> <?php __e('added note for user') ?> <?php renderUser($event, $this) ?> <span  class="admin-activity_user_note-preview"><?php p(mb_substr($event->content, 0, 250))?><?php echo mb_strlen($event->content) > 250 ? '&hellip;' : '' ?></span>
+                        <br />
+                        <?php renderTime($event, $this) ?>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Recent Activity'); ?></h2>
+    <p><?php __e('No data to display yet') ?></p>
+</div>
+<?php endif; ?>

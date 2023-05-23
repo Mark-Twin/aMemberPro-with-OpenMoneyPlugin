@@ -1,0 +1,7 @@
+<?php
+$title = ___("JunglePay payment");
+$this->setLayout('layout.phtml');
+?>
+<script language='javascript' src='http://app.junglepay.com/js/integration.js'></script>
+<script language="javascript">widgetKey('<?php echo $this->wkey ?>','<?php echo $this->refererId ?>');</script>
+<!--<iframe width="100%" height="230" frameborder="0" src="<?php echo $this->src; ?>"></iframe>-->

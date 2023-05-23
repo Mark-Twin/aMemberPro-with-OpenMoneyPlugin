@@ -1,0 +1,37 @@
+<?php
+$title = "Click the below button to enter the payment page";
+$this->setLayout('layout.phtml');
+?>
+
+    <form action="<?php echo $this->action; ?>" method="post" target="ccPurchase" >
+        <input type="hidden" name="ext_frm_pos" value="<?php echo $this->ext_frm_pos; ?>" />
+        <input type="hidden" name="ext_frm_tpldiz" value="<?php echo $this->ext_frm_tpldiz; ?>" />
+        <input type="hidden" name="ext_frm_data0" value="<?php echo $this->ext_frm_data0; ?>" />
+        <input type="hidden" name="ext_frm_data1" value="<?php echo $this->ext_frm_data1; ?>" />
+        <?php if(isset($this->src)): ?>
+        <input type="image" id="monelib-image" src="<?php echo $this->src; ?>" style="border:0px" alt="Pin code purchase" />
+        <?php else: ?>
+        <input type="submit" id="monelib-image" value="Pay Now" />
+        <?php endif; ?>
+    </form>
+
+<script>
+function monelibClosed() {
+    window.setTimeout(function() {
+        var url = '<?php echo $this->url_thanks; ?>';
+        window.location = url;
+    }, 1000);
+}
+jQuery(function($){
+    jQuery('#monelib-image').on('click', function(){
+        popUp = window.open('','ccPurchase','resizable=yes,menubar=no, location=yes, status=yes, scrollbars=yes, menubar=no, width=580, height=650');
+
+        var pollTimer = window.setInterval(function() {
+            if (popUp.closed !== false) { // !== is required for compatibility with Opera
+                window.clearInterval(pollTimer);
+                monelibClosed();
+            }
+        }, 500);
+    });
+});
+</script>

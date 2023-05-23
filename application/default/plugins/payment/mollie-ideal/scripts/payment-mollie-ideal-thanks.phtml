@@ -1,0 +1,30 @@
+<?php
+$title = ___("iDEAL betaling");
+$this->setLayout('layout.phtml');
+?>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->public; ?>/style.css">
+
+<table id="outer">
+<tr>
+    <td align="center">
+    <img src="<?php echo $this->public; ?>/ideal.gif" align="right">
+    <h2>iDEAL betaling</h2>
+    <b>Betaalstatus</b><br/><br/>
+
+    <table id="inner">
+    <tr>
+        <td><b>Betaalstatus</b></td><td width="300px"><?php echo $this->status; ?></td>
+    </tr>
+    <tr>
+        <td><b>Betaalcode</b></td><td><?php echo $this->payment_id; ?> / <?php echo $this->mollieTransactionId; ?></td>
+    </tr>
+    </table>
+    <br/><br/>
+
+    <form method="post" action="<?php echo $this->action; ?>" target="_top">
+    <input type="submit" value="Verder" />
+    </form>
+    </td>
+</tr>
+</table>

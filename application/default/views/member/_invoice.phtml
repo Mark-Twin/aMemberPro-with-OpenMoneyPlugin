@@ -1,0 +1,70 @@
+<?php
+/**
+ * That is template for an invoice in member/payment-history.phtml
+ */
+?>
+<div class="am-active-invoice">
+    <div class="am-active-invoice-header">
+        <span class="am-active-invoice-date"><?php p(amDate($invoice->tm_started)) ?></span>
+        <span class="am-active-invoice-num">#<?php p($invoice->public_id) ?></span>
+        <span class="am-active-invoice-paysys"><?php __e($invoice->_paysysName) ?></span>,
+        <span class="am-active-invoice-terms"><?php p($invoice->getTerms()) ?></span>
+        <?php if ($invoice->rebill_date): ?>
+        <span class="am-active-invoice-rebill-date"><?php __e('Next Rebill') ?>: <?php p(amDate($invoice->rebill_date)) ?></span>
+        <?php endif; ?>
+        <?php if (!empty($invoice->_cancelUrl)): ?>
+        <span class="am-active-invoice-cancel">
+            <a class="cancel-subscription local-link" href="<?php p($invoice->_cancelUrl)?>"><?php __e("Cancel Subscription") ?></a>
+        </span>
+        <?php endif; ?>
+        <?php if ($invoice->isCancelled()): ?>
+        <span class="am-active-invoice-cancel">
+            <?php __e("Cancelled") ?> (<?php p(amDate($invoice->tm_cancelled)) ?>)
+        </span>
+        <?php endif ?>
+        <?php if ($invoice->isFailed()): ?>
+        <span class="am-active-invoice-failed">
+            <?php __e("Failed") ?>
+        </span>
+        <?php endif ?>
+        <?php if(!empty($invoice->_restoreUrl)) : ?>
+        <span class="am-active-invoice-restore">
+            <a class="restore-subscription local-link" href="<?php p($invoice->_restoreUrl)?>"><?php __e("Resume Subscription") ?></a>
+        </span>
+        <?php endif; ?>
+    </div>
+    <ul class="am-active-invoice-product-list">
+    <?php foreach ($invoice->getItems() as $item): ?>
+        <li class="am-active-invoice-product">
+            <span class="am-active-invoice-item-title"><?php p($item->item_title) ?><?php if ($item->qty>1) : ?> &times; <?php p($item->qty) ?><?php endif; ?></span>
+
+            <?php if (!empty($item->_upgrades)): ?>
+                <span class="am-active-invoice-upgrade">
+                    <a href="javascript:;" class="upgrade-subscription local-link" data-invoice_item_id="<?php p($this->obfuscate($item->invoice_item_id)) ?>"><?php __e("upgrade") ?></a>
+                </span>
+                <div class="upgrade-subscription-popup upgrade-subscription-popup-<?php p($this->obfuscate($item->invoice_item_id)) ?>"
+                     style="display:none" data-popup-title="<?php __e('Change Subscription') ?>">
+                    <?php include $this->_script('member/_upgrade.phtml') ?>
+                </div>
+            <?php endif ?>
+            <!-- options -->
+            <?php foreach ($item->getOptions() as $optKey => $opt): ?>
+                <br /><b><i><?php p($opt['optionLabel']) ?>:</i></b>
+                     <i><?php p(is_array($opt['valueLabel']) ? implode(',', $opt['valueLabel']) : $opt['valueLabel']) ?></i>
+                     <?php if ($opt['first_price'] || $opt['second_price']) : ?>
+                     <i style='color: gray;'><?= $opt['first_price'] > 0 ? '+' : '&minus;' ?> <?php
+                            $o = new stdclass;
+                            $o->first_price = abs($opt['first_price']);
+                            $o->second_price = abs($opt['second_price']);
+                            $o->first_period = $invoice->first_period;
+                            $o->second_period = $invoice->second_period;
+                            $o->rebill_times = $invoice->rebill_times;
+                            $o->currency = $invoice->currency;
+                            $t = new Am_TermsText($o);
+                        echo $t->getStringForOption(); ?></i>
+                     <?php endif ?>
+            <?php endforeach // item->getOptions() ?>
+        </li>
+    <?php endforeach ?>
+    </ul>
+</div>

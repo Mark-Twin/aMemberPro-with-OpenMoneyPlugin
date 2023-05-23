@@ -1,0 +1,5 @@
+<?php if ($theme->getConfig('logo_link')) : ?>
+    <a href="<?php p($theme->getConfig('home_url', $di->url('',false))) ?>"><img class="am-header-content-logo" src="<?php p($theme_logo_url) ?>" alt="<?php p($di->config->get('site_title')) ?>" /></a>
+<?php else : ?>
+    <img class="am-header-content-logo" src="<?php p(@$theme_logo_url ?: $this->_scriptImg('/header-logo.png')) ?>" alt="<?php p($di->config->get('site_title')) ?>" />
+<?php endif;

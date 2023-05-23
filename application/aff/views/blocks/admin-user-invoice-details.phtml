@@ -1,0 +1,52 @@
+<div class="user-invoice-record-details-commissions">
+    <?php if ($this->comm_items) : ?>
+    <em><?php __e('Commissions')?></em>
+    <div class="grid-container">
+        <table class="grid grid-small">
+            <tr>
+                <th><?php __e('Date') ?></th>
+                <th><?php __e('Affiliate') ?></th>
+                <th><?php __e('Product')?></th>
+                <th><?php __e('Commission')?></th>
+                <th><?php __e('Payout')?></th>
+                <th><?php __e('Paid')?></th>
+                <?php if ($has_tiers): ?>
+                <th><?php __e('Tier')?></th>
+                <?php endif; ?>
+                <th></th>
+            </tr>
+            <?php foreach ($this->comm_items as $comm_item) : ?>
+            <tr class="grid-row<?php if ($comm_item->record_type == AffCommission::VOID) : ?> red<?php endif; ?>">
+                <td><?php echo amDate($comm_item->date) ?></td>
+                <td><a class="link" href="<?php p($this->userUrl($comm_item->aff_id)) ?>"><?php p($comm_item->aff_name) ?></a></td>
+                <td><?php p($comm_item->product_title) ?></td>
+                <td class="align-right"><strong><?php if ($comm_item->record_type == AffCommission::VOID): ?>&minus;&nbsp;<?php endif; ?><?php echo Am_Currency::render($comm_item->amount) ?></strong></td>
+                <td>
+                    <?php if ($comm_item->payout_date) : ?>
+                    <a href="<?php echo $this->url('aff/admin-payout/view', array('payout_id'=>$comm_item->payout_id)) ?>" class="link" target="_top"><?php echo amDate($comm_item->payout_date) ?></a>
+                    <?php else : ?>
+                        &ndash;
+                    <?php endif; ?>
+                </td>
+                <td><?php p($comm_item->is_paid ? ___('yes') : ___('no')) ?></td>
+                <?php if ($has_tiers): ?>
+                <td><?php echo $comm_item->tier ? ___('%d-Tier', $comm_item->tier + 1): '&ndash;' ?></td>
+                <?php endif; ?>
+                <td>
+                    <?php if($comm_item->is_voided) : ?>
+                        <span class="red"><?php __e('Voided') ?></span>
+                    <?php elseif ($comm_item->record_type == AffCommission::VOID): ?>
+                        (<?php __e('void') ?>)
+                    <?php else : ?>
+                        <a href="<?php echo $this->url('aff/admin-commission/void/id/'.$comm_item->commission_id) ?>" class="void-commission local"><?php __e('Void') ?></a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+    <?php endif; ?>
+    <?php if ($aff && (!$this->comm_items || @count($this->comm_items) < $invoice->getPaymentsCount())): ?>
+        <a class="local calc-commission" href="<?php echo $this->url('aff/admin-commission/calc/id/'.$invoice->pk()) ?>"><?php __e('Calculate Commission for this Invoice') ?></a> (<?php p($aff->getName())?>, <?php p($aff->email); ?>)
+    <?php endif; ?>
+</div>

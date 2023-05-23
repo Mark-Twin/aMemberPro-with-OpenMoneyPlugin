@@ -1,0 +1,8 @@
+<?php _e('Output  system information like signup url, login url, etc...', 'am4-plugin');?> <br/>
+<?php _e('If title parameter will be set, HTML link will be printed instead of url', 'am4-plugin');?><br/><br/>
+        <table>
+            <tr><th><span class="am4shortcode">[am4info var=signupurl]</span></th><td>http://localhost/amember/signup</td></tr>
+            <tr><th><span class="am4shortcode">[am4info var=signupurl title="Renew Your Membership"]</span></th><td>&lt;a href='http://localhost/amember/signup'&gt;Renew Your Membership&lt;/a&gt;</td></tr>
+            <tr><th><span class="am4shortcode">[am4info var=loginurl]</span></th><td>http://localhost/amember/login</td></tr>
+            <tr><th><span class="am4shortcode">[am4info var=logouturl]</span></th><td>http://localhost/amember/logout</td></tr>
+        </table>

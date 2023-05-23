@@ -1,0 +1,12 @@
+<div class="am-helpdesk-faq-search-result">
+    <h2><?php __e('Search Results') ?></h2>
+    <?php if (!$items) : ?>
+    <p><?php __e('No result found') ?></p>
+    <?php else: ?>
+    <ul class="am-helpdesk-faq-list">
+    <?php foreach ($items as $f) : ?>
+        <li class="am-helpdesk-faq-list-item"><a href="<?php echo $this->url('helpdesk/faq/i/'.urlencode($f->title)) ?>"><?php p($f->title) ?></a></li>
+    <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+</div>

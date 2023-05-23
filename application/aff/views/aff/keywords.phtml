@@ -1,0 +1,26 @@
+<?php
+$title = ___('Affiliate Keywords');
+$this->setLayout('member/layout.phtml'); ?>
+<?php echo $this->blocks('aff/top') ?>
+<?php echo $this->blocks('aff/keywords/top') ?>
+<?php
+echo $content;
+?>
+<?php $module = $di->modules->get('aff'); ?>
+<div>
+    <h2>How to use keywords</h2>
+    <p>If you have different sources of traffic and want to know what is better, you should use keywords.</p>
+    <p>Let's say you have two different pages where you want to promote our site (example.com/page1.html and example.com/page2.html), and you want to know what page generates more sales.</p>
+    <p>All you need to do is to include special "keyword" parameter in affiliate link, eg.:</p>
+    <ul class="am-list">
+        <li><i>Your affiliate link:</i> <?php echo $module->getTrackingLink($di->auth->getUser());?></li>
+        <?php
+        $link1 = $module->getTrackingLink($di->auth->getUser(),null,true,array('keyword'=>'page1'));
+        $link2 = $module->getTrackingLink($di->auth->getUser(),null,true,array('keyword'=>'page2'));
+        list($link1, $link2) = preg_replace('/(keyword=page\d)/', '<b>$1</b>', array($link1, $link2));
+        ?>
+        <li><i>Link that you should include in page1.html:</i> <?php echo $link1 ?></li>
+        <li><i>Link that you should include in page2.html:</i> <?php echo $link2; ?></li>
+    </ul>
+    <p>When user clicks on affiliate link, we will extract "keyword" parameter from affiliate URL and calculate what "keyword" generates more clicks and sales.</p>
+</div>

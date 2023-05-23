@@ -1,0 +1,98 @@
+<?php $simple = $this->getController()->isSimple();?>
+<h4><?php _e('These error messages can be used in shortcodes later.', 'am4-plugin');?></h4>
+<div><?php _e('Use something simple and unique for error message "name"', 'am4-plugin');?></div>
+<table class="form-table">
+    <?php foreach($options as $id=>$option) : ?>
+        <tr class="option-head option-id-<?php print $id;?>" id="<?php print $id;?>">
+            <th class="error-title"><label id="error-title-<?php print $id;?>"><?php echo $option['name'];?></label></th>
+            <td>&nbsp;
+                <?php if($simple) : ?>
+                    <a href='#'><?php _e('pick', 'am4-plugin');?></a>&nbsp;&nbsp;
+                <?php else : ?>
+                <a href='#edit-form' class="error-edit-link"><?php _e('edit', 'am4-plugin');?></a>&nbsp;&nbsp;<a href="#" class="error-delete-link"><?php _e('delete', 'am4-plugin');?></a>
+                <?php endif;?>
+            </td>
+        </tr>
+        <tr class="option-body option-id-<?php print $id;?>" id='option-id-<?php print $id;?>' style='display: none;'>
+            <td colspan="2"><div style='overflow:auto; height:300px; width:800px; border: 1px solid #7F9DB9; padding: 5px;' id="error-text-<?php print $id;?>"><?php echo $option['text'];?></div>
+            </td>
+        </tr>
+        <tr class="option-edit option-id-<?php print $id;?>" style='display: none;'>
+            <td colspan="2"></div>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+        <tr class ="option-add-new">
+            <td colspan="2"><a href="#edit-form" class="option-form-link"><label><?php _e('Add new error message', 'am4-plugin');?></label></a></td>
+        </tr>
+</table>
+<a name='edit-form'></a>
+<div id='edit-form-container'>
+<table class="form-table" id ="edit-form">
+        <tr class="option-head-edit">
+            <th><b><?php _e('Error Template Name', 'am4-plugin');?></b><br/><input type="text" name='options[name]' id='error-name-input'></th>
+        </tr>
+        <tr class="option-body-edit">
+            <th><b><?php _e('Error Template Body', 'am4-plugin');?></b><br/><textarea class ="error-edit-input" rows="20" cols="100" name='options[text]' id="error-edit-input"></textarea></th>
+        </tr>
+        <tr>
+            <td><input id="am4-update-btn" name="save" type="submit" class="button-primary" id="publish" value="Update" />
+                <?php $this->getController()->actionInput('save');?>
+                <input type="hidden" name='options[id]' id='error-id-input' value=''>
+            </td>
+        </tr>
+</table>
+    </div>
+
+<br/>
+<script type="text/javascript">
+    function toggleActiveRow(row, active){
+        if(active) jQuery(row).css('background', '#ececec')
+        else jQuery(row).css('background', 'white')
+    }
+    jQuery(document).ready(function(){
+        jQuery('.error-title').click(function (){
+            jQuery('.option-body').hide(); toggleActiveRow('.option-head', false);
+            var head = jQuery(this).parent('.option-head');
+            head.next('.option-body').show(300); toggleActiveRow(head.get(), true);
+            jQuery('.option-edit').hide();
+        });
+
+        jQuery('.error-edit-link').click(function(){
+            jQuery('.option-edit').hide();
+            row = jQuery(this).parents('.option-head');
+            var body = row.next('.option-body');
+            body.hide();
+            toggleActiveRow('.option-head', false); toggleActiveRow(row.get(), true);
+            var option_id = row.attr('id');
+            edit = body.next('.option-edit');
+            edit.show(200);
+            if(!edit.find("#edit-form").length){
+                var form = jQuery("#edit-form");
+                form.appendTo(edit.find('td'));
+                form.find('#error-name-input').val(jQuery('#error-title-'+option_id).html());
+                form.find('#error-edit-input').val(jQuery('#error-text-'+option_id).html());
+                form.find('#error-id-input').val(option_id);
+
+            }
+        });
+        jQuery(".option-add-new").click(function (){
+            if(!jQuery("#edit-form-container").find("#edit-form").length){
+                var form = jQuery("#edit-form");
+                form.appendTo("#edit-form-container");
+                form.find('#error-name-input').val('');
+                form.find('#error-edit-input').val('');
+                form.find('#error-id-input').val('');
+
+            }
+        });
+
+        jQuery('.error-delete-link').click(function(){
+            if(confirm('Really delete this error message?'))
+                var id = jQuery(this).parents('.option-head').attr('id');
+                am_post('delete', {'id': id}, function(){
+                    jQuery('.option-id-'+id).remove();
+                });
+        });
+    });
+</script>

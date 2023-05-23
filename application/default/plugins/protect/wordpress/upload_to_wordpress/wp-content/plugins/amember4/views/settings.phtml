@@ -1,0 +1,66 @@
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row"><?php _e('aMember Path', 'am4-plugin');?></th>
+                        <td id="amember-path-container"><input id="options-path" type="text" name="options[path]" size="60" value="<?php $this->e($options['path']);?>">
+                            <div id="amember-path-message" class="amember_error"></div>
+                            <p class="description"><?php _e('Path where you have aMember installed', 'am4-plugin');?></p>
+                        </td>
+                    </tr>
+                    <tr class="amember-settings-block">
+                        <th scope="row"><?php _e("aMember Root URL", 'am4-plugin');?></th>
+                        <td><input id="options-url" type="text" name="options[url]" size="60" value="<?php $this->e($options['url']);?>"></td>
+                    </tr>
+                    <?php if(am4PluginsManager::isConfigured()) : ?>
+                    <tr class="amember-settings-block">
+                        <th scope="row"><?php _e("Protect whole blog", 'am4-plugin');?></th>
+                        <td><?php
+                        $show_only_urls = true;
+                        $hide_update_bnt = true;
+                        include "protection.phtml";?></td>
+                    </tr>
+                    <tr valign='top'>
+                        <th scope="row"><?php _e("Disable Protection for these roles", 'am4-plugin');?>
+                        </th>
+                        <td>
+                        <?php
+                        $this->checkboxes('options[disable_protection][]', am4PluginsManager::getWpRoles(true) ,$options['disable_protection']);?>
+                        <p class="description"><?php _e('Protection will be disabled for users who have selected roles(if user login in wordpress directly). User will have full access to content.');?> <?php _e('By default protection is completly disabled for Administrators');?></p>
+                        </td>
+                    </tr>
+                    <tr valign='top'>
+                        <th scope="row"><?php _e("Redirect profile page to aMember", 'am4-plugin');?>
+                        </th>
+                        <td>
+                            <input type='checkbox' id="options-profile-redirect" name="options[profile_redirect]" value=1 <?php checked(@$options['profile_redirect'],1);?>>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
+                </table><br/>
+
+                <script type="text/javascript">
+                    jQuery(document).ready(function (){
+                        jQuery("#options-path").dirBrowser();
+                        jQuery("#options-path").change(function (){
+                                if(path = jQuery("#options-path").val())
+                                am_post('validate', {
+                                   'path' :  path
+                                }, function(data){
+                                  if(data) data = eval( '(' + data + ')' );
+                                  jQuery('#amember-path-message').html(data.valid ? '' : data.error);
+                                  if(data.valid){
+                                      jQuery('.amember-settings-block').show();
+                                  }else{
+                                      jQuery('.amember-settings-block').hide();
+                                  }
+                                  for(i in data){
+                                    if(i=='valid' || i=='error') continue;
+                                    e = jQuery('#options-'+i);
+                                    if(!e.val()) e.val(data[i]);
+                                  }
+                                });
+
+                        }).trigger("change");
+
+
+                    });
+                </script>

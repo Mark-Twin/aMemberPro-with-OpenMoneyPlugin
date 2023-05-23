@@ -1,0 +1,52 @@
+<?php if ($resources || $left_member_links): ?>
+    <?php if (count($resources) + count($left_member_links) > 5) : ?>
+    <div class="am-input-filter-wrapper">
+        <div class="am-input-filter-inner-wrapper">
+            <input class="am-input-filter"
+                   type="text"
+                   name="q"
+                   autocomplete="off"
+                   placeholder="<?php __e('Type to Filter…') ?>" />
+            <div class="am-input-filter-empty">&nbsp;</div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    jQuery(function(){
+        jQuery(document).on('focusin focusout', '.am-input-filter', function(){
+            jQuery(this).closest('.am-input-filter-wrapper').toggleClass('am-input-filter-wrapper_focus');
+        });
+
+        jQuery(document).on('keyup change', '.am-input-filter', function(){
+            var $context = jQuery(this).closest('.am-block');
+            jQuery('.am-input-filter-empty', $context).toggle(jQuery(this).val().length !== 0);
+
+            if (jQuery(this).val()) {
+                jQuery('li', $context).hide();
+                jQuery('li[data-title*="' + jQuery(this).val().toLowerCase() + '"]', $context).show();
+            } else {
+                jQuery('li', $context).show();
+            }
+        });
+
+        jQuery('.am-input-filter-empty').click(function(){
+            jQuery(this).closest('.am-input-filter-wrapper').find('.am-input-filter').val('').change();
+            jQuery(this).hide();
+        });
+    });
+    </script>
+    <?php endif; ?>
+    <ul id="member-resources" class="am-widget-list am-list-resources">
+        <?php foreach ($resources as $r): ?>
+            <?php if ($l = $r->renderLink()) : ?>
+            <li data-title="<?php p(strtolower($r->title)) ?>" id="resource-link-<?php p($r->getTable()->getAccessType()) ?>-<?php p($r->pk()) ?>-wrapper"><?php echo $l; ?>
+                <?php if (@$r->desc) : ?>
+                    <div><?php echo ___(@$r->desc); ?></div>
+                <?php endif; ?>
+            </li>
+            <?php endif; ?>
+        <?php endforeach ?>
+        <?php foreach ($left_member_links as $u=>$t): ?>
+            <li data-title="<?php p(strtolower($t)) ?>"><a href="<?php p($u) ?>"><?php echo $t ?></a></li>
+        <?php endforeach ?>
+    </ul>
+<?php endif ?>

@@ -1,0 +1,12 @@
+<?php
+$title = ___('Administrator Login');
+$this->setLayout('admin/layout-login.phtml');
+?><div class="form-login-wrapper">
+    <div class="form-login" >
+        <?php if (!empty($error)) echo $this->formErrors($error) ?>
+        <?php echo $content ?>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery('.errors').fadeTo('slow', 0.1).fadeTo('slow', 1.0);
+</script>

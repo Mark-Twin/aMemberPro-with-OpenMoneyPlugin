@@ -1,0 +1,9 @@
+<?php if ($items) : ?>
+<div class="am-helpdesk-faq-search-result">
+    <ul class="am-helpdesk-faq-list">
+    <?php foreach ($items as $f) : ?>
+        <li class="am-helpdesk-faq-list-item"><a href="<?php echo $this->url('helpdesk/faq/i/'.urlencode($f->title)); ?>" target="_blank"><?php p($f->title) ?></a></li>
+    <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>

@@ -1,0 +1,32 @@
+<?php /* Shopping cart contents */ ?>
+<div class="am-basket-preview">
+<?php
+$hasQty = false;
+foreach ($cart->getItems() as $item) {
+    $hasQty = $hasQty || $item->qty > 1;
+}
+?>
+<?php if (count($cart->getItems())) : ?>
+    <table class="am-basket-preview-items">
+    <?php foreach ($cart->getItems() as $item): ?>
+    <tr class="am-basket-preview-item">
+        <td class="am-basket-preview-item-remove"><?php if (!$cart->isStick($item)):?><a href="javascript:;" title="<?php __e('Remove') ?>" onclick="cart.remove(<?php p($item->item_id); ?>)">&#10005;</a><?php endif ?></td>
+        <td class="am-basket-preview-item-title"><div><?php p($item->item_title) ?></div></td>
+        <?php if ($hasQty) : ?>
+        <td class="am-basket-preview-item-qty">&times;<?php p($item->qty) ?></td>
+        <?php endif; ?>
+        <td class="am-basket-preview-item-total"><?php p($this->cart->getCurrency($item->first_total)) ?></td>
+    </tr>
+    <?php endforeach ?>
+    </table>
+    <div class="am-basket-preview-actions">
+        <a href="<?php echo $di->surl('cart/view-basket') ?>"><?php __e('View Basket')?></a>
+        <span class="am-basket-preview-actions-divider">|</span>
+        <a href="<?php echo $di->surl('cart/checkout') ?>"><?php __e('Checkout')?></a>
+    </div>
+<?php else: ?>
+    <div class="am-basket-preview-empty">
+        <?php __e('Your cart is empty. Click %shere%s to continue shopping.', '<a href="' . $di->surl('cart') . '">', '</a>') ?>
+    </div>
+<?php endif; ?>
+</div>

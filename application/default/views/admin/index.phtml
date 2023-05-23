@@ -1,0 +1,154 @@
+<?php
+$this->layoutNoTitle = true;
+$this->setLayout('admin/layout.phtml');
+?>
+<?php if (!$di->config->get('dont_check_updates') && $di->authAdmin->getUser()->isSuper()): ?>
+<script type="text/javascript">
+    if (!document.cookie.match(/[^;]am_upgrade_checked=1[;$]/))
+    {
+        jQuery.getJSON(amUrl('/admin-upgrade/check'), function(updates){
+            var $ul = jQuery('<ul class="upgrades"></ul>');
+            var up_cnt = 0;
+            jQuery.each(updates, function(k,record){
+                var link = jQuery('<a href="javascript:" data-href="'+record.dismiss_url+'" class="dismiss local">dismiss</a>');
+                var changelog = jQuery('<a href="javascript:;" class="changelog local">changelog</a>');
+                changelog.data('text', record.text);
+                var update = jQuery('<a href="' + escape(amUrl('/admin-upgrade')) +'">update</a>');
+                var li = jQuery("<li class='upgrade'>"
+                    + record.notice
+                    + "</li>");
+                li.append(" &middot; ").append(changelog);
+                li.append(" &middot; ").append(update);
+                li.append(" &middot; ").append(link);
+                changelog.click(function(){
+                    var $div = jQuery('<div style="display:none;" id="chagelog-popup"></div>');
+                    jQuery('body').append($div);
+                    var $pre = jQuery('<pre></pre>')
+                    $div.append($pre.html(jQuery(this).data('text')));
+
+                    $div.dialog({
+                        autoOpen: true,
+                        modal : true,
+                        title : "Changelog",
+                        width : 800,
+                        height: 500,
+                        position : {my: "center", at: "center", of: window},
+                        close : function() {
+                            $div.remove();
+                        }
+                    });
+                });
+                link.click(function(){
+                    jQuery.get(link.data('href'));
+                    li.remove();
+                    up_cnt--;
+                    jQuery(".upgrade-caption-count").empty().append(up_cnt);
+                    if (up_cnt <= 0) {
+                        jQuery('.upgrades-conteiner').remove();
+                    }
+                });
+                $ul.append(li);
+                up_cnt++;
+            });
+            if (up_cnt) {
+                var $div = jQuery('<div class="upgrades-conteiner"></div>');
+                $div.append(
+                '<div class="upgarde-controll"><a href="#" id="upgarde-controll-link">+</a></div>' +
+                    '<div class="upgrade-caption"><span class="upgrade-caption-count">' + up_cnt + '</span> upgrades available' + '</div>'
+            ).append($ul)
+                jQuery('.content').prepend($div);
+
+                jQuery('#upgarde-controll-link, .upgrade-caption').click(function(){
+                    var $a = jQuery('#upgarde-controll-link');
+                    if ($a.hasClass('opened')) {
+                        $a.removeClass('opened').empty().append('+');
+                        jQuery('.upgrades').hide();
+                        jQuery('.upgrade-caption').show();
+                    } else {
+                        $a.addClass('opened').empty().html('&minus;');
+                        jQuery('.upgrade-caption').hide();
+                        jQuery('.upgrades').show();
+                    }
+                    return false;
+                })
+            }
+        });
+    }
+</script>
+<?php endif; //!$di->config->get('dont_check_updates') && $di->authAdmin->getUser()->isSuper() ?>
+<div class="dashboard-customize-link-wrapper">
+<a href="<?php echo $this->url($controllerPath . '/customize-dashboard') ?>" class="link dashboard-customize-link"><?php __e('Customize Dashboard') ?></a>
+</div>
+<div class="dashboard">
+    <div class="top">
+        <div>
+            <?php echo $this->blocks('admin/dashboard/top') ?>
+        </div>
+    </div>
+    <?php foreach(array('top', 'aside', 'main','bottom') as $target) : ?>
+    <div class="<?php p($target) ?>">
+        <div>
+            <?php foreach ($widgets[$target] as $k => $widget) : ?>
+            <?php $widgetContent = $widget->renderFromCache($this, isset($widgetsConfig[$widget->getId()])?$widgetsConfig[$widget->getId()]:null); ?>
+            <div class="widget" id="widget-<?php p($target);?>-<?php p($k) ?>" data-title="<?php p($widget->getTitle());?>"
+                 style="opacity:0.5" data-cache="<?php echo ($widgetContent !== false)?>">
+
+                <?php echo $widgetContent;?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+<img id="ajax-loader-image" style="display:none" src="<?php echo $this->_scriptImg('/loading-b.svg');?>" width="12" height="12" />
+<script type="text/javascript">
+function amReloadWidget(w) {
+    var container = jQuery(w);
+    jQuery.ajax({
+        url: <?php echo json_encode($this->url($controllerPath . '/widget/id/', false)) ?>+jQuery(w).attr('id'),
+        beforeSend: function() {
+            if(container.data('cache')||container.data('widget-hash')) return true;
+            container.data('timeoutID', window.setTimeout(function (){
+                container.html("&nbsp;Widget '"+container.data('title')+"' loading&hellip;");
+                var img = jQuery('#ajax-loader-image').clone();
+                container.prepend(img);
+                img.show();
+            }, 1000));
+            return true;
+        },
+        success : function(result){
+            container.data('cache', false);
+            if (container.data('timeoutID'))
+            {
+                window.clearTimeout(container.data('timeoutID'));
+                container.data('timeoutID', null);
+            }
+            if (container.data('widget-hash') !== result.hash) {
+                container.data('widget-hash', result.hash);
+                var $result = jQuery(result.widget);
+                var script = $result.find('script').detach();
+                container.html($result);
+                container.css({opacity:1});
+                script.each(function(){
+                    eval(jQuery(this).text());
+                });
+            }
+        }
+    });
+}
+jQuery(document).ready(function($){
+    setInterval(reloadWidgets = function(){
+        jQuery(".widget").each(function(){
+            amReloadWidget(this);
+        });
+    }, 60 * 1000);
+    reloadWidgets();
+
+    setInterval(checkViewportSize = function(){
+        jQuery('.top, .aside, .main, .bottom', '.dashboard').each(function(){
+            jQuery(this).toggleClass('container-width-narrow', $(this).outerWidth() < 600);
+        });
+    }, 2000);
+    checkViewportSize();
+});
+</script>

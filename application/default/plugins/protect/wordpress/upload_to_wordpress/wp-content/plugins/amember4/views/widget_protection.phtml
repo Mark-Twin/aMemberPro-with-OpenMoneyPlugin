@@ -1,0 +1,10 @@
+<div class="am4-widget-protection-block">
+    <b><?php _e('Show widget when:', 'am4-plugin');?> </b>
+    <div><input type="checkbox" name="<?php echo $widget->get_field_name("access",true); ?>" value="guest" <?php checked(in_array('guest', (array)@$instance['access']));?>> <?php _e('User is not logged in', 'am4-plugin');?></div>
+    <div><input type="checkbox" name="<?php echo $widget->get_field_name("access",true); ?>" value="not_have" <?php checked(in_array('not_have', (array)@$instance['access']));?>> <?php _e('User do not have subscriptions:', 'am4-plugin');?><br/>
+    <?php $this->resourceAccess($widget->id."not_have", @$instance['not_have'], $widget->get_field_name('not_have'), __('Select Products that user should not have', 'am4-plugin'), self::RESOURCE_ACCESS_SKIP_PERIOD);?>
+    </div>
+    <div><input type="checkbox" name="<?php echo $widget->get_field_name("access",true); ?>" value="have" <?php checked(in_array('have', (array)@$instance['access']));?>> <?php _e('User have subscriptions:', 'am4-plugin');?><br/>
+    <?php $this->resourceAccess($widget->id."have", @$instance['have'], $widget->get_field_name('have'), __('Select Products that user should have', 'am4-plugin'),false);?>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+<?php
+$menu = $this->adminMenu();
+$menu->setAcl($di->authAdmin->getUser());
+echo str_replace(array('((', '))'), array('<span class="admin-menu-item-alert">', '<span>'), $menu->renderMenu($this->di->navigationAdmin));
+
+$menu = $this->adminMenuCollapsed();
+$menu->setAcl($di->authAdmin->getUser());
+echo str_replace(array('((', '))'), array('<span class="admin-menu-item-alert">', '<span>'), $menu->renderMenu($this->di->navigationAdmin));
+?>
+<div class="<?php echo isset($_COOKIE['am-admin-menu-collapsed']) && $_COOKIE['am-admin-menu-collapsed'] ? 'menu-expand' : 'menu-collapse' ?>">
+    <a href="javascript:;" id="menu-collapse-exapand"><?php __e('Collapse Menu') ?></a>
+</div>
+<script type="text/javascript">
+jQuery(function(){
+
+    function setCookie(name, value) {
+            var today = new Date();
+            var expiresDate = new Date();
+            expiresDate.setTime(today.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year
+            document.cookie = name + "=" + escape(value) + "; path=/; expires=" + expiresDate.toGMTString() + ";";
+    }
+
+    function getCookie(name) {
+        var prefix = name + "=";
+        var start = document.cookie.indexOf(prefix);
+        if (start == -1) return null;
+        var end = document.cookie.indexOf(";", start + prefix.length);
+        if (end == -1) end = document.cookie.length;
+        return unescape(document.cookie.substring(start + prefix.length, end));
+    }
+
+    jQuery('li:has(a.folder)', jQuery('.admin-menu-collapsed')).bind('mouseenter', function(){
+        jQuery(this).find('ul').show();
+        jQuery(this).addClass('active');
+        return false;
+    });
+
+    jQuery('li:has(a.folder)', jQuery('.admin-menu-collapsed')).bind('mouseleave', function(){
+        jQuery(this).find('ul').hide();
+        jQuery(this).removeClass('active');
+        return false;
+    });
+
+    jQuery('#menu-collapse-exapand').click(function(){
+        jQuery(this).closest('div').hasClass('menu-collapse') ?
+            jQuery(this).closest('div').removeClass('menu-collapse').addClass('menu-expand') :
+            jQuery(this).closest('div').removeClass('menu-expand').addClass('menu-collapse');
+        jQuery('body').toggleClass('collapsed');
+        getCookie('am-admin-menu-collapsed') === '1' ?
+            setCookie('am-admin-menu-collapsed', '0') :
+            setCookie('am-admin-menu-collapsed', '1');
+        jQuery(window).resize();
+        return false;
+    });
+});
+</script>

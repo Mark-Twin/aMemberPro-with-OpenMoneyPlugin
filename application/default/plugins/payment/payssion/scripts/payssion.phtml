@@ -1,0 +1,10 @@
+<?php
+$title = "Select Payment Method";
+$this->setLayout('layout.phtml');
+?>
+<form method="post" action="<?php echo $this->action; ?>" target="_top">
+    <input type="hidden" name="invoice" value="<?php echo $this->invoice_id; ?>">
+    <?php echo $this->method; ?>
+    <input type="submit" value="Select" />
+</form>
+

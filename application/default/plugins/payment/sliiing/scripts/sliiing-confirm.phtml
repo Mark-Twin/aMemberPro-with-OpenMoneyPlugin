@@ -1,0 +1,21 @@
+<?php
+$title = ___("Processing your Transaction");
+$this->setLayout('layout.phtml');
+?>
+<br />
+<div class="make-payment-button">
+    <h2><?php __e('Please select the biller and click button to continue') ?></h2>
+    <form action="<?php echo $this->action; ?>" method="post" id="sliiing-form" >
+        <input type="hidden" name="invoice" value="<?php echo $this->invoice->public_id; ?>" />
+        <select name="biller"/>
+        <?php
+        foreach($this->billers['options'] as $k => $v)
+        {
+            if(in_array($k, $this->billers['default'])) $checked = ' checked="checked" ';
+            echo "<option value='$k'>$k</option>";
+        }
+        ?>
+	</select>
+        <input type="submit" value="<?php __e('Continue') ?>" />
+    </form>
+</div>

@@ -1,0 +1,17 @@
+<?php
+$title = $di->config->get('site_title') . ' : ' . ___('Checkout');
+$this->setLayout('cart/layout-wide.phtml');
+$isBasket = false;
+?>
+<?php include $this->_script('cart/_checkout.phtml'); ?>
+<form method="post" action="<?php echo $this->url('cart/checkout') ?>">
+    <?php echo Am_Html::renderArrayAsInputHiddens($_REQUEST); ?>
+    <div class="am-cart-checkout-buttons">
+        <?php if (isset($choosePaysys)) : ?>
+        <input type="hidden" name="choose-paysys" value="1" />
+        <?php endif; ?>
+        <input type="submit" class="am-cart-checkout-buttons-checkout" value="<?php __e('Proceed to Checkout') ?>" />
+        <input type="button" class="am-cart-checkout-buttons-update" value="<?php __e('Edit Your Cart') ?>" onclick="window.location.href = '<?php echo $this->url('cart/view-basket') ?>'"/>
+        <input type="hidden" name='a' value='checkout'>
+    </div>
+</form>

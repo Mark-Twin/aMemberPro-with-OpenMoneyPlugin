@@ -1,0 +1,27 @@
+<?php if (count($products)) : ?>
+    <?php if ($columns == 2) : ?>
+    <div class="am-cart-layout-two-coll">
+        <div class="am-cart-layout-two-coll-coll am-cart-layout-two-coll-coll-left">
+            <div class="am-cart-layout-two-coll-content">
+                <?php $i=1; foreach ($products as $k=>$p) if ($i++ % $columns) echo $p; ?>
+            </div>
+        </div>
+        <div class="am-cart-layout-two-coll-coll am-cart-layout-two-coll-coll-right">
+            <div class="am-cart-layout-two-coll-content">
+                <?php $i=0; foreach ($products as $k=>$p) if ($i++ % $columns) echo $p; ?>
+            </div>
+        </div>
+    </div>
+    <?php else : ?>
+    <div class="am-cart-layout-one-coll">
+        <div class="am-cart-layout-one-coll-coll">
+            <div class="am-cart-layout-one-coll-content">
+                <?php foreach ($products as $p) echo $p;  ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <?php echo $paginator->render(); ?>
+<?php else: ?>
+    <?php __e('Products not found. Click %shere%s to continue shopping.', '<a href="' . $this->url('cart') . '">', '</a>') ?>
+<?php endif; ?>

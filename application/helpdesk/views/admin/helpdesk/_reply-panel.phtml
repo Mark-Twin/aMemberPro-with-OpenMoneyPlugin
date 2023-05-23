@@ -1,0 +1,17 @@
+<div class="am-helpdesk-reply-panel">
+    <?php if ($strategy->canUseSnippets() || $strategy->canUseFaq()) : ?>
+    <div class="am-helpdesk-reply-panel-tools">
+        <?php if ($strategy->canUseSnippets()): ?>
+        <div class="am-helpdesk-reply-panel-tool am-helpdesk-reply-panel-tool-snippets">
+            <a class="local" href="javascript:;"><?php __e('Snippets') ?></a>
+        </div>
+        <?php endif; ?>
+        <?php if ($strategy->canUseFaq()): ?>
+        <div class="am-helpdesk-reply-panel-tool am-helpdesk-reply-panel-tool-faq">
+            <a class="local" href="javascript:;"><?php __e('FAQ') ?></a>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+    <div class="am-helpdesk-reply-panel-content"></div>
+</div>

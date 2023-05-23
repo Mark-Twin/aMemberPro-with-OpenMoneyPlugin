@@ -1,0 +1,22 @@
+<?php $title = ___('Processing your Transaction'); $this->setLayout('layout.phtml'); ?>
+<?php if (isset($invoice)) : ?>
+<?php include $this->_script('_receipt.phtml'); ?>
+<?php endif; ?>
+<?php echo $this->prolog; ?>
+<div>
+    <form id="payment-system-redirect" method="post" action="<?php p($url); ?>" target="_top">
+        <noscript>
+            <h2><?php __e('Click button to continue') ?></h2>
+        </noscript>
+        <?php if (!@$hideButton): ?>
+        <input type="submit" id=payment-continue-button value="<?php __e('Continue')?>" />
+        <?php endif ?>
+        <?php if (!empty($vars)) echo Am_Html::renderArrayAsInputHiddens($vars); ?>
+    </form>
+    <?php if (@$autoSubmit) : ?>
+    <script type="text/javascript">
+        document.getElementById('payment-system-redirect').submit();
+    </script>
+    <?php endif; ?>
+</div>
+<?php echo $this->epilog; ?>

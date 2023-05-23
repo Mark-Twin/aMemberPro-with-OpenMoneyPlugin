@@ -1,0 +1,7 @@
+<?php if ($item) : ?>
+    <?php if ($item->variable_qty) : ?>
+        <?php __e('You have %d items in your Basket', $item->qty) ?>
+    <?php else: ?>
+        <?php __e('Already in Basket') ?>
+    <?php endif; ?>
+<?php endif; ?>

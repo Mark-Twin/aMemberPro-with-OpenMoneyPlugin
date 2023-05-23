@@ -1,0 +1,1422 @@
+<?xml version="1.0"?>
+<schema version="4.0.0" id="$Id$" >
+    
+  <table name="access">
+    <field name="access_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="invoice_id" type="int" unsigned="1" notnull="0"/>
+    <field name="invoice_public_id" type="char" len="16" notnull="0"/>
+    <field name="invoice_payment_id" type="int" unsigned="1" notnull="0"/>
+    <field name="invoice_item_id" type="int" unsigned="1" notnull="0"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="product_id" type="int" notnull="1"/>
+    <field name="transaction_id" type="varchar" len="64" notnull="0"/>
+    <field name="begin_date" type="date" notnull="1"/>
+    <field name="expire_date" type="date" notnull="1"/>
+    <field name="qty" type="int" notnull="1" default="1" />
+    <field name="comment" type="varchar" len="255" />
+    <index name="PRIMARY" unique="1">
+      <field name="access_id"/>
+    </index>
+    <index name="invoice_id_2" unique="1">
+      <field name="invoice_id"/>
+      <field name="user_id"/>
+      <field name="product_id"/>
+      <field name="transaction_id"/>
+    </index>
+    <index name="user_id">
+      <field name="user_id"/>
+    </index>
+    <index name="product_id">
+      <field name="product_id"/>
+    </index>
+    <index name="invoice_id">
+      <field name="invoice_id"/>
+      <field name="invoice_item_id"/>
+    </index>
+    <index name="invoice_public_id">
+      <field name="invoice_public_id"/>
+    </index>
+    <index name="transaction_product">
+      <field name="transaction_id"/>
+      <field name="product_id"/>
+    </index>
+  </table>
+
+  <!-- this table is updated daily and when access table changed - it holds status, calculated number of "days"
+       for each customer/product-product_category and start of first subsciption, end of last subscription 
+       this table has no record about future subscriptions (yet?) \
+       use WHERE status='active' in SQL to be sure about
+  -->
+  <table name="access_cache">
+      <field name="user_id" type="int" unsigned="1" notnull="1" />
+      <field name="fn" type="enum" len="'product_id','product_category_id','user_group_id','special'" notnull="1" />
+      <field name="id" type="int" notnull="1" />
+      <!-- days mean count of full days user had subscription. 1 if subscribed today and so on -->
+      <field name="days" type="int" />
+      <field name="begin_date" type="date" notnull="0" />
+      <field name="expire_date" type="date" notnull="0" />
+      <field name="payments_count" type="int" notnull="1" default="0" />
+      <field name="status" type="enum" len="'active','expired'" notnull="1" />
+      <alter><drop field="months" /></alter>
+      <index name="speed" unique="1">
+          <field name="user_id" />
+          <field name="fn" />
+          <field name="id" />
+      </index>
+  </table>
+  
+  <table name="access_log">
+    <field name="log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="time" type="datetime" notnull="1" />
+    <field name="url" type="varchar" len="255"/>
+    <field name="remote_addr" type="varchar" len="39"/>
+    <field name="referrer" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+      <field name="log_id"/>
+    </index>
+    <index name="user_id">
+      <field name="user_id"/>
+      <field name="time"/>
+      <field name="remote_addr"/>
+    </index>
+    <index name="time">
+      <field name="time"/>
+    </index>
+  </table>
+  <table name="admin_log">
+    <field name="log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="dattm" type="datetime"/>
+    <field name="admin_id" type="int"/>
+    <field name="ip" type="varchar" len="39"/>
+    <field name="tablename" type="varchar" len="32" notnull="1"/>
+    <field name="record_id" type="varchar" notnull="0" len="32" />
+    <field name="message" type="text"/>
+    <field name="admin_login" type="varchar" len="32"/>
+    <index name="PRIMARY" unique="1">
+      <field name="log_id"/>
+    </index>
+    <index name="al">
+      <field name="tablename"/>
+      <field name="record_id"/>
+    </index>
+  </table>
+  <table name="admin">
+    <field name="admin_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="login" type="varchar" len="32" notnull="1"/>
+    <field name="name_f" type="varchar" len="64" notnull="1" />
+    <field name="name_l" type="varchar" len="64" notnull="1" />
+    <field name="pass" type="varchar" len="128" notnull="1"/>
+    <field name="last_login" type="datetime"/>
+    <field name="last_ip" type="varchar" len="39"/>
+    <field name="last_session" type="varchar" len="32"/>
+    <field name="email" type="varchar" len="255"/>
+    <field name="super_user" type="smallint" notnull="1" default="0"/>
+    <field name="perms" type="text"/>
+    <field name="prefs" type="blob"/>
+    <field name="lang" type="varchar" len="32"/>
+    <field name="reseller_id" type="int" />
+    <field name="is_disabled" type="tinyint" notnull="1" default="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="admin_id"/>
+    </index>
+    <index name="login" unique="1">
+      <field name="login"/>
+    </index>
+    <data>
+        <query>
+        INSERT INTO ?_admin (login, pass, email, super_user, name_f, name_l) VALUES ('@ADMIN_LOGIN@', '@ADMIN_PASS@', '@ADMIN_EMAIL@', 1, '', '');
+        </query>
+    </data>
+  </table>
+  
+  <table name="billing_plan">
+    <field name="plan_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="product_id" type="int" notnull="1"/>
+    <field name="title" type="varchar" len="255" notnull="1" />
+    <field name="terms" type="varchar" len="255" notnull="1" />
+    <field name="first_price" type="decimal" len="12,2" notnull="1"/>
+    <field name="first_period" type="varchar" len="32" notnull="1"/>
+    <field name="rebill_times" type="int" notnull="1" default="0"/>
+    <field name="second_price" type="decimal" len="12,2"/>
+    <field name="second_period" type="varchar" len="32"/>
+    <field name="disabled" type="tinyint" notnull="1" default="0" />
+    <field name="qty" type="int" notnull="1" default="1" />
+    <field name="variable_qty" type="tinyint" notnull="1" default="0" />
+    <field name="currency" type="char" len="3" notnull="0" />
+    <field name="paysys_id" type="varchar" len="255"/>
+    <field name="sort_order" type="tinyint"/>
+    <index name="PRIMARY" unique="1">
+      <field name="plan_id"/>
+    </index>
+    <index name="product" >
+      <field name="product_id"/>
+    </index>
+    <table_data name="billing_plan">
+     <row>
+      <field name="product_id">1</field>
+      <field name="title">Default Billing Plan</field>
+      <field name="terms"></field>
+      <field name="first_price">1.11</field>
+      <field name="first_period">1d</field>
+      <field name="rebill_times">99999</field>
+      <field name="second_price">2.22</field>
+      <field name="second_period">2d</field>
+      <field name="currency">USD</field>
+      <field name="disabled">0</field>
+     </row>
+    </table_data>
+  </table>
+  
+  <table name="cc">
+    <field name="cc_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="cc" type="varchar" len="25"/>
+    <field name="cc_number" type="varchar" len="255"/>
+    <field name="cc_expire" type="char" len="4"/>
+    <field name="cc_name_f" type="varchar" len="128"/>
+    <field name="cc_name_l" type="varchar" len="128"/>
+    <field name="cc_country" type="varchar" len="255"/>
+    <field name="cc_street" type="varchar" len="255"/>
+    <field name="cc_street2" type="varchar" len="255"/>
+    <field name="cc_city" type="varchar" len="255"/>
+    <field name="cc_state" type="varchar" len="255"/>
+    <field name="cc_zip" type="varchar" len="255"/>
+    <field name="cc_company" type="varchar" len="255"/>
+    <field name="cc_phone" type="varchar" len="255"/>
+    <field name="cc_housenumber" type="varchar" len="255"/>
+    <field name="cc_province" type="varchar" len="50"/>
+    <field name="cc_issuenum" type="varchar" len="25"/>
+    <field name="cc_startdate" type="varchar" len="12"/>
+    <field name="cc_type" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+      <field name="cc_id"/>
+    </index>
+    <index name="user_id" unique="1">
+      <field name="user_id"/>
+    </index>
+  </table>
+  
+  <table name="echeck">
+    <field name="echeck_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="echeck" type="varchar" len="25"/>
+    <field name="echeck_ban" type="varchar" len="255"/>
+    <field name="echeck_aba" type="varchar" len="255"/>
+    <field name="echeck_bank_name" type="varchar" len="255"/>
+    <field name="echeck_account_name" type="varchar" len="255"/>
+    <field name="echeck_name_f" type="varchar" len="64"/>
+    <field name="echeck_name_l" type="varchar" len="64"/>
+    <field name="echeck_country" type="varchar" len="255"/>
+    <field name="echeck_street" type="varchar" len="255"/>
+    <field name="echeck_street2" type="varchar" len="255"/>
+    <field name="echeck_city" type="varchar" len="255"/>
+    <field name="echeck_state" type="varchar" len="255"/>
+    <field name="echeck_zip" type="varchar" len="255"/>
+    <field name="echeck_company" type="varchar" len="255"/>
+    <field name="echeck_phone" type="varchar" len="255"/>
+    <field name="echeck_housenumber" type="varchar" len="255"/>
+    <field name="echeck_province" type="varchar" len="50"/>
+    <field name="echeck_issuenum" type="varchar" len="25"/>
+    <field name="echeck_startdate" type="varchar" len="12"/>
+    <field name="echeck_type" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+      <field name="echeck_id"/>
+    </index>
+    <index name="user_id" unique="1">
+      <field name="user_id"/>
+    </index>
+  </table>
+  <table name="config">
+    <field name="config_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="name" type="char" len="64" notnull="1" />
+    <field name="config" type="mediumblob"/>
+    <index name="PRIMARY" unique="1">
+      <field name="config_id"/>
+    </index>
+    <index name="name" unique="1">
+      <field name="name"/>
+    </index>
+  </table>
+  <table name="store">
+    <field name="store_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="name" type="varchar" len="255" notnull="1"/>
+    <field name="value" type="varchar" len="255"/>
+    <field name="blob_value" type="mediumblob"/>
+    <field name="expires" type="datetime" notnull="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="store_id"/>
+    </index>
+    <index name="name" unique="1">
+      <field name="name" len="191"/>
+    </index>
+  </table>
+  <table name="country">
+    <field name="country_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="country" type="char" len="2" notnull="1"/>
+    <field name="alpha2" type="char" len="2" notnull="1"/>
+    <field name="alpha3" type="char" len="3" notnull="1"/>
+    <field name="numeric" type="smallint" notnull="1"/>
+    <field name="title" type="varchar" len="64"/>
+    <field name="tag" type="int"/>
+    <field name="status" type="enum" len="'added','changed'"/>
+    <index name="PRIMARY" unique="1">
+      <field name="country_id"/>
+    </index>
+    <index name="country" unique="1">
+      <field name="country"/>
+    </index>
+  </table>
+  <table name="coupon">
+    <field name="coupon_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="batch_id" type="int" unsigned="1" notnull="1"/>
+    <field name="code" type="varchar" len="32" notnull="1"/>
+    <field name="used_count" type="int" notnull="1" default="0"/>
+    <field name="user_id" type="int" unsigned="1" notnull="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="coupon_id"/>
+    </index>
+    <index name="code" unique="1">
+      <field name="code"/>
+    </index>
+  </table>
+  <table name="coupon_batch">
+    <field name="batch_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="comment" type="varchar" len="128"/>
+    <field name="discount_type" type="enum" len="'percent','number'" default="number"/>
+    <field name="discount" type="decimal" len="12,2"/>
+    <field name="begin_date" type="date"/>
+    <field name="expire_date" type="date"/>
+    <field name="is_disabled" type="tinyint" notnull="1" default="0"/>
+    <field name="is_recurring" type="tinyint" notnull="1" default="0"/>
+    <field name="product_ids" type="varchar" len="255"/>
+    <field name="use_count" type="int"/>
+    <field name="user_use_count" type="int"/>
+    <field name="user_id" type="int" unsigned="1"/>
+    <field name="require_product" type="text"/>
+    <field name="prevent_if_product" type="text" />
+    <index name="PRIMARY" unique="1">
+      <field name="batch_id"/>
+    </index>
+  </table>
+  <table name="data">
+    <field name="table" type="varchar" len="64" notnull="1"/>
+    <field name="id" type="int" unsigned="1" notnull="1"/>
+    <field name="key" type="varchar" len="255" notnull="1"/>
+    <field name="type" type="smallint" notnull="1" default="0"/>
+    <field name="value" type="varchar" len="255"/>
+    <field name="blob" type="mediumblob"/>
+    <index name="table" unique="1">
+      <field name="table" len="16" />
+      <field name="id"/>
+      <field name="key" len="160"/>
+    </index>
+  </table>
+  <table name="email_template">
+    <field name="email_template_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="email_template_layout_id" type="int" notnull="0" />
+    <field name="name" type="varchar" len="64" notnull="1"/>
+    <field name="lang" type="varchar" len="16" notnull="1"/>
+    <field name="format" type="enum" len="'text','html','multipart'" notnull="1" default="text"/>
+    <field name="subject" type="varchar" len="255" notnull="1"/>
+    <field name="txt" type="mediumtext" notnull="1"/>
+    <field name="plain_txt" type="mediumtext"/>
+    <field name="attachments" type="mediumtext"/>
+    <field name="attach_pdf_invoice" type="tinyint"/>
+    <field name="recurring" type="tinyint"/>
+    <field name="day" type="int"/>
+    <field name="days" type="varchar" len="255" notnull="0" />
+    <field name="paysys_ids" type="varchar" len="255" notnull="0" />
+    <field name="conditions" type="text" notnull="0" />
+    <field name="not_conditions" type="varchar" len="255" notnull="0" />
+    <field name="not_conditions_expired" type="tinyint" notnull="0" />
+    <field name="not_conditions_future" type="tinyint" notnull="0" />
+    <field name="recipient_user" type="tinyint" notnull="1" default="1" />
+    <field name="recipient_aff" type="tinyint" notnull="1" default="0" />
+    <field name="recipient_admin" type="tinyint" notnull="1" default="0" />
+    <field name="recipient_emails" type="text" notnull="0" />
+    <field name="bcc" type="text" notnull="0" />
+    <field name="reply_to" type="int" unsigned="1" notnull="0" />
+    <field name="recipient_admins" type="varchar" len="255" notnull="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="email_template_id"/>
+    </index>
+  </table>
+  <table name="email_template_layout">
+      <field name="email_template_layout_id" type="int" notnull="1" extra="auto_increment"/>
+      <field name="name" type="varchar" len="64" notnull="1"/>
+      <field name="layout" type="mediumtext" notnull="1"/>
+      <index name="PRIMARY" unique="1">
+        <field name="email_template_layout_id"/>
+      </index>
+      <data>
+        <query>
+        ALTER TABLE ?_email_template_layout AUTO_INCREMENT = 101;
+        </query>
+      </data>
+      <table_data name="email_template">
+          <row>
+              <field name="email_template_layout_id">1</field>
+              <field name="name">Default User Layout</field>
+              <field name="layout">Dear %user.name_f% %user.name_l%,
+
+%content%
+
+--
+Best Regards,
+%site_title%
+%root_url%</field>
+          </row>
+          <row>
+              <field name="email_template_layout_id">2</field>
+              <field name="name">Default Admin Layout</field>
+              <field name="layout">Dear Administrator,
+
+%content%
+
+--
+Best Regards,
+%site_title%
+%root_url%</field>
+          </row>
+          <row>
+              <field name="email_template_layout_id">3</field>
+              <field name="name">Default Affiliate Layout</field>
+              <field name="layout">Dear %affiliate.name_f% %affiliate.name_l%,
+
+%content%
+
+--
+Best Regards,
+%site_title%
+%root_url%</field>
+          </row>
+      </table_data>
+  </table>
+  
+  <!-- emails sent via admin-email function -->
+  <table name="email_sent">
+    <field name="email_sent_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="subject" type="varchar" len="255" />
+    <field name="format" type="varchar" len="16" />
+    <field name="body" type="text" />
+    <field name="files" type="varchar" len="255" />
+    <field name="newsletter_ids" type="varchar" len="255" />
+    <field name="count_users" type="int" />
+    <field name="sent_users" type="int" />
+    <field name="last_email" type="varchar" len="255" />
+    <field name="desc_users" type="varchar" len="255" />
+    <field name="is_cancelled" type="varchar" len="255" />
+    <field name="serialized_vars" type="text" />
+    <field name="tm_added" type="datetime" notnull="1" />
+    <field name="tm_finished" type="datetime" notnull="0" />
+    <field name="admin_id" type="int" />
+    <index name="PRIMARY" unique="1">
+      <field name="email_sent_id"/>
+    </index>
+  </table>
+
+  <table name="error_log">
+    <field name="log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" default="0"/>
+    <field name="time" type="datetime" notnull="1" />
+    <field name="url" type="varchar" len="255"/>
+    <field name="remote_addr" type="varchar" len="39"/>
+    <field name="referrer" type="varchar" len="255"/>
+    <field name="error" type="text"/>
+    <field name="trace" type="text"/>
+    <index name="PRIMARY" unique="1">
+      <field name="log_id"/>
+    </index>
+  </table>
+  
+  <table name="debug_log">
+    <field name="log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" default="0"/>
+    <field name="time" type="datetime" notnull="1" />
+    <field name="url" type="varchar" len="255"/>
+    <field name="remote_addr" type="varchar" len="39"/>
+    <field name="referrer" type="varchar" len="255"/>
+    <field name="error" type="text"/>
+    <field name="trace" type="text"/>
+    <index name="PRIMARY" unique="1">
+      <field name="log_id"/>
+    </index>
+  </table>
+  
+  
+  <table name="failed_login">
+    <field name="failed_login_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="ip" type="char" len="39" notnull="1"/>
+    <field name="login_type" type="int" notnull="1"/>
+    <field name="failed_logins" type="int" notnull="1"/>
+    <field name="last_failed" type="int" notnull="1"/>
+    <index name="PRIMARY" unique="1">
+      <field name="failed_login_id"/>
+    </index>
+    <index name="ip" unique="1">
+      <field name="ip"/>
+      <field name="login_type"/>
+    </index>
+  </table>
+  <table name="resource_category">
+    <field name="resource_category_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255"/>
+    <field name="description" type="text" />
+    <field name="parent_id" type="int" notnull="0" />
+    <field name="sort_order" type="int" />
+    <index name="PRIMARY" unique="1">
+      <field name="resource_category_id" />
+    </index>
+    <index name="parent_id">
+      <field name="parent_id" />
+    </index>
+  </table>
+  <table name="resource_resource_category">
+    <field name="resource_resource_category_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="resource_id" type="int" notnull="1" />
+    <field name="resource_type" type="varchar" len="64" notnull="1" />
+    <field name="resource_category_id" type="int" notnull="1" />
+    <index name="PRIMARY" unique="1">
+      <field name="resource_resource_category_id" />
+    </index>
+    <index name="resource_category" unique="1">
+      <field name="resource_id" />
+      <field name="resource_type" />
+      <field name="resource_category_id" />
+    </index>
+    <index name="resource_category_id">
+      <field name="resource_category_id" />
+    </index>
+  </table>
+  <table name="resource_access">
+    
+    <field name="resource_access_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="resource_id" type="int" unsigned="1" notnull="0"/>
+    <field name="resource_type" type="varchar" len="64" notnull="1" />
+    <field name="fn" type="enum" len="'product_id','product_category_id','free','free_without_login','user_group_id','special'" notnull="1" />
+    <field name="id" type="int" notnull="1" />
+    <field name="start_days" type="int" notnull="0" />
+    <field name="start_payments" type="int" notnull="1" default="0" />
+    <field name="stop_days"  type="int" notnull="0" />
+    <field name="date_based" type="tinyint" notnull="1" default="0" />
+    <index name="PRIMARY" unique="1">
+        <field name="resource_access_id" />
+    </index>
+    <index name="res" >
+        <field name="resource_type" />
+        <field name="resource_id" />
+    </index>
+  </table>
+  
+  <table name="resource_access_sort">
+    <field name="resource_access_sort_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="resource_id" type="int" unsigned="1" notnull="0" />
+    <field name="resource_type" type="varchar" len="64" notnull="1" />
+    <field name="sort_order" type="int" notnull="1" />
+    <index name="PRIMARY" unique="1">
+        <field name="resource_access_sort_id" />
+    </index>
+    <index name="res" unique="1">
+        <field name="resource_type" />
+        <field name="resource_id" />
+    </index>
+    <index name="sort_order" >
+        <field name="sort_order" />
+    </index>
+  </table>
+  <table name="folder">
+    <field name="folder_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="desc" type="text" />
+    <field name="path" type="varchar" len="255" notnull="1"/>
+    <field name="url" type="varchar" len="255" notnull="1"/>
+    <field name="method" type="varchar" len="64"/>
+    <field name="dattm" type="datetime" notnull="0" />
+    <field name="hide" type="smallint" size="1" default="0" />
+    <field name="no_access_url" type="varchar" len="255"/>
+    <field name="options" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+      <field name="folder_id"/>
+    </index>
+    <index name="path" unique="1">
+      <field name="path" len="191"/>
+    </index>
+    <index name="url" unique="1">
+      <field name="url" len="191"/>
+    </index>
+  </table>
+  <table name="file">
+    <field name="file_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="desc" type="text" />
+    <field name="path" type="varchar" len="255" notnull="1"/>
+    <field name="mime" type="varchar" len="64" />
+    <field name="size" type="int" notnull="0" />
+    <field name="display_type" type="varchar" len="255" notnull="0" />
+    <field name="dattm" type="datetime" notnull="0" />
+    <field name="hide" type="smallint" size="1" default="0" />
+    <field name="download_limit" type="varchar" len="50" notnull="1" default="" />
+    <field name="no_access_url" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+        <field name="file_id" />
+    </index>
+  </table>
+  <table name="video">
+    <field name="video_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="desc" type="text" />
+    <field name="path" type="varchar" len="255" notnull="1"/>
+    <field name="poster_id" type="int" notnull="0"/>
+    <field name="cc_id" type="int" notnull="0"/>
+    <field name="mime" type="varchar" len="64" />
+    <field name="size" type="int" notnull="0" />
+    <field name="dattm" type="datetime" notnull="0" />
+    <field name="hide" type="smallint" size="1" default="0" />
+    <field name="tpl" type="varchar" len="255" notnull="0" />
+    <field name="meta_title" type="varchar" len="255" notnull="0"/>
+    <field name="meta_keywords" type="varchar" len="255" notnull="0"/>
+    <field name="meta_description" type="varchar" len="255" notnull="0"/>
+    <field name="meta_robots" type="set" len="'noindex','nofollow','noarchive'" notnull="0"/>
+    <field name="config" type="blob"/>
+    <field name="no_access_url" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+        <field name="video_id" />
+    </index>
+  </table>
+  <table name="upload">
+      <field name="upload_id" type="int" notnull="1" extra="auto_increment" />
+      <field name="path" type="varchar" len="255" />
+      <field name="desc" type="varchar" len="255" />
+      <field name="prefix" type="varchar" len="255" notnull="1" />
+      <field name="name" type="varchar" len="255" />
+      <field name="mime" type="varchar" len="255" />
+      <field name="size" type="int" notnull="0" />
+      <field name="delete" type="int" notnull="0" />
+      <field name="uploaded" type="int" notnull="0" />
+      <field name="storage_id" type="varchar" len="32" notnull="0" default="null" />
+      <field name="admin_id" type="int" notnull="0" />
+      <field name="user_id" type="int" notnull="0" />
+      <field name="session_id" type="char" len="32" notnull="0" />
+      <index name="PRIMARY" unique="1">
+          <field name="upload_id" />
+      </index>
+      <index name="prefix">
+          <field name="prefix" len="191"/>
+      </index>
+  </table>
+  <table name="page">
+    <field name="page_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="desc" type="text" />
+    <field name="path" type="varchar" len="255" notnull="0"/>
+    <field name="use_layout" type="int" default="0" />
+    <field name="html" type="mediumtext" notnull="0" />
+    <field name="dattm" type="datetime" notnull="0" />
+    <field name="onmenu" type="smallint" size="1" default="0" />
+    <field name="hide" type="smallint" size="1" default="0" />
+    <field name="tpl" type="varchar" len="255" notnull="0" />
+    <field name="meta_title" type="varchar" len="255" notnull="0"/>
+    <field name="meta_keywords" type="varchar" len="255" notnull="0"/>
+    <field name="meta_description" type="varchar" len="255" notnull="0"/>
+    <field name="meta_robots" type="set" len="'noindex','nofollow','noarchive'" notnull="0"/>
+    <field name="no_access_url" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+        <field name="page_id" />
+    </index>
+    <index name="path" unique="1">
+        <field name="path" len="191"/>
+    </index>
+  </table>
+  <table name="link">
+    <field name="link_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="desc" type="text" />
+    <field name="url" type="varchar" len="255" notnull="1"/>
+    <field name="dattm" type="datetime" notnull="0" />
+    <field name="onmenu" type="smallint" size="1" default="0" />
+    <field name="hide" type="smallint" size="1" default="0" />
+    <index name="PRIMARY" unique="1">
+        <field name="link_id" />
+    </index>
+  </table>
+  <table name="integration">
+    <field name="integration_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="comment" type="varchar" len="255" notnull="1"/>
+    <field name="plugin" type="text" />
+    <field name="vars" type="text" />
+    <index name="PRIMARY" unique="1">
+        <field name="integration_id" />
+    </index>
+  </table>
+  <table name="invoice">
+    <field name="invoice_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1"/>
+    <field name="paysys_id" type="varchar" len="64"/>
+    <field name="currency" type="char" len="3" notnull="1"/>
+    <field name="first_subtotal" type="decimal" len="12,2"/>
+    <field name="first_discount" type="decimal" len="12,2"/>
+    <field name="first_tax" type="decimal" len="12,2"/>
+    <field name="first_shipping" type="decimal" len="12,2"/>
+    <field name="first_total" type="decimal" len="12,2"/>
+    <field name="first_period" type="varchar" len="32" notnull="1"/>
+    <field name="rebill_times" type="int"/>
+    <field name="second_subtotal" type="decimal" len="12,2"/>
+    <field name="second_discount" type="decimal" len="12,2"/>
+    <field name="second_tax" type="decimal" len="12,2"/>
+    <field name="second_shipping" type="decimal" len="12,2"/>
+    <field name="second_total" type="decimal" len="12,2"/>
+    <field name="second_period" type="varchar" len="32"/>
+    <field name="tax_rate" type="varchar" len="255" />
+    <field name="tax_type" type="varchar" len="255" />
+    <field name="tax_title" type="varchar" len="255"/>
+    <field name="status" type="tinyint" notnull="1" default="0"/>
+    <field name="coupon_id" type="int" notnull="0"/>
+    <field name="coupon_code" type="varchar" len="255" notnull="0"/>
+    <field name="discount_first" type="decimal" len="12,2"/>
+    <field name="discount_second" type="decimal" len="12,2"/>
+    <field name="is_confirmed" type="tinyint"/>
+    <field name="public_id" type="char" notnull="1" len="16"/>
+    <field name="invoice_key" type="varchar" len="32"/>
+    <field name="tm_added" type="datetime" notnull="1" />
+    <field name="tm_started" type="datetime" notnull="0" />
+    <field name="tm_cancelled" type="datetime" notnull="0" />
+    <field name="rebill_date" type="date" notnull="0" />
+    <field name="due_date" type="date" notnull="0" />
+    <field name="terms" type="varchar" len="255" notnull="0" />
+    <field name="comment" type="text"/>
+    <field name="base_currency_multi" type="decimal" len="12,6" default="1.0" />
+    <field name="saved_form_id" type="int" unsigned="1" notnull="0"/>
+    <field name="remote_addr" type="varchar" len="39" notnull="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="invoice_id"/>
+    </index>
+    <index name="user_id">
+      <field name="user_id"/>
+    </index>
+    <index name="public_id" unique="1">
+      <field name="public_id"/>
+    </index>
+    <index name="rebill_date">
+      <field name="rebill_date"/>
+    </index>
+  </table>
+  <table name="invoice_item">
+    <field name="invoice_item_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="invoice_id" type="int" unsigned="1" notnull="1"/>
+    <field name="invoice_public_id" type="char" len="16" />
+    <field name="item_id" type="int"/>
+    <field name="item_type" type="varchar" len="16" notnull="1" default="product"/>
+    <field name="item_title" type="varchar" len="255" notnull="1"/>
+    <field name="item_description" type="varchar" len="255" notnull="1"/>
+    <field name="qty" type="int" notnull="1" default="1"/>
+    <field name="first_price" type="decimal" len="12,2" notnull="1"/>
+    <field name="first_discount" type="decimal" len="12,2" notnull="1"/>
+    <field name="first_tax" type="decimal" len="12,2" notnull="1"/>
+    <field name="first_total" type="decimal" len="12,2" notnull="1"/>
+    <field name="first_shipping" type="decimal" len="12,2" notnull="1"/>
+    <field name="first_period" type="varchar" len="32" notnull="1"/>
+    <field name="rebill_times" type="int"/>
+    <field name="second_price" type="decimal" len="12,2"/>
+    <field name="second_discount" type="decimal" len="12,2"/>
+    <field name="second_tax" type="decimal" len="12,2"/>
+    <field name="second_total" type="decimal" len="12,2"/>
+    <field name="second_shipping" type="decimal" len="12,2"/>
+    <field name="second_period" type="varchar" len="32"/>
+    <field name="currency" type="char" len="3"/>
+    <field name="tax_group" type="varchar" len="255" default="-1" />
+    <field name="tax_rate" type="varchar" len="255" />
+    <!--
+    <field name="trial_group" type="int" deprecated="deprecated" />
+    <field name="renewal_group" type="int" deprecated="deprecated" /> -->
+    <!-- can more than 1 item be added to basket -->
+    <field name="is_countable" type="tinyint" notnull="1" default="0"/>
+    <!-- can the qty be changed by user -->
+    <field name="variable_qty" type="tinyint" notnull="1" default="0" />
+    <field name="is_tangible" type="tinyint"/>
+    <field name="billing_plan_id" type="int" notnull="0" />
+    <field name="billing_plan_data" type="text" />
+    <field name="options" type="blob" notnull="0" />
+    <!-- will be removed in future versions! -->
+    <field name="option1" type="varchar" len="255" notnull="0" deprecated="1"/>
+    <field name="option2" type="varchar" len="255" notnull="0" deprecated="1"/>
+    <field name="option3" type="varchar" len="255" notnull="0" deprecated="1"/>
+    <!-- -->
+    <index name="PRIMARY" unique="1">
+      <field name="invoice_item_id"/>
+    </index>
+    <index name="invoice_id">
+      <field name="invoice_id"/>
+    </index>
+    <index name="invoice_public_id">
+      <field name="invoice_public_id"/>
+    </index>
+  </table>
+  
+  <!-- this table is only for search, you must keep it in sync with invoice_item.options value -->
+  <table name="invoice_item_option">
+    <field name="invoice_item_option_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="invoice_item_id" type="int" unsigned="1" notnull="1"/>
+    <field name="invoice_id" type="int" unsigned="1" notnull="1" />
+    <field name="user_id" type="int" unsigned="1" />
+    <field name="item_id" type="int"/>
+    <field name="name" type="varchar" len="255" notnull="1" />
+    <field name="value" type="varchar" len="1024" />
+    <field name="first_price" type="decimal" len="12,2" />
+    <field name="second_price" type="decimal" len="12,2" />
+    <index name="PRIMARY" unique="1">
+      <field name="invoice_item_option_id"/>
+    </index>
+    <index name="invoice_item_id">
+      <field name="invoice_id"/>
+    </index>
+    <index name="invoice_id">
+      <field name="invoice_id"/>
+    </index>
+  </table>
+  
+  
+  <table name="invoice_log">
+    <field name="log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="tm" type="datetime" notnull="1" />
+    <field name="invoice_id" type="int" unsigned="1"/>
+    <field name="user_id" type="int" unsigned="1"/>
+    <field name="paysys_id" type="varchar" len="64"/>
+    <field name="type" type="varchar" len="32"/>
+    <field name="title" type="varchar" len="255"/>
+    <field name="details" type="text"/>
+    <field name="remote_addr" type="varchar" len="39"/>
+    <field name="is_processed" type="tinyint" default="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="log_id"/>
+    </index>
+    <index name="invoice_id">
+      <field name="invoice_id"/>
+    </index>
+    <index name="user_id">
+      <field name="user_id"/>
+    </index>
+  </table>
+  <table name="invoice_payment">
+    <field name="invoice_payment_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="invoice_id" type="int" unsigned="1" notnull="1"/>
+    <field name="invoice_public_id" type="char" len="16" notnull="1"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="paysys_id" type="varchar" len="64"/>
+    <field name="receipt_id" type="varchar" len="64" notnull="1"/>
+    <field name="transaction_id" type="varchar" len="64" notnull="1"/>
+    <field name="dattm" type="datetime" notnull="1" />
+    <field name="currency" type="char" len="3" notnull="1" />
+    <field name="amount" type="decimal" len="12,2" notnull="1"/>
+    <field name="discount" type="decimal" len="12,2"/>
+    <field name="tax" type="decimal" len="12,2"/>
+    <field name="shipping" type="decimal" len="12,2"/>
+    <field name="refund_dattm" type="datetime"  notnull="0"/>
+    <field name="refund_amount" type="decimal" len="12,2" notnull="0"/>
+    <field name="base_currency_multi" type="decimal" len="12,6" default="1.0" />
+    <field name="display_invoice_id" type="char" len="32"/>
+
+    <index name="PRIMARY" unique="1">
+      <field name="invoice_payment_id"/>
+    </index>
+    <index name="invoice_id" unique="1">
+      <field name="invoice_id"/>
+      <field name="user_id"/>
+      <field name="transaction_id"/>
+    </index>
+    <index name="invoice_public_id">
+      <field name="invoice_public_id"/>
+    </index>
+    <index name="user_id">
+      <field name="user_id"/>
+    </index>
+    <index name="dattm">
+      <field name="dattm"/>
+    </index>
+  </table>
+  <table name="invoice_refund">
+    <field name="invoice_refund_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="invoice_id" type="int" unsigned="1" notnull="1"/>
+    <field name="invoice_public_id" type="char" len="16" notnull="1"/>
+    <field name="invoice_payment_id" type="int" unsigned="1" notnull="0"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="paysys_id" type="varchar" len="64"/>
+    <field name="receipt_id" type="varchar" len="64" notnull="1"/>
+    <field name="transaction_id" type="varchar" len="64" notnull="1"/>
+    <field name="dattm" type="datetime" notnull="1" />
+    <field name="currency" type="char" len="3" notnull="1" />
+    <field name="amount" type="decimal" len="12,2" notnull="1"/>
+    <field name="refund_type" type="int" notnull="1" default="0"/>
+    <field name="base_currency_multi" type="decimal" len="12,6" default="1.0" />
+    <field name="display_invoice_id" type="char" len="32"/>
+    
+    <index name="PRIMARY" unique="1">
+      <field name="invoice_refund_id"/>
+    </index>
+    <index name="invoice_payment_id">
+      <field name="invoice_payment_id"/>
+    </index>
+    <index name="invoice_id" unique="1">
+      <field name="invoice_id"/>
+      <field name="user_id"/>
+      <field name="transaction_id"/>
+    </index>
+    <index name="invoice_public_id">
+      <field name="invoice_public_id"/>
+    </index>
+    <index name="user_id">
+      <field name="user_id"/>
+    </index>
+    <index name="dattm">
+      <field name="dattm"/>
+    </index>
+  </table>
+  <table name="mail_queue">
+    <field name="queue_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="from" type="varchar" len="255" notnull="1"/>
+    <field name="recipients" type="varchar" len="255" notnull="1"/>
+    <field name="count_recipients" type="smallint" notnull="1"/>
+    <field name="subject" type="text" />
+    <field name="added" type="int" notnull="1"/>
+    <field name="sent" type="int"/>
+    <field name="failures" type="int" default="0"/>
+    <field name="priority" type="int" default="0"/>
+    <field name="last_error" type="varchar" len="255"/>
+    <field name="headers" type="blob"/>
+    <field name="body" type="mediumblob"/>
+    <index name="PRIMARY" unique="1">
+      <field name="queue_id"/>
+    </index>
+    <index name="sent">
+      <field name="sent"/>
+      <field name="priority"/>
+      <field name="added"/>
+    </index>
+  </table>
+  <table name="user_status">
+    <field name="user_status_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="product_id" type="int" notnull="1"/>
+    <field name="status" type="tinyint" notnull="1" default="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="user_status_id"/>
+    </index>
+    <index name="user_id" unique="1">
+      <field name="user_id"/>
+      <field name="product_id"/>
+    </index>
+  </table>
+  <table name="user">
+    <field name="user_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="login" type="varchar" len="64" notnull="1"/>
+    <field name="pass" type="varchar" len="64"/>
+    <field name="remember_key" type="varchar" len="40" notnull="0"/>
+    <field name="pass_dattm" type="datetime" notnull="0"/>
+    <field name="email" type="varchar" len="64"/>
+    <field name="name_f" type="varchar" len="64" notnull="1"/>
+    <field name="name_l" type="varchar" len="64" notnull="1"/>
+    <field name="street" type="varchar" len="255"/>
+    <field name="street2" type="varchar" len="255"/>
+    <field name="city" type="varchar" len="255"/>
+    <field name="state" type="varchar" len="255"/>
+    <field name="zip" type="varchar" len="255"/>
+    <field name="country" type="varchar" len="255"/>
+    <field name="phone" type="varchar" len="255"/>
+    <field name="added" type="datetime" notnull="0"/>
+    <field name="remote_addr" type="varchar" len="39"/>
+    <field name="user_agent" type="varchar" len="255"/>
+    <field name="saved_form_id" type="int" unsigned="1" notnull="0"/>
+    <field name="status" type="smallint" notnull="1" default="0"/>
+    <field name="unsubscribed" type="tinyint" notnull="1" default="0" />
+    <field name="lang" type="varchar" len="32"/>
+    <field name="i_agree" type="tinyint" default="0"/>
+    <field name="is_approved" type="tinyint" default="1"/>
+    <field name="is_locked" type="tinyint" default="0"/>
+    <field name="disable_lock_until" type="datetime" notnull="0"/>
+    <field name="reseller_id" type="int"/>
+    <field name="comment" type="text"/>
+    <field name="tax_id" type="varchar" len="255" notnull="0" /><!-- to store EU VAT Id -->
+    <field name="last_login" type="datetime"/>
+    <field name="last_ip" type="varchar" len="39"/>
+    <field name="last_user_agent" type="varchar" len="255"/>
+    <field name="last_session" type="varchar" len="32"/>
+     <!-- add fields from [aff] module here to similfy import -->
+    <field name="aff_id" type="int" unsigned="1" notnull="0"/>
+    <field name="aff_added" type="datetime" notnull="0"/>
+    <field name="is_affiliate" type="tinyint"/>
+    <field name="aff_payout_type" type="varchar" len="32"/>
+    <!-- end of affiliate fields -->
+    <index name="PRIMARY" unique="1">
+      <field name="user_id"/>
+    </index>
+    <index name="login" unique="1">
+      <field name="login" len="64"/>
+    </index>
+    <index name="country">
+      <field name="country" len="3"/>
+    </index>
+    <index name="state">
+      <field name="state" len="191"/>
+    </index>
+  </table>
+
+    <table name="user_group">
+        <field name="user_group_id" type="int" notnull="1" extra="auto_increment"/>
+        <field name="title" type="varchar" len="255"/>
+        <field name="description" type="text" />
+        <field name="parent_id" type="int" notnull="1" />
+        <field name="sort_order" type="int" notnull="1" default="0" />
+        <index name="PRIMARY" unique="1">
+            <field name="user_group_id" />
+        </index>
+        <index name="parent_id">
+            <field name="parent_id" />
+        </index>
+    </table>
+    <table name="user_user_group">
+        <field name="user_user_group_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+        <field name="user_id" type="int" unsigned="1" notnull="1" />
+        <field name="user_group_id" type="int" notnull="1" />
+        <index name="PRIMARY" unique="1">
+            <field name="user_user_group_id" />
+        </index>
+        <index name="user_group" unique="1">
+            <field name="user_id" />
+            <field name="user_group_id" />
+        </index>
+        <index name="user_group_id">
+            <field name="user_group_id" />
+        </index>
+    </table>
+  <table name="user_note">
+      <field name="note_id" type="int" notnull="1" extra="auto_increment"/>
+      <field name="admin_id" type="int" notnull="1" />
+      <field name="user_id" type="int" unsigned="1" notnull="1" />
+      <field name="content" type="text" />
+      <field name="dattm" type="datetime" />
+      <field name="attachments" type="varchar" len="255" />
+      <index name="PRIMARY" unique="1">
+          <field name="note_id"/>
+      </index>
+  </table>
+  <table name="user_delete_request">
+      <field name="request_id" type="int" notnull="1" extra="auto_increment" />
+      <field name="user_id" type="int" unsigned="1" notnull="1" />
+      <field name="added" type="datetime" notnull="0" />
+      <field name="processed" type="datetime" notnull="0" />
+      <field name="admin_id" type="int" unsigned="1" notnull="0"/>
+      <field name="remote_addr" type="varchar" len="39" />
+      <field name='errors' type='text' />
+      <field name='completed' type='int' notnull="1"/>
+      <index name="PRIMARY" unique="1">
+          <field name="request_id"/>
+      </index>
+      <index name="user_id" unique="1">
+          <field name="user_id"/>
+      </index>
+      
+  </table>
+  
+  <table name="product">
+    <field name="product_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" notnull="1"/>
+    <field name="description" type="text"/>
+    <field name="url" type="varchar" len="255"/>
+    <field name="trial_group" type="varchar" len="32"/>
+    <field name="start_date" type="varchar" len="255" />
+    <field name="currency" type="char" len="3"/>
+    <field name="tax_group" type="varchar" len="255" default="-1" />
+    <field name="tax_rate_group" type="varchar" len="255" default="" />
+    <field name="tax_digital" type="varchar" len="255" default="0" />
+    <field name="sort_order" type="int" notnull="1" />
+    <field name="renewal_group" type="varchar" len="255"/>
+    <field name="start_date_fixed" type="date" /> 
+    <field name="require_other" type="text"/>
+    <field name="prevent_if_other" type="text" />
+    <field name="paysys_id" type="varchar" len="255"/>
+    <field name="comment" type="varchar" len="255" />
+    <field name="default_billing_plan_id" type="int" notnull="0" />
+    <field name="is_tangible" type="tinyint" default="0" notnull="1" />
+    <field name="is_disabled" type="tinyint" default="0" notnull="1" />
+    <field name="is_archived" type="tinyint" default="0" notnull="1" />
+    <!-- <field name="is_countable" type="tinyint" default="0" notnull="1" deprecated="deprecated" /> -->
+    <field name="comment" type="text"/>
+    <index name="PRIMARY" unique="1">
+      <field name="product_id"/>
+    </index>
+    <table_data name="product">
+     <row>
+      <field name="title">Sample Subscription</field>
+      <field name="description">this is a sample subscription type</field>
+      <field name="start_date">payment,product</field>
+      <field name="currency">USD</field>
+      <field name="sort_order">1</field>
+      <field name="default_billing_plan_id">1</field>
+     </row>
+    </table_data>    
+  </table>
+  
+  <table name="product_category">
+    <field name="product_category_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255"/>
+    <field name="description" type="text" />
+    <field name="parent_id" type="int" notnull="0" />
+    <field name="code" type="varchar" len="64" />
+    <field name="sort_order" type="int" />
+    <index name="PRIMARY" unique="1">
+      <field name="product_category_id" />
+    </index>
+    <index name="parent_id">
+      <field name="parent_id" />
+    </index>
+  </table>
+  <table name="product_product_category">
+    <field name="product_product_category_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="product_id" type="int" notnull="1" />
+    <field name="product_category_id" type="int" notnull="1" />
+    <index name="PRIMARY" unique="1">
+      <field name="product_product_category_id" />
+    </index>
+    <index name="product_category" unique="1">
+      <field name="product_id" />
+      <field name="product_category_id" />
+    </index>
+    <index name="product_category_id">
+      <field name="product_category_id" />
+    </index>
+  </table>
+  <table name="product_option">
+    <field name="product_option_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="product_id" type="int" notnull="1" />
+    <field name="name" type="varchar" len="255" notnull="1" />
+    <field name="title" type="varchar" len="255" notnull="1" />
+    <field name="description" type="varchar" len="1024" />
+    <field name="type" type="varchar" len="32" notnull="1" />
+    <field name="size" type="int" />
+    <field name="default" type="varchar" len="255" />
+    <field name="options" type="text" /> 
+    <field name="is_required" type="tinyint" notnull="0" default="0" />
+    <field name="sort_order" type="int" notnull="1" default="999" />
+    <index name="product_option_id">
+      <field name="product_option_id" />
+    </index>
+    <index name="product_name" unique="1">
+      <field name="product_id" />
+      <field name="name"  len="187"/>
+    </index>
+  </table>
+  <table name="rebill_log">
+    <field name="rebill_log_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="added_tm" type="datetime" notnull="1"/>
+    <field name="payment_date" type="date" notnull="1"/>
+    <field name="payment_id" type="int" unsigned="1" notnull="1"/>
+    <field name="rebill_payment_id" type="int" unsigned="1" notnull="1"/>
+    <field name="amount" type="decimal" len="12,2" notnull="1"/>
+    <field name="status" type="smallint"/>
+    <field name="status_tm" type="datetime"/>
+    <field name="status_msg" type="varchar" len="255"/>
+    <index name="PRIMARY" unique="1">
+      <field name="rebill_log_id"/>
+    </index>
+    <index name="payment_id">
+      <field name="payment_id"/>
+    </index>
+  </table>
+  <table name="saved_search">
+    <field name="saved_search_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="name" type="varchar" len="64" notnull="1"/>
+    <field name="class" type="varchar" len="64" notnull="1"/>
+    <field name="search" type="text"/>
+    <field name="updated" type="timestamp" notnull="1" default="CURRENT_TIMESTAMP" extra="on update CURRENT_TIMESTAMP"/>
+    <field name="admin_id" type="int"/>
+    <index name="PRIMARY" unique="1">
+      <field name="saved_search_id"/>
+    </index>
+  </table>
+  <table name="session">
+    <field name="id" type="char" len="32" notnull="1"/>
+    <field name="modified" type="int"/>
+    <field name="lifetime" type="int"/>
+    <field name="user_id" type="int" unsigned="1"/>
+    <field name="data" type="mediumtext"/>
+    <index name="PRIMARY" unique="1">
+      <field name="id"/>
+    </index>
+  </table>
+  <table name="state">
+    <field name="state_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="state" type="char" len="12" notnull="1"/>
+    <field name="country" type="char" len="2" notnull="1"/>
+    <field name="title" type="varchar" len="64"/>
+    <field name="status" type="enum" len="'added','changed'"/>
+    <field name="tag" type="int" default="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="state_id"/>
+    </index>
+    <index name="state" unique="1">
+      <field name="state"/>
+    </index>
+    <index name="country">
+      <field name="country"/>
+    </index>
+  </table>
+  <table name="saved_form">
+    <field name="saved_form_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="title" type="varchar" len="255" />
+    <field name="comment" type="varchar" len="255" />
+    <field name="code" type="varchar" len="64" />
+    <field name="fields" type="mediumtext" />
+    <field name="tpl" type="varchar" len="255" notnull="0" />
+    <field name="type" type="varchar" len="16" />
+    <field name="hide" type="smallint" size="1" default="0" />
+    <field name="is_disabled" type="smallint" size="1" default="0" />
+    <field name="default_for" type="varchar" len="255" />
+    <field name="sort_order" type="int" />
+    <field name="meta_title" type="varchar" len="255" notnull="0"/>
+    <field name="meta_keywords" type="varchar" len="255" notnull="0"/>
+    <field name="meta_description" type="varchar" len="255" notnull="0"/>
+    <field name="meta_robots" type="set" len="'noindex','nofollow','noarchive'" notnull="0"/>
+    <index name="PRIMARY" unique="1">
+        <field name="saved_form_id" />
+    </index>
+    <table_data name="saved_form">
+     <row type="saved_form">
+      <field name="title">Signup Form</field>
+      <field name="comment">customer signup/payment form</field>
+      <field name="code">default</field>
+      <field name="fields">[{&quot;id&quot;:&quot;product-0&quot;,&quot;class&quot;:&quot;product&quot;},{&quot;id&quot;:&quot;paysystem&quot;,&quot;class&quot;:&quot;paysystem&quot;},{&quot;id&quot;:&quot;name&quot;,&quot;class&quot;:&quot;name&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;email&quot;,&quot;class&quot;:&quot;email&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;login&quot;,&quot;class&quot;:&quot;login&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;password&quot;,&quot;class&quot;:&quot;password&quot;,&quot;hide&quot;:&quot;1&quot;}]</field>
+      <field name="default_for">signup,member</field>
+      <field name="type">signup</field>
+      <field name="sort_order">1</field>
+     </row>
+     <row type="saved_form">
+      <field name="title">Create Customer Profile</field>
+      <field name="comment">shopping cart signup form</field>
+      <field name="fields">[{&quot;id&quot;:&quot;name&quot;,&quot;class&quot;:&quot;name&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;email&quot;,&quot;class&quot;:&quot;email&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;login&quot;,&quot;class&quot;:&quot;login&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;password&quot;,&quot;class&quot;:&quot;password&quot;,&quot;hide&quot;:&quot;1&quot;}]</field>
+      <field name="type">cart</field>
+      <field name="sort_order">2</field>
+     </row>
+     <row type="saved_form">
+      <field name="title">Customer Profile</field>
+      <field name="comment">customer profile form</field>
+      <field name="code">default</field>
+      <field name="fields">[{&quot;id&quot;:&quot;name&quot;,&quot;class&quot;:&quot;name&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;email&quot;,&quot;class&quot;:&quot;email&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;new-password&quot;,&quot;class&quot;:&quot;new-password&quot;}]</field>
+      <field name="default_for">profile</field>
+      <field name="type">profile</field>
+      <field name="sort_order">3</field>
+     </row>
+     <row type="saved_form">
+      <field name="title">Affiliate Signup Form</field>
+      <field name="comment">affiliate signup form</field>
+      <field name="fields">[{&quot;id&quot;:&quot;name&quot;,&quot;class&quot;:&quot;name&quot;,&quot;hide&quot;:&quot;1&quot;},{&quot;id&quot;:&quot;email&quot;,&quot;class&quot;:&quot;email&quot;,&quot;hide&quot;:true},{&quot;id&quot;:&quot;login&quot;,&quot;class&quot;:&quot;login&quot;,&quot;hide&quot;:true},{&quot;id&quot;:&quot;password&quot;,&quot;class&quot;:&quot;password&quot;,&quot;hide&quot;:true},{&quot;id&quot;:&quot;address&quot;,&quot;class&quot;:&quot;address&quot;,&quot;hide&quot;:&quot;1&quot;,&quot;config&quot;:{&quot;fields&quot;:{&quot;street&quot;:1,&quot;city&quot;:1,&quot;country&quot;:1,&quot;state&quot;:1,&quot;zip&quot;:1}}},{&quot;id&quot;:&quot;payout&quot;,&quot;class&quot;:&quot;payout&quot;}]</field>
+      <field name="type">aff</field>
+      <field name="sort_order">4</field>
+     </row>
+    </table_data>
+  </table>
+  <table name="translation">
+    <field name="language" type="varchar" len="10" notnull="1"/>
+    <field name="translations" type="mediumtext" notnull="1"/>
+    <index name="PRIMARY" unique="1">
+      <field name="language"/>
+    </index>
+  </table>
+  <table name="saved_pass">
+    <field name="saved_pass_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1" />
+    <field name="format" type="varchar" len="32" notnull="1"/>
+    <field name="pass" type="varchar" len="255" notnull="1"/>
+    <field name="salt" type="varchar" len="255"/>
+    <field name="time" type="timestamp" notnull="1" default="CURRENT_TIMESTAMP" extra="on update CURRENT_TIMESTAMP"/>
+    <index name="PRIMARY" unique="1"><field name="saved_pass_id" /></index>
+    <index name="user" unique="1"><field name="user_id"/><field name="format"/></index>
+  </table>
+  <table name="ban">
+    <field name="ban_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="type"  type="varchar" len="32" notnull="1" />
+    <field name="value" type="varchar" len="255" notnull="1" />
+    <field name="comment" type="varchar" len="255" notnull="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="ban_id"/>
+    </index>
+    <index name="type">
+      <field name="type"/>
+    </index>
+  </table>
+  
+  <table name="exchange_rate">
+    <field name="rate_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="from" type="char" len="3" notnull="1" />
+    <field name="to" type="char" len="3" notnull="1" />
+    <field name="date" type="date"  />
+    <index name="PRIMARY" unique="1">
+      <field name="rate_id"/>
+    </index>
+    <index name="date">
+      <field name="date"/>
+    </index>
+  </table>
+  
+  <table name="product_upgrade">
+    <field name="product_upgrade_id" type="int" notnull="1" extra="auto_increment" />
+    <field name="from_billing_plan_id" type="int" />
+    <field name="to_billing_plan_id" type="int" />
+    <field name="surcharge" type="decimal" len="12,2" default="0.00" />
+    <field name="type" type="varchar" len="32" default="default" />
+    <field name="comment" type="varchar" len="255" default="default" />
+    <field name="hide_if_to" type="tinyint" notnull="1" default="0"/>
+    <index name="PRIMARY" unique="1">
+      <field name="product_upgrade_id"/>
+    </index>
+  </table>
+  
+  <table name="currency_exchange">
+    <field name="rate_id" type="int" notnull="1" extra="auto_increment" />
+    <field name="currency" type="char" len="3" notnull="1" />
+    <field name="date" type="date" notnull="1" />
+    <field name="rate" type="decimal" len="12,6" notnull="1" />
+    <index name="PRIMARY" unique="1">
+      <field name="rate_id"/>
+    </index>
+    <index name="currency_rate" unique="1">
+        <field name="currency" />
+        <field name="date" />
+    </index>
+  </table>
+  <table name="file_download">
+    <field name="download_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="file_id" type="int" notnull="1"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="dattm" type="datetime" notnull="1" />
+    <field name="remote_addr" type="varchar" len="39"/>
+    <index name="PRIMARY" unique="1">
+      <field name="download_id"/>
+    </index>
+    <index name="download">
+      <field name="file_id"/>
+      <field name="user_id"/>
+      <field name="dattm"/>
+    </index>
+  </table>
+  <table name="saved_report">
+    <field name="saved_report_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="report_id" type="varchar" len="64" notnull="1"/>
+    <field name="title" type="varchar" len="255" />
+    <field name="request" type="blob"/>
+    <field name="admin_id" type="int"/>
+    <index name="PRIMARY" unique="1">
+      <field name="saved_report_id"/>
+    </index>
+  </table>
+  <table name="store_rebuild">
+    <field name="store_rebuild_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="rebuild_name" type="char" len="32" notnull="1"/>
+    <field name="session_id" type="char" len="32" notnull="1"/>
+    <field name="user_id" type="int" unsigned="1" notnull="1"/>
+    <field name="expires" type="datetime" notnull="0" />
+    <index name="PRIMARY" unique="1">
+      <field name="store_rebuild_id"/>
+    </index>
+    <index name="full_name" unique="1">
+      <field name="rebuild_name"/>
+      <field name="session_id"/>
+      <field name="user_id"/>
+    </index>
+  </table>
+  <table name="custom_field_sort">
+    <field name="custom_field_sort_id" type="int" unsigned="1" notnull="1" extra="auto_increment"/>
+    <field name="custom_field_table" type="varchar" len="32" notnull="1" />
+    <field name="custom_field_name" type="varchar" len="32" notnull="1" />
+    <field name="sort_order" type="int" notnull="1" />
+    <index name="PRIMARY" unique="1">
+        <field name="custom_field_sort_id" />
+    </index>
+    <index name="res" unique="1">
+        <field name="custom_field_table" />
+        <field name="custom_field_name" />
+    </index>
+    <index name="sort_order" >
+        <field name="sort_order" />
+    </index>
+  </table>
+  
+  <table name="cc_rebill">
+    <field name="cc_rebill_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="tm_added" type="datetime" notnull="1" />
+    <field name="paysys_id" type="varchar" len="64" />
+    <field name="invoice_id" type="int" />
+    <field name="rebill_date" type="date" />
+    <field name="status" type="smallint" />
+    <field name="status_tm" type="datetime" />
+    <field name="status_msg" type="varchar" len="255" />
+    <index name="PRIMARY" unique="1">
+      <field name="cc_rebill_id"/>
+    </index>
+    <index name="invoice_date" unique="1">
+        <field name="invoice_id" />
+        <field name="rebill_date" />
+    </index>    
+    <index name="by_date">
+      <field name="rebill_date" />
+    </index>
+  </table>
+
+  <table name="button">
+    <field name="button_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="hash" type="varchar" len="64" notnull="1" />
+
+    <field name="title" type="varchar" len="255" />
+    <field name="comment" type="varchar" len="255" />
+    <field name="coupon" type="varchar" len="255" />
+    <field name="is_disabled" type="int" default="0" />
+    
+    <field name="paysys_id" type="varchar" len="255" />
+    <field name="billing_plan_id" type="varchar" len="255" />
+    <field name="saved_form_id" type="int" />
+    
+    <index name="PRIMARY" unique="1">
+        <field name="button_id" />
+    </index>
+  </table>
+  
+  <table name='agreement'>
+    <field name="agreement_revision_id" type="int" notnull="1" extra="auto_increment"/>
+    <field name="type" type="varchar" len="64" notnull="1" />
+    <field name="title" type="varchar" len="128" notnull="1" />
+    <field name="url" type="varchar" len="255" notnull="0" />
+    <field name="body" type="text"/>
+    <field name="comment" type="varchar" len="255" notnull="0"/>
+    <field name="dattm" type="timestamp" default="CURRENT_TIMESTAMP" extra="on update CURRENT_TIMESTAMP"/>
+    <field name="is_current" type="tinyint" notnull='1' default='0'/>
+    <index name="PRIMARY" unique="1">
+        <field name="agreement_revision_id" />
+    </index>
+    <index name='type'>
+        <field name="type" />
+    </index>
+  </table>
+  
+  <table name='user_consent'>
+    <field name='consent_id' type="int" notnull="1" extra="auto_increment" />
+    <field name='revision_id' type="int" notnull="0" />
+    <field name='user_id' type="int" notnull="1" />
+    <field name='title' type="varchar" len='255' notnull="0"/>
+    <field name='type' type="varchar" len='64' notnull="1"/>
+    <field name="dattm" type="datetime" />
+    <field name="remote_addr" type="varchar" len="39" notnull="1" />
+    <field name="source" type="varchar" len="255" />
+    <field name="cancel_dattm" type="datetime" notnull="0"/>
+    <field name="cancel_remote_addr" type="varchar" len="39" notnull="0" />
+    <field name="cancel_source" type="varchar" len="255" notnull="0"/>
+    <index name="PRIMARY" unique="1">
+        <field name="consent_id" />
+    </index>
+    <index name='agreement_revision_id'>
+        <field name="revision_id" />
+    </index>
+    <index name='user_id'>
+        <field name="user_id" />
+    </index>
+  
+  </table>
+</schema>

@@ -1,0 +1,13 @@
+<?php
+if (isset($_GET['_msg']) &&
+    isset($_SERVER['HTTP_REFERER']) &&
+    parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) == $_SERVER['HTTP_HOST']) : ?>
+
+    <div class="am-info" id="am-info-msg" style="clear:both">
+        <?php p($_GET['_msg']) ?>
+    </div>
+    <script type="text/javascript">
+        jQuery('#am-info-msg').fadeTo('slow', 0.1).fadeTo('slow', 1.0);
+        setTimeout(function(){jQuery('#am-info-msg').fadeOut()}, 5000);
+    </script>
+<?php endif; ?>

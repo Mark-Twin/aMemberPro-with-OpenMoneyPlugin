@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>cart</id>
+    <name>Shopping Cart</name>
+    <desc>This module provides shopping cart functionality</desc>
+    <version>5.5.4</version>
+</module>

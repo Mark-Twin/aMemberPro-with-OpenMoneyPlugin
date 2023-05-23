@@ -1,0 +1,29 @@
+<?php $lastUsersList = $di->userTable->findBy(array(), 0, $num, 'last_login DESC'); ?>
+<?php if ($lastUsersList) : ?>
+<div class="admin-last admin-lastusers">
+    <h2><?php __e('Last %s User Signin', $num); ?></h2>
+    <div class="grid-container">
+        <table class="grid grid-no-highlight">
+            <?php foreach ($lastUsersList as $u): ?>
+            <tr class="grid-row <?php echo (@$rownum++%2) ? 'odd' : 'even' ?>">
+                <td><?php if (trim($u->getName())) : ?>
+                        <strong><?php p($u->getName()) ?></strong>
+                        (<a class="link" href="<?php echo $this->userUrl($u->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$u->user_id}") ?>"><?php p($u->login) ?></a>)
+                    <?php else: ?>
+                        <a class="link" href="<?php echo $this->userUrl($u->user_id) ?>" data-tooltip-url="<?php echo $this->url('admin-users/card', "id={$u->user_id}") ?>"><?php p($u->login) ?></a>
+                    <?php endif; ?>
+                    -
+                    <?php echo $u->last_login ? $u->last_ip . ___(' at ') . '<time datetime="' . date('c', amstrtotime($u->last_login)) . '" title="' . $this->getElapsedTime($u->last_login) . '">' . amDatetime($u->last_login) . '</time>' : ___('Never') ?>
+                    <br />
+                    <?php p($u->email) ?></td>
+            </tr>
+            <?php endforeach ?>
+        </table>
+    </div>
+</div>
+<?php else: ?>
+<div class="widget-nodata">
+    <h2><?php __e('Last %s User Signin', $num); ?></h2>
+    <p><?php __e('No data to display yet') ?></p>
+</div>
+<?php endif; ?>

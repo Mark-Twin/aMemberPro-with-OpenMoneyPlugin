@@ -1,0 +1,31 @@
+<?php if (!$msg) : ?>
+<div class="info info_ok">
+    No problems detected in your license key and URLs configuration.
+</div>
+<?php else : ?>
+<div class="info">
+        <p><strong>There is a license problem with aMember Pro as described in the following error message:</strong></p>
+        <ul class="list">
+            <li><strong style="color:#ba2727"><?php echo $msg ?></strong></font></li>
+        </ul>
+        <?php if (preg_match('/After upgrading from aMember Trial to aMember Pro/', $msg)) : ?>
+            <p><strong>Please go to <a target="_blank" href="https://www.amember.com/amember/member">aMember Pro Customers Area</a>,
+                    copy your license key to clipboard, then paste it to "License Key" field below,
+                    and press "Update License Information" button.</strong></p>
+        <?php endif; ?>
+        <p>Below your current Root and Secure Root URL, and license key are listed.</p>
+        <p>According to aMember Pro <a href="http://www.amember.com/p/Main/License" target="_blank">license agreement</a>,
+            you have to order a separate aMember Pro license for each aMember installation.
+            There are exceptions:</p>
+        <ul class="list">
+            <li>We can move your aMember installation to new domain within 3 months from the order date, providing you are stopped business on licensed domain.</li>
+            <li>We will add "hosting-provided SSL" domain name to your license for free, just let us know main domain name, and Secure URL of your aMember installation.</li>
+        </ul>
+
+        <p>Please login to <a target="_blank" href="https://www.amember.com/amember/member/">aMember Pro Members Area</a> to review
+            your existing domains and order new licenses if necessary.</p>
+        <p>Go to <a target="_blank" href="https://www.amember.com/support/">aMember Pro Helpdesk</a>
+            to request license changes and if you have any questions about licensing.</p>
+</div>
+<?php endif; ?>
+<?php include $this->_script('admin/form.phtml'); ?>

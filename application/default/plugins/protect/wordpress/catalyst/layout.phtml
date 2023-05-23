@@ -1,0 +1,12 @@
+<?php
+do_action("template_redirect");
+Am_Di::getInstance()->plugins_protect->get('wordpress')
+    ->startLayout($this, isset($meta_title) ? $meta_title : $title, true, $body_class);
+global $catalyst_layout_id, $catalyst_child_home;
+
+catalyst_hook_widget_areas( $catalyst_layout_id );
+catalyst_hook_hook_boxes( $catalyst_layout_id );
+
+get_header();
+include dirname(__FILE__)."/../amember.php";
+get_footer();

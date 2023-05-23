@@ -1,0 +1,41 @@
+<ul class="am-widget-list am-list-newsletters">
+<?php
+foreach ($lists as $l):
+    $id = $l->pk();
+    $checked = in_array($id, $subscribed) ? 'checked="checked"' : '';
+?>
+    <li class="am-list-newsletters-item"><label for="list-<?php echo $id?>">
+            <input type="checkbox" class="newsletter-list" name="<?php echo $id ?>" value="1" <?php echo $checked ?> id="list-<?php echo $id ?>" />
+            <span class="am-list-newsletters-item_title"><?php __e($l->title) ?></span>
+            <?php if ($l->desc) : ?>
+            <span class="am-list-newsletters-item_desc"><?php __e($l->desc) ?></span>
+            <?php endif; ?>
+        </label>
+    </li>
+<?php endforeach; ?>
+</ul>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    jQuery("input.newsletter-list").change(function(){
+        var vars = [];
+        vars.push({ name: this.name, value: this.checked ? 1 : 0 });
+        <?php if (!empty($this->s) && !empty($this->e)): ?>
+        vars.push({name: "s", value: <?php echo json_encode($this->s); ?>});
+        vars.push({name: "e", value: <?php echo json_encode($this->e); ?>});
+        <?php endif // end of unsubscribe-without-login code ?>
+        var url = amUrl("/newsletter/ajax/update-subscription", 1);
+        jQuery.post(url[0], jQuery.merge(vars, url[1]), function(){
+            amFlashMessage('<?php __e('Status of your subscription has been changed.') ?>');
+        });
+    });
+    jQuery("#checkbox-unsubscribed").change(function(){
+        jQuery("[id^=member-main-newsletter]").toggle( ! this.checked);
+        jQuery("#member-main-newsletter").find('[type=checkbox]').prop('checked', false);
+    });
+    if (jQuery("#checkbox-unsubscribed:checked").length)
+    {
+        jQuery("[id^=member-main-newsletter]").hide();
+        jQuery("#member-main-newsletter").find('[type=checkbox]').prop('checked', false);
+    }
+});
+</script>

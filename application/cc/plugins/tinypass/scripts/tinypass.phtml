@@ -1,0 +1,21 @@
+<?php
+$title = ___("Secure Payment");
+$this->setLayout('layout.phtml');
+?>
+
+<script type='text/javascript' src='https://code.tinypass.com/tinypass.js'></script>
+<h3><b><font color="#ee3733">Please click on the button to complete your payment. Check your email for instructions</font></b></h3>
+<br>
+<?php echo $buttonHTML; ?>
+
+<br>
+<script type="text/javascript">
+    function redirectFunction(status) {
+        if (status.state == 'granted') {
+              //reload or perform any other logic based on the state
+              window.location = '<?php echo $url; ?>';
+        }
+    }
+</script>
+
+

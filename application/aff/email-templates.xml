@@ -1,0 +1,137 @@
+<table_data name="email_template">
+    <row type="email_template">
+        <field name="name">aff.admin_registration_mail</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: *** New Affiliate Signup</field>
+        <field name="txt">
+Affiliate details:
+    Username:   %affiliate.login%
+    Email:      %affiliate.email%
+    Name:       %affiliate.name_f% %affiliate.name_l%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.registration_mail</field>
+        <field name="email_template_layout_id">3</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Affiliate Program Registration</field>
+        <field name="txt">Thank you for registration on %site_title% affiliate program!
+
+   Your User ID: %affiliate.login%
+   Your Password: %password%
+
+Log-on to your affiliate pages at:
+%root_url%/aff/member
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.mail_sale_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Affiliate Commission</field>
+        <field name="txt">New sale has been made with using of affiliate link.
+You may find sale details below:
+
+----
+Affilate: %affiliate.user_id% / %affiliate.login% / %affiliate.email%
+          %affiliate.name_f% %affiliate.name_l% / %affiliate.remote_addr%
+New Member: %user.user_id% / %user.login% / %user.email%
+          %user.name_f% %user.name_l% / %user.remote_addr%
+Payment REF: %payment.invoice_payment_id%
+Total:       %payment.amount%
+Product ordered: %product.title%
+Commission paid: %commission%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.mail_sale_user</field>
+        <field name="email_template_layout_id">3</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Affiliate Sale</field>
+        <field name="txt">New sale has been made by your affiliate link and
+commission credited to your balance. You may find
+sale details below:
+
+----
+Payment REF: %payment.invoice_payment_id%
+Total:       %amount%
+Product ordered: %product.title%
+Your commission: %commission%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.new_payouts</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Affiliate Payout ToDo</field>
+        <field name="txt">New payouts were generated for you affiliates. Please visit
+%url%
+to pay earnings.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.notify_payout_empty</field>
+        <field name="email_template_layout_id">3</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your Affiliate Payout Method is not defined yet</field>
+        <field name="txt">You did not set up payout method in our affiliate
+programm. Your commissions will not be included
+to payout until you set up it.
+
+Please Log-on to your affiliate pages and set up it:
+%root_url%/aff/member/payout-info
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.notify_payout_paid</field>
+        <field name="email_template_layout_id">3</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Affiliate Payout</field>
+        <field name="txt">We issue payout for your affiliate account on our site.
+All new commissions issued until %payout.thresehold_date|date% is included
+to this payout.
+
+Payout Amount: %payout_detail.amount|currency%
+Payout Method: %payout_method_title%
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.manually_approve</field>
+        <field name="email_template_layout_id">3</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your affiliate signup is pending</field>
+        <field name="txt">Thank you for subscribing!
+
+We review all affiliates manually, so your status is pending.
+You will receive email when your
+account will be approved. Thank you for your patience.
+        </field>
+    </row>
+    <row type="email_template">
+        <field name="name">aff.manually_approve_admin</field>
+        <field name="email_template_layout_id">2</field>
+        <field name="lang">en</field>
+        <field name="format">text</field>
+        <field name="subject">%site_title%: Your approval required</field>
+        <field name="txt">New affiliate signup completed and is awaiting your approval.
+Please log into aMember CP
+        %root_url%/admin/
+and then click the following link:
+        %root_url%/admin-users?_u_a=edit&amp;_u_id=%affiliate.user_id%
+
+Affiliate details:
+    Username:   %affiliate.login%
+    Email:      %affiliate.email%
+    Name:       %affiliate.name_f% %user.name_l%
+        </field>
+    </row>
+</table_data>

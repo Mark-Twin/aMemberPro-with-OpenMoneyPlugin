@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>aff</id>
+    <name>Affiliate</name>
+    <desc>This module handles management of affiliate program</desc>
+    <version>5.5.4</version>
+</module>

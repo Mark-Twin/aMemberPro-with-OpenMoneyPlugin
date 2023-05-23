@@ -1,0 +1,8 @@
+.am-coll-left,
+.am-coll-right {
+    width: 49%;
+}
+
+.am-form fieldset legend {
+    margin-left: -7px;
+}

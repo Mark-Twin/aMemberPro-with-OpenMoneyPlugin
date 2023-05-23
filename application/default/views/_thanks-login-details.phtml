@@ -1,0 +1,27 @@
+<?php if ($invoice):?>
+<div class="am-block am-thanks-login-details">
+    <div class="am-thanks-login-details-login">
+        <?php __e('Your Username')?>:
+        <strong><?php p($invoice->getUser()->login); ?></strong>
+    </div>
+    <div class="am-thanks-login-details-pass">
+        <?php __e('Your Password')?>:
+        <?php
+    $pg = $invoice->getUser()->getStoredPlaintextPassword();
+    if ($pg) : ?>
+   <a class="am-thanks-password local-link" href="javascript:;"><?php __e('click to see password') ?></a>
+   <span class="am-thanks-password" style="display:none"><strong><?php p($pg)?></strong></span>
+   <script type="text/javascript">
+   jQuery(function($){
+        jQuery(".am-thanks-password").click(function(){
+            jQuery(".am-thanks-password").toggle();
+        });
+   });
+   </script>
+    <?php else:
+        __e('as chosen on signup page');
+    endif;
+?>
+    </div>
+</div> 
+<?php endif ?>

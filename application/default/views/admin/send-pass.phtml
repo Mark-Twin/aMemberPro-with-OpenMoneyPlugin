@@ -1,0 +1,15 @@
+<?php
+$title = ___('Restore Password');
+$this->setLayout("admin/layout-login.phtml");
+?><div class="form-login-wrapper">
+    <div class="form-login" >
+        <?php if (@$message) : ?>
+        <div class="form-send-pass-info">
+            <?php p($message) ?>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($error)) echo $this->formErrors((array)$error) ?>
+        <?php if (@$form) { echo $form; } ?>
+        <a class="link" href="<?php echo $this->url('admin-auth/index') ?>"><?php __e('Log in') ?></a>
+    </div>
+</div>
